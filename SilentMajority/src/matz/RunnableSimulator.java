@@ -1,5 +1,7 @@
 package matz;
 
+import java.lang.reflect.Field;
+
 public class RunnableSimulator implements Runnable {
 
 	private double SilentAgentsRatio;
@@ -33,9 +35,16 @@ public class RunnableSimulator implements Runnable {
 	
 	@Override
 	public void run() {
-		// TODO 自動生成されたメソッド・スタブ
-		System.out.println();
+		RunnableSimulator rs = new RunnableSimulator();
 		
+		System.out.println("Running simulation with following parameters:");
+		for (Field field : rs.getClass().getDeclaredFields()) {
+			try {
+				System.out.println(field.getName()+" = "+field.get(this).toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
