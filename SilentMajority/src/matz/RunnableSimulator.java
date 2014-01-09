@@ -2,12 +2,20 @@ package matz;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 public class RunnableSimulator implements Runnable {
 
 	private double SilentAgentsRatio;
 	private double ModelReferenceRatio;
+	private String TaskLogFileName;
+	private Logger TaskLogger = null;
 	
 	/**サイレント率を入力．
 	 * @param silentAgentsRatio
@@ -37,6 +45,46 @@ public class RunnableSimulator implements Runnable {
 		ModelReferenceRatio = modelReferenceRatio;
 	}
 
+	/**Taskごとのログファイル名を取得。
+	 * @return taskLogFileName
+	 */
+	public String getTaskLogFileName() {
+		return TaskLogFileName;
+	}
+
+	/**タスクごとのログファイル名を日付ベースで指定。
+	 * @param taskLogFileName セットする taskLogFileName
+	 */
+	public void setTaskLogFileName() {
+		Date date = new Date();
+		DateFormat df = new SimpleDateFormat("yyyyMMdd");
+		TaskLogFileName = this.getClass().getName() + Thread.currentThread().getId() + "-" + df.format(date);
+	}
+	/**Loggerを初期化し、ファイルハンドラを設定する。
+	 * ログファイルは日付ベースで名前付けし、アペンドする。
+	 * @throws SecurityException
+	 * @throws IOException
+	 */
+	public void initSimExecLogger() throws SecurityException, IOException {
+		setTaskLogFileName();
+		TaskLogger = Logger.getLogger(this.getClass().getName());
+		FileHandler fh = new FileHandler("logs/" + getTaskLogFileName() + ".log", true);
+		fh.setFormatter(new SimpleFormatter());
+		TaskLogger.addHandler(fh);														//logfile
+		TaskLogger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));		//stdout
+	}
+	public void logConf(String msg) {
+		TaskLogger.config(msg);
+	}
+	public void logInfo(String msg) {
+		TaskLogger.info(msg);
+	}
+	public void logWarn(String msg) {
+		TaskLogger.warning(msg);
+	}
+	public void logErr(String msg) {
+		TaskLogger.severe(msg);
+	}
 	/**ランダムなサイレント率とモデル選択比でシミュレーションを初期化．
 	 * 
 	 */
@@ -102,11 +150,11 @@ public class RunnableSimulator implements Runnable {
 	public void run() {
 		RunnableSimulator rs = new RunnableSimulator();
 		
-		System.out.println(Thread.currentThread().getId() + " : " + Thread.currentThread().toString()
+		rs.logInfo(Thread.currentThread().getId() + " : " + Thread.currentThread().toString()
 				+ "\tRunning simulation with following parameters:");
 		for (Field field : rs.getClass().getDeclaredFields()) {
 			try {
-				System.out.println(field.getName()+" = "+field.get(this).toString());
+				rs.logInfo(field.getName()+" = "+field.get(this).toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -119,7 +167,7 @@ public class RunnableSimulator implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Done.");
+		rs.logInfo("Done.");
 	}
 
 }

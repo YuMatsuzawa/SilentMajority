@@ -1,6 +1,6 @@
 package matz;
 
-import java.lang.reflect.Field; //Leave this imported regardless of being used or unused
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 public final class SimulationExecutor {
 
@@ -46,7 +48,7 @@ public final class SimulationExecutor {
 	 */
 	public void safeShutdown() {
 		SimExecServ.shutdown();
-		System.out.println("Simulation Executor going to be terminated after all submitted tasks done.");
+		SimExecLogger.info("SimulationExecutor going to be terminated after all submitted tasks done.");
 	}
 	/**SimulationExecutorのログファイル名を取得．
 	 * @return
@@ -54,31 +56,63 @@ public final class SimulationExecutor {
 	public String getSimExecLogFileName() {
 		return SimExecLogFileName;
 	}
-	/**SimulationExecutorのログファイル名を指定．
+	/**SimulationExecutorのログファイル名を日付ベースで設定．
 	 * @param simExecLogFileName
 	 */
-	public void setSimExecLogFileName(String simExecLogFileName) {
+	public void setSimExecLogFileName() {
 		Date date = new Date();
-		DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-		SimExecLogFileName = this.getClass().getName() + df.format(date) + ".log";
+		DateFormat df = new SimpleDateFormat("yyyyMMdd");
+		SimExecLogFileName = this.getClass().getName() + df.format(date);
 	}
-	public void initSimExecLogger() {
+	
+	/**Loggerを初期化し、ファイルハンドラを設定する。
+	 * ログファイルは日付ベースで名前付けし、アペンドする。
+	 * @throws SecurityException
+	 * @throws IOException
+	 */
+	public void initSimExecLogger() throws SecurityException, IOException {
+		setSimExecLogFileName();
 		SimExecLogger = Logger.getLogger(this.getClass().getName());
-		SimExecLogger.addHandler(new FileHandler(getSimExecLogFileName()));
+		FileHandler fh = new FileHandler("logs/" + getSimExecLogFileName() + ".log", true);
+		fh.setFormatter(new SimpleFormatter());
+		SimExecLogger.addHandler(fh);														//logfile
+		SimExecLogger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));		//stdout
+	}
+	public void logConf(String msg) {
+		SimExecLogger.config(msg);
+	}
+	public void logInfo(String msg) {
+		SimExecLogger.info(msg);
+	}
+	public void logWarn(String msg) {
+		SimExecLogger.warning(msg);
+	}
+	public void logErr(String msg) {
+		SimExecLogger.severe(msg);
 	}
 	/**デフォルトのスレッド数(8)でSimulationExecutorを初期化．
 	 * 
 	 */
 	public SimulationExecutor() {
-		setNumThreads(NumThreadsDefault);
-		initSimExecServ();
+		try {
+			setNumThreads(NumThreadsDefault);
+			initSimExecServ();
+			initSimExecLogger();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	/**指定したスレッド数でSimulationExecutorを初期化．
 	 * @param numThreads - int
 	 */
 	public SimulationExecutor(int numThreads) {
-		setNumThreads(numThreads);
-		initSimExecServ();
+		try {
+			setNumThreads(numThreads);
+			initSimExecServ();
+			initSimExecLogger();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static final void main(String[] args) {
@@ -92,7 +126,7 @@ public final class SimulationExecutor {
 			}
 		}
 		
-		System.out.println(Thread.currentThread().getId() + " : " + Thread.currentThread().toString()
+		SE.logInfo(Thread.currentThread().getId() + " : " + Thread.currentThread().toString()
 				+ "\tStarting Simulation Executor. NumThreads = " + SE.getNumThreads());
 		
 		/*for (Field field : SE.SimExecServ.getClass().getDeclaredFields()) {

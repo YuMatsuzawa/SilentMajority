@@ -1,0 +1,4 @@
+2014/01/09 19:51:52 matz.SimulationExecutor logInfo
+î•ñ: 1 : Thread[main,5,main]	Starting Simulation Executor. NumThreads = 4
+2014/01/09 19:51:52 matz.SimulationExecutor safeShutdown
+î•ñ: SimulationExecutor going to be terminated after all submitted tasks done.
