@@ -1,34 +1,43 @@
 package matz;
 
 import java.io.*;
-import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
+import java.util.logging.*;
 
 public class RunnableSimulator implements Runnable {
 
+	private String InstanceName;
 	private double SilentAgentsRatio;
 	private double ModelReferenceRatio;
 	private String TaskLogFileName;
 	private Logger TaskLogger = null;
 	
-	/**サイレント率を入力．
-	 * @param silentAgentsRatio
+	/**シミュレータインスタンスの名前を取得する．
+	 * @return
 	 */
-	public void setSilentAgentsRatio(double silentAgentsRatio) {
-		SilentAgentsRatio = silentAgentsRatio;
+	public String getInstanceName() {
+		return InstanceName;
 	}
 
+	/**シミュレータインスタンスの名前を指定する．
+	 * 与えられる名前の型が何でもいいように，valueOfでparseする．
+	 * @param instanceName
+	 */
+	public void setInstanceName(Object instanceName) {
+		InstanceName = String.valueOf(instanceName);
+	}
 	/**サイレント率を取得．
 	 * @return
 	 */
 	public double getSilentAgentsRatio() {
 		return SilentAgentsRatio;
+	}
+
+	/**サイレント率を入力．
+	 * @param silentAgentsRatio
+	 */
+	public void setSilentAgentsRatio(double silentAgentsRatio) {
+		SilentAgentsRatio = silentAgentsRatio;
 	}
 
 	/**モデル選択比を取得．
@@ -51,55 +60,69 @@ public class RunnableSimulator implements Runnable {
 	public String getTaskLogFileName() {
 		return TaskLogFileName;
 	}
-
-	/**タスクごとのログファイル名を日付ベースで指定。
-	 * @param taskLogFileName セットする taskLogFileName
+	/**SimulationExecutorのログファイル名をスレッド情報ベースで設定．
+	 * @param simExecLogFileName
 	 */
 	public void setTaskLogFileName() {
-		Date date = new Date();
-		DateFormat df = new SimpleDateFormat("yyyyMMdd");
-		TaskLogFileName = this.getClass().getName() + Thread.currentThread().getId() + "-" + df.format(date);
+		TaskLogFileName = TaskLogger.getName() + ".log";
 	}
-	/**Loggerを初期化し、ファイルハンドラを設定する。
-	 * ログファイルは日付ベースで名前付けし、アペンドする。
+	/**ロガーを初期化し、ファイルハンドラを設定する。
+	 * ログファイルはアペンドする。
 	 * @throws SecurityException
 	 * @throws IOException
 	 */
-	public void initSimExecLogger() throws SecurityException, IOException {
-		setTaskLogFileName();
-		TaskLogger = Logger.getLogger(this.getClass().getName());
-		FileHandler fh = new FileHandler("logs/" + getTaskLogFileName() + ".log", true);
-		fh.setFormatter(new SimpleFormatter());
+	public void initTaskLogger() throws SecurityException, IOException {
+		TaskLogger = Logger.getLogger(this.getClass().getName()+"."+this.getInstanceName()); //pseudo-constructor
+		setTaskLogFileName();		
+		//for (Handler handler : TaskLogger.getHandlers()) TaskLogger.removeHandler(handler); //remove default handlers
+		TaskLogger.setUseParentHandlers(false);
+		 //this is essential for disabling 'root logger' to display your logs in default settings and formats.
+		 //with this setting, LogRecord from this class won't be passed up to root logger.
+		
+		File logDir = new File("logs");
+		if (!logDir.isDirectory()) logDir.mkdirs();
+		
+		FileHandler fh = new FileHandler(logDir + "/" + getTaskLogFileName(), true);
+		fh.setFormatter(new ShortLogFormatter());
 		TaskLogger.addHandler(fh);														//logfile
-		TaskLogger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));		//stdout
 	}
-	public void logConf(String msg) {
-		TaskLogger.config(msg);
-	}
-	public void logInfo(String msg) {
-		TaskLogger.info(msg);
-	}
-	public void logWarn(String msg) {
-		TaskLogger.warning(msg);
-	}
-	public void logErr(String msg) {
-		TaskLogger.severe(msg);
+	/**ロガーのファイルハンドラをクローズする．
+	 * この処理はlckファイルを掃除するために必要．
+	 * 
+	 */
+	public void closeLogFileHandler() {
+		for (Handler handler : TaskLogger.getHandlers()) {
+			handler.flush();
+			handler.close();
+		}
 	}
 	/**ランダムなサイレント率とモデル選択比でシミュレーションを初期化．
 	 * 
 	 */
-	public RunnableSimulator() {
-		setSilentAgentsRatio(Math.random());
-		setModelReferenceRatio(Math.random());
+	public RunnableSimulator(Object instanceName) {
+		try {
+			setInstanceName(instanceName);
+			setSilentAgentsRatio(Math.random());
+			setModelReferenceRatio(Math.random());
+			initTaskLogger();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**指定したサイレント率とモデル選択比でシミュレーションを初期化．
 	 * @param silentAgentsRatio
 	 * @param modelReferenceRatio
 	 */
-	public RunnableSimulator(double silentAgentsRatio, double modelReferenceRatio) {
-		setSilentAgentsRatio(silentAgentsRatio);
-		setModelReferenceRatio(modelReferenceRatio);
+	public RunnableSimulator(Object instanceName, double silentAgentsRatio, double modelReferenceRatio) {
+		try {
+			setInstanceName(instanceName);
+			setSilentAgentsRatio(silentAgentsRatio);
+			setModelReferenceRatio(modelReferenceRatio);
+			initTaskLogger();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	/**並列タスク処理のテスト用のメソッド．
 	 * 適当なテキストファイルを入力とし，単語の出現数を数え上げる．
@@ -136,8 +159,10 @@ public class RunnableSimulator implements Runnable {
 			}
 		});
 		
-		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("wc_"
-				+ Thread.currentThread().toString().replaceAll("\\s", "") + ".txt", true));
+		File outDir = new File("results/wc");
+		if (!outDir.isDirectory()) outDir.mkdirs();
+		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(new File(outDir,"wc_"
+				+ Thread.currentThread().toString().replaceAll("\\s", "") + ".txt"), true));
 		try {
 			osw.write(entries.toString());
 		} catch (IOException e) {
@@ -148,26 +173,16 @@ public class RunnableSimulator implements Runnable {
 	
 	@Override
 	public void run() {
-		RunnableSimulator rs = new RunnableSimulator();
 		
-		rs.logInfo(Thread.currentThread().getId() + " : " + Thread.currentThread().toString()
-				+ "\tRunning simulation with following parameters:");
-		for (Field field : rs.getClass().getDeclaredFields()) {
-			try {
-				rs.logInfo(field.getName()+" = "+field.get(this).toString());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		this.TaskLogger.info("Start.");
+		try {
+			//procedure
+			WordCount(new File("zarathustra.txt"));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		for (int i = 0; i < 10; i++) {
-			try {
-				//procedure
-				WordCount(new File("zarathustra.txt"));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		rs.logInfo("Done.");
+		this.TaskLogger.info("Done.");	
+		this.closeLogFileHandler();
 	}
 
 }

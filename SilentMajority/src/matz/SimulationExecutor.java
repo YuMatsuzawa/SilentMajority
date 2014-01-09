@@ -1,15 +1,10 @@
 package matz;
 
+import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
+import java.util.logging.*;
 
 public final class SimulationExecutor {
 
@@ -56,39 +51,45 @@ public final class SimulationExecutor {
 	public String getSimExecLogFileName() {
 		return SimExecLogFileName;
 	}
-	/**SimulationExecutorのログファイル名を日付ベースで設定．
+	/**SimulationExecutorのログファイル名をロガーの名前から設定．
 	 * @param simExecLogFileName
 	 */
 	public void setSimExecLogFileName() {
-		Date date = new Date();
-		DateFormat df = new SimpleDateFormat("yyyyMMdd");
-		SimExecLogFileName = this.getClass().getName() + df.format(date);
+		SimExecLogFileName = SimExecLogger.getName() + ".log";
 	}
 	
-	/**Loggerを初期化し、ファイルハンドラを設定する。
-	 * ログファイルは日付ベースで名前付けし、アペンドする。
+	/**ロガーを初期化し、ファイルハンドラ・コンソールハンドラを設定する。
+	 * ログファイルはアペンドする。
 	 * @throws SecurityException
 	 * @throws IOException
 	 */
 	public void initSimExecLogger() throws SecurityException, IOException {
+		
+		SimExecLogger = Logger.getLogger(this.getClass().getName()); //pseudo-constructor
 		setSimExecLogFileName();
-		SimExecLogger = Logger.getLogger(this.getClass().getName());
-		FileHandler fh = new FileHandler("logs/" + getSimExecLogFileName() + ".log", true);
-		fh.setFormatter(new SimpleFormatter());
+		SimExecLogger.setUseParentHandlers(false);
+		 //this is essential for disabling 'root logger' to display your logs in default settings and formats.
+		 //with this setting, LogRecord from this class won't be passed up to root logger.
+		
+		File logDir = new File("logs");
+		if (!logDir.isDirectory()) logDir.mkdirs();
+		
+		FileHandler fh = new FileHandler(logDir + "/" + getSimExecLogFileName(), true);
+		fh.setFormatter(new ShortLogFormatter());
 		SimExecLogger.addHandler(fh);														//logfile
-		SimExecLogger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));		//stdout
+		ConsoleHandler ch = new ConsoleHandler();
+		ch.setFormatter(new ShortLogFormatter());
+		SimExecLogger.addHandler(ch);														//stderr
 	}
-	public void logConf(String msg) {
-		SimExecLogger.config(msg);
-	}
-	public void logInfo(String msg) {
-		SimExecLogger.info(msg);
-	}
-	public void logWarn(String msg) {
-		SimExecLogger.warning(msg);
-	}
-	public void logErr(String msg) {
-		SimExecLogger.severe(msg);
+	/**ロガーのファイルハンドラをクローズする．
+	 * この処理はlckファイルを掃除するために必要．
+	 * 
+	 */
+	public void closeLogFileHandler() {
+		for (Handler handler : SimExecLogger.getHandlers()) {
+			handler.flush();
+			handler.close();
+		}
 	}
 	/**デフォルトのスレッド数(8)でSimulationExecutorを初期化．
 	 * 
@@ -116,31 +117,28 @@ public final class SimulationExecutor {
 	}
 	
 	public static final void main(String[] args) {
-		SimulationExecutor SE = new SimulationExecutor();
-		for (String arg : args) {
-			try {
-				int numThreads = Integer.parseInt(arg);
-				SE = new SimulationExecutor(numThreads);
-			} catch (NumberFormatException e) {
-				
+		SimulationExecutor SE = null;
+		if (args.length > 0) {
+			for (String arg : args) {
+				try {
+					int numThreads = Integer.parseInt(arg);
+					SE = new SimulationExecutor(numThreads);
+				} catch (NumberFormatException e) {
+					SE = new SimulationExecutor();
+				}
 			}
+		} else {
+			SE = new SimulationExecutor();
 		}
 		
-		SE.logInfo(Thread.currentThread().getId() + " : " + Thread.currentThread().toString()
-				+ "\tStarting Simulation Executor. NumThreads = " + SE.getNumThreads());
+		SE.SimExecLogger.info("Starting Simulation Executor. NumThreads = " + SE.getNumThreads());
 		
-		/*for (Field field : SE.SimExecServ.getClass().getDeclaredFields()) {
-			try {
-				System.out.println(field.getName() + " = " + field.get(SE).toString());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}*/
 		for (int i = 0; i < 8; i++) {
-			SE.execute(new RunnableSimulator());
+			SE.execute(new RunnableSimulator("instance" + i));
 		}
 		
 		SE.safeShutdown();
+		SE.closeLogFileHandler();
 	}
 
 }
