@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.*;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
 
 public final class SimulationExecutor {
 
@@ -58,7 +61,7 @@ public final class SimulationExecutor {
 		SimExecLogFileName = SimExecLogger.getName() + ".log";
 	}
 	
-	/**ロガーを初期化し、ファイルハンドラ・コンソールハンドラを設定する。
+	/**ロガーを初期化し、ファイルハンドラ・コンソールハンドラを設定する。<br />
 	 * ログファイルはアペンドする。
 	 * @throws SecurityException
 	 * @throws IOException
@@ -81,7 +84,7 @@ public final class SimulationExecutor {
 		ch.setFormatter(new ShortLogFormatter());
 		SimExecLogger.addHandler(ch);														//stderr
 	}
-	/**ロガーのファイルハンドラをクローズする．
+	/**ロガーのファイルハンドラをクローズする．<br />
 	 * この処理はlckファイルを掃除するために必要．
 	 * 
 	 */

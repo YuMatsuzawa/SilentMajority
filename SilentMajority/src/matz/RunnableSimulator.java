@@ -2,7 +2,9 @@ package matz;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
 
 public class RunnableSimulator implements Runnable {
 
@@ -11,6 +13,7 @@ public class RunnableSimulator implements Runnable {
 	private double ModelReferenceRatio;
 	private String TaskLogFileName;
 	private Logger TaskLogger = null;
+	private String DataDir = "data";
 	
 	/**シミュレータインスタンスの名前を取得する．
 	 * @return
@@ -66,7 +69,7 @@ public class RunnableSimulator implements Runnable {
 	public void setTaskLogFileName() {
 		TaskLogFileName = TaskLogger.getName() + ".log";
 	}
-	/**ロガーを初期化し、ファイルハンドラを設定する。
+	/**ロガーを初期化し、ファイルハンドラを設定する。<br />
 	 * ログファイルはアペンドする。
 	 * @throws SecurityException
 	 * @throws IOException
@@ -86,7 +89,7 @@ public class RunnableSimulator implements Runnable {
 		fh.setFormatter(new ShortLogFormatter());
 		TaskLogger.addHandler(fh);														//logfile
 	}
-	/**ロガーのファイルハンドラをクローズする．
+	/**ロガーのファイルハンドラをクローズする．<br />
 	 * この処理はlckファイルを掃除するために必要．
 	 * 
 	 */
@@ -96,6 +99,20 @@ public class RunnableSimulator implements Runnable {
 			handler.close();
 		}
 	}
+	/**入力データを格納してあるディレクトリパスを取得。
+	 * @return dataDir
+	 */
+	public String getDataDir() {
+		return DataDir;
+	}
+
+	/**入力データを格納してあるディレクトリパスを指定。デフォルト値は<current>/data
+	 * @param dataDir セットする dataDir
+	 */
+	public void setDataDir(String dataDir) {
+		DataDir = dataDir;
+	}
+
 	/**ランダムなサイレント率とモデル選択比でシミュレーションを初期化．
 	 * 
 	 */
@@ -124,9 +141,9 @@ public class RunnableSimulator implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	/**並列タスク処理のテスト用のメソッド．
-	 * 適当なテキストファイルを入力とし，単語の出現数を数え上げる．
-	 * HashMapとString．splitを使い，最後にArrayListとCollection．sortで並び替える．
+	/**並列タスク処理のテスト用のメソッド．<br />
+	 * 適当なテキストファイルを入力とし，単語の出現数を数え上げる．<br />
+	 * HashMapとString．splitを使い，最後にArrayListとCollection．sortで並び替える．<br />
 	 * @param input
 	 * @throws IOException 
 	 */
@@ -177,7 +194,7 @@ public class RunnableSimulator implements Runnable {
 		this.TaskLogger.info("Start.");
 		try {
 			//procedure
-			WordCount(new File("zarathustra.txt"));
+			WordCount(new File(this.getDataDir(),"zarathustra.txt"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
