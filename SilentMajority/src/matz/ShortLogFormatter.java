@@ -16,15 +16,26 @@ public class ShortLogFormatter extends Formatter {
 		DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
 		
 		message.append(df.format(record.getMillis()))
-		.append("> ")
+		.append("> [")
+		.append(record.getLevel())
+		.append("] ")
 		.append(record.getMessage())
-		.append("\t[")
+		.append("\t(")
 		.append(record.getSourceClassName())
 		.append("#")
 		.append(record.getSourceMethodName())
 		.append(":")
 		.append(record.getThreadID())
-		.append("]\n");
+		.append(")\n");
+		
+		Throwable thrown = null;
+		if ((thrown = record.getThrown()) != null) {
+			for (StackTraceElement ste : thrown.getStackTrace()) {
+				message.append("\t\t\t")
+				.append(ste.toString())
+				.append("\n");
+			}
+		}
 		
 		return message.toString();
 	}

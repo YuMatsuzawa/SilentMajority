@@ -2,9 +2,7 @@ package matz;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 public class RunnableSimulator implements Runnable {
 
@@ -71,10 +69,8 @@ public class RunnableSimulator implements Runnable {
 	}
 	/**ロガーを初期化し、ファイルハンドラを設定する。<br />
 	 * ログファイルはアペンドする。
-	 * @throws SecurityException
-	 * @throws IOException
 	 */
-	public void initTaskLogger() throws SecurityException, IOException {
+	public void initTaskLogger() {
 		TaskLogger = Logger.getLogger(this.getClass().getName()+"."+this.getInstanceName()); //pseudo-constructor
 		setTaskLogFileName();		
 		//for (Handler handler : TaskLogger.getHandlers()) TaskLogger.removeHandler(handler); //remove default handlers
@@ -85,9 +81,18 @@ public class RunnableSimulator implements Runnable {
 		File logDir = new File("logs");
 		if (!logDir.isDirectory()) logDir.mkdirs();
 		
-		FileHandler fh = new FileHandler(logDir + "/" + getTaskLogFileName(), true);
-		fh.setFormatter(new ShortLogFormatter());
-		TaskLogger.addHandler(fh);														//logfile
+		try {
+			FileHandler fh = new FileHandler(logDir + "/" + getTaskLogFileName(), true);
+			fh.setFormatter(new ShortLogFormatter());
+			fh.setLevel(Level.ALL);
+			TaskLogger.addHandler(fh);														//logfile
+		} catch (Exception e) {
+			ConsoleHandler ch = new ConsoleHandler();
+			ch.setLevel(Level.WARNING);
+			ch.setFormatter(new ShortLogFormatter());
+			TaskLogger.addHandler(ch);
+			logStackTrace(e);
+		}
 	}
 	/**ロガーのファイルハンドラをクローズする．<br />
 	 * この処理はlckファイルを掃除するために必要．
@@ -98,6 +103,14 @@ public class RunnableSimulator implements Runnable {
 			handler.flush();
 			handler.close();
 		}
+	}
+	/**例外をロガーに流すメソッド。<br />
+	 * SEVEREレベル（Fatalレベル）で出力される。
+	 * 
+	 * @param thrown
+	 */
+	public void logStackTrace(Throwable thrown) {
+		TaskLogger.log(Level.SEVERE, thrown.getLocalizedMessage(), thrown);
 	}
 	/**入力データを格納してあるディレクトリパスを取得。
 	 * @return dataDir
@@ -123,7 +136,7 @@ public class RunnableSimulator implements Runnable {
 			setModelReferenceRatio(Math.random());
 			initTaskLogger();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logStackTrace(e);
 		}
 	}
 	
@@ -138,7 +151,7 @@ public class RunnableSimulator implements Runnable {
 			setModelReferenceRatio(modelReferenceRatio);
 			initTaskLogger();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logStackTrace(e);
 		}
 	}
 	/**並列タスク処理のテスト用のメソッド．<br />
@@ -162,7 +175,7 @@ public class RunnableSimulator implements Runnable {
 				}
 			}	
 		} catch (IOException e) {
-			e.printStackTrace();
+			logStackTrace(e);
 		}
 		br.close();
 		
@@ -183,7 +196,7 @@ public class RunnableSimulator implements Runnable {
 		try {
 			osw.write(entries.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			logStackTrace(e);
 		}
 		osw.close();		
 	}
@@ -195,11 +208,12 @@ public class RunnableSimulator implements Runnable {
 		try {
 			//procedure
 			WordCount(new File(this.getDataDir(),"zarathustra.txt"));
+			this.TaskLogger.info("Done.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logStackTrace(e);
+		} finally {
+			this.closeLogFileHandler();
 		}
-		this.TaskLogger.info("Done.");	
-		this.closeLogFileHandler();
 	}
 
 }

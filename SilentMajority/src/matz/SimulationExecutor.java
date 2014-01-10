@@ -1,19 +1,22 @@
 package matz;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 public final class SimulationExecutor {
 
 	private int NumThreads;
 	private int NumThreadsDefault = 8;
+	/**SimulationExecutorの基幹となるスレッドプールを保持するExecutorService.
+	 * @see java.util.concurrent.ExecutorService
+	 * 
+	 */
 	private ExecutorService SimExecServ;
+	/**SimulationExecutorのLogger。
+	 * @see java.util.logging.Logger
+	 */
 	private Logger SimExecLogger = null;
 	private String SimExecLogFileName;
 	
@@ -63,10 +66,8 @@ public final class SimulationExecutor {
 	
 	/**ロガーを初期化し、ファイルハンドラ・コンソールハンドラを設定する。<br />
 	 * ログファイルはアペンドする。
-	 * @throws SecurityException
-	 * @throws IOException
 	 */
-	public void initSimExecLogger() throws SecurityException, IOException {
+	public void initSimExecLogger() {
 		
 		SimExecLogger = Logger.getLogger(this.getClass().getName()); //pseudo-constructor
 		setSimExecLogFileName();
@@ -77,12 +78,19 @@ public final class SimulationExecutor {
 		File logDir = new File("logs");
 		if (!logDir.isDirectory()) logDir.mkdirs();
 		
-		FileHandler fh = new FileHandler(logDir + "/" + getSimExecLogFileName(), true);
-		fh.setFormatter(new ShortLogFormatter());
-		SimExecLogger.addHandler(fh);														//logfile
 		ConsoleHandler ch = new ConsoleHandler();
 		ch.setFormatter(new ShortLogFormatter());
+		ch.setLevel(Level.INFO);
 		SimExecLogger.addHandler(ch);														//stderr
+
+		try {
+			FileHandler fh = new FileHandler(logDir + "/" + getSimExecLogFileName(), true);
+			fh.setFormatter(new ShortLogFormatter());
+			fh.setLevel(Level.ALL);
+			SimExecLogger.addHandler(fh);														//logfile
+		} catch (Exception e) {
+			logStackTrace(e);
+		}
 	}
 	/**ロガーのファイルハンドラをクローズする．<br />
 	 * この処理はlckファイルを掃除するために必要．
@@ -94,6 +102,14 @@ public final class SimulationExecutor {
 			handler.close();
 		}
 	}
+	/**例外をロガーに流すメソッド。<br />
+	 * SEVEREレベル（Fatalレベル）で出力される。
+	 * 
+	 * @param thrown
+	 */
+	public void logStackTrace(Throwable thrown) {
+		SimExecLogger.log(Level.SEVERE, thrown.getLocalizedMessage(), thrown);
+	}
 	/**デフォルトのスレッド数(8)でSimulationExecutorを初期化．
 	 * 
 	 */
@@ -103,7 +119,8 @@ public final class SimulationExecutor {
 			initSimExecServ();
 			initSimExecLogger();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logStackTrace(e);
+			
 		}
 	}
 	/**指定したスレッド数でSimulationExecutorを初期化．
@@ -115,7 +132,7 @@ public final class SimulationExecutor {
 			initSimExecServ();
 			initSimExecLogger();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logStackTrace(e);
 		}
 	}
 	
