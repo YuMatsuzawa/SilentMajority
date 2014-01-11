@@ -127,7 +127,8 @@ public class RunnableSimulator implements Runnable {
 	}
 
 	/**ランダムなサイレント率とモデル選択比でシミュレーションを初期化．
-	 * 
+	 * 適当な可読型で名前を与えること。
+	 * @param instanceName - 名前
 	 */
 	public RunnableSimulator(Object instanceName) {
 		try {
@@ -141,6 +142,8 @@ public class RunnableSimulator implements Runnable {
 	}
 	
 	/**指定したサイレント率とモデル選択比でシミュレーションを初期化．
+	 * 適当な可読型で名前を与えること。
+	 * @param instanceName - 名前
 	 * @param silentAgentsRatio
 	 * @param modelReferenceRatio
 	 */
