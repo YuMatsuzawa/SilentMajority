@@ -3,6 +3,8 @@ package matz;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.*;
 
 public final class SimulationExecutor {
@@ -33,16 +35,34 @@ public final class SimulationExecutor {
 		NumThreads = numThreads;
 	}
 	/**ExecutorServiceをNumThreadsフィールドに指定したスレッド数で初期化．
-	 * 
+	 * ThreadFactoryを用いてThreadに名前付けをする．
 	 */
-	public void initSimExecServ() {
-		SimExecServ = Executors.newFixedThreadPool(getNumThreads());
+	private void initSimExecServ() {
+		ThreadFactory tf = new ThreadFactory() {
+			
+			@Override
+			public Thread newThread(Runnable r) {
+				String thPrefix = "SimPool";
+				Thread th = new Thread(r);
+				th.setName(thPrefix + th.getName());
+				return th;
+			}
+		};
+		SimExecServ = Executors.newFixedThreadPool(getNumThreads(),tf);
 	}
 	/**RunnableタスクをSimulationExecutorのExecutorServiceに投入する．
 	 * @param runnable
 	 */
 	public void execute(Runnable command) {
 		SimExecServ.execute(command);
+	}
+	/**RunnableタスクあるいはCallableオブジェクトを投入し，非同期計算の結果を取得するオブジェクトFutureを得る．
+	 * @param command
+	 * @return
+	 */
+	public Future<?> submit(Runnable command) {
+		Future<?> future = SimExecServ.submit(command);
+		return future;
 	}
 	/**実行中のタスクが全て終了したあとにExecutorServiceを終了する．
 	 * 
@@ -67,7 +87,7 @@ public final class SimulationExecutor {
 	/**ロガーを初期化し、ファイルハンドラ・コンソールハンドラを設定する。<br />
 	 * ログファイルはアペンドする。
 	 */
-	public void initSimExecLogger() {
+	private void initSimExecLogger() {
 		
 		SimExecLogger = Logger.getLogger(this.getClass().getName()); //pseudo-constructor
 		setSimExecLogFileName();
@@ -96,7 +116,7 @@ public final class SimulationExecutor {
 	 * この処理はlckファイルを掃除するために必要．
 	 * 
 	 */
-	public void closeLogFileHandler() {
+	private void closeLogFileHandler() {
 		for (Handler handler : SimExecLogger.getHandlers()) {
 			handler.flush();
 			handler.close();
@@ -153,8 +173,13 @@ public final class SimulationExecutor {
 		
 		SE.SimExecLogger.info("Starting Simulation Executor. NumThreads = " + SE.getNumThreads());
 		
-		for (int i = 0; i < 8; i++) {
-			SE.execute(new RunnableSimulator("instance" + i));
+		int resol = 100;
+		//Future<?>[] futures = new Future<?>[resol];
+		for (int i = 0; i < resol; i++) {
+			RunnableSimulator rn = new RunnableSimulator("instance" + i);
+			//futures[i] = SE.submit(rn);
+			SE.execute(rn);
+			SE.SimExecLogger.info("Submitted: " + rn.getInstanceName());
 		}
 		
 		SE.safeShutdown();

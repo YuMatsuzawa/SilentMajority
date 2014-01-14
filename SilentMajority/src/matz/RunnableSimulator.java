@@ -69,9 +69,11 @@ public class RunnableSimulator implements Runnable {
 	}
 	/**ロガーを初期化し、ファイルハンドラを設定する。<br />
 	 * ログファイルはアペンドする。
+	 * Runnableタスクのログは（数百以上に及ぶことのある）タスクごとではなく，（たかだかプロセッサ数*コア数に収まる）実行スレッドごとに取得したい．
+	 * そのために，initTaskLoggerはThread.currendThread（）を使用するので，Runnableオブジェクトのrun()メソッド内で実行されなければならない．
 	 */
-	public void initTaskLogger() {
-		TaskLogger = Logger.getLogger(this.getClass().getName()+"."+this.getInstanceName()); //pseudo-constructor
+	private void initTaskLogger() {
+		TaskLogger = Logger.getLogger(this.getClass().getName()+"."+Thread.currentThread().getName()); //pseudo-constructor
 		setTaskLogFileName();		
 		//for (Handler handler : TaskLogger.getHandlers()) TaskLogger.removeHandler(handler); //remove default handlers
 		TaskLogger.setUseParentHandlers(false);
@@ -98,7 +100,7 @@ public class RunnableSimulator implements Runnable {
 	 * この処理はlckファイルを掃除するために必要．
 	 * 
 	 */
-	public void closeLogFileHandler() {
+	private void closeLogFileHandler() {
 		for (Handler handler : TaskLogger.getHandlers()) {
 			handler.flush();
 			handler.close();
@@ -135,9 +137,9 @@ public class RunnableSimulator implements Runnable {
 			setInstanceName(instanceName);
 			setSilentAgentsRatio(Math.random());
 			setModelReferenceRatio(Math.random());
-			initTaskLogger();
+			//initTaskLogger();
 		} catch (Exception e) {
-			logStackTrace(e);
+			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．
 		}
 	}
 	
@@ -152,9 +154,9 @@ public class RunnableSimulator implements Runnable {
 			setInstanceName(instanceName);
 			setSilentAgentsRatio(silentAgentsRatio);
 			setModelReferenceRatio(modelReferenceRatio);
-			initTaskLogger();
+			//initTaskLogger();
 		} catch (Exception e) {
-			logStackTrace(e);
+			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．
 		}
 	}
 	/**並列タスク処理のテスト用のメソッド．<br />
@@ -206,13 +208,16 @@ public class RunnableSimulator implements Runnable {
 	
 	@Override
 	public void run() {
+		this.initTaskLogger();
+			//threadごとのログを取得するために，run()内でロガーを初期化する．
+			//このRunnableタスクそのものをコンストラクトするのはExecutorのメインthreadなので，その時点でロガーを初期化してしまうと各々のthread名が取得できない
 		
-		this.TaskLogger.info("Start.");
+		this.TaskLogger.info("Start: "+this.getInstanceName());
 		try {
 			//main procedure calling bracket
 			WordCount(new File(this.getDataDir(),"zarathustra.txt"));
 			//TODO deploy actual simulation method
-			//Simulate();
+			//();
 			this.TaskLogger.info("Done.");
 		} catch (Exception e) {
 			logStackTrace(e);
