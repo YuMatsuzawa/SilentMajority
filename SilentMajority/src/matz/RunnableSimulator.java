@@ -209,8 +209,10 @@ public class RunnableSimulator implements Runnable {
 		
 		this.TaskLogger.info("Start.");
 		try {
-			//procedure
+			//main procedure calling bracket
 			WordCount(new File(this.getDataDir(),"zarathustra.txt"));
+			//TODO deploy actual simulation method
+			//Simulate();
 			this.TaskLogger.info("Done.");
 		} catch (Exception e) {
 			logStackTrace(e);
