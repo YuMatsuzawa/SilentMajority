@@ -10,7 +10,10 @@ import java.util.logging.*;
 public final class SimulationExecutor {
 
 	private int NumThreads;
-	private int NumThreadsDefault = 8;
+	/**ExecutorServiceが持つThread数のデフォルト値。Core i7以上を想定しているので8としている。
+	 * デフォルト値なのでStatic。
+	 */
+	private static int NumThreadsDefault = 8;
 	/**SimulationExecutorの基幹となるスレッドプールを保持するExecutorService.
 	 * @see java.util.concurrent.ExecutorService
 	 * 
@@ -26,13 +29,13 @@ public final class SimulationExecutor {
 	 * @return
 	 */
 	public int getNumThreads() {
-		return NumThreads;
+		return this.NumThreads;
 	}
 	/**ExecutorServiceのスレッド数を指定する．
 	 * @param numThreads - int
 	 */
 	public void setNumThreads(int numThreads) {
-		NumThreads = numThreads;
+		this.NumThreads = numThreads;
 	}
 	/**ExecutorServiceをNumThreadsフィールドに指定したスレッド数で初期化．
 	 * ThreadFactoryを用いてThreadに名前付けをする．
@@ -48,40 +51,40 @@ public final class SimulationExecutor {
 				return th;
 			}
 		};
-		SimExecServ = Executors.newFixedThreadPool(getNumThreads(),tf);
+		this.SimExecServ = Executors.newFixedThreadPool(this.getNumThreads(),tf);
 	}
 	/**RunnableタスクをSimulationExecutorのExecutorServiceに投入する．
 	 * @param runnable
 	 */
 	public void execute(Runnable command) {
-		SimExecServ.execute(command);
+		this.SimExecServ.execute(command);
 	}
 	/**RunnableタスクあるいはCallableオブジェクトを投入し，非同期計算の結果を取得するオブジェクトFutureを得る．
 	 * @param command
 	 * @return
 	 */
 	public Future<?> submit(Runnable command) {
-		Future<?> future = SimExecServ.submit(command);
+		Future<?> future = this.SimExecServ.submit(command);
 		return future;
 	}
 	/**実行中のタスクが全て終了したあとにExecutorServiceを終了する．
 	 * 
 	 */
 	public void safeShutdown() {
-		SimExecServ.shutdown();
-		SimExecLogger.info("SimulationExecutor going to be terminated after all submitted tasks done.");
+		this.SimExecServ.shutdown();
+		this.SimExecLogger.info("SimulationExecutor going to be terminated after all submitted tasks done.");
 	}
 	/**SimulationExecutorのログファイル名を取得．
 	 * @return
 	 */
 	public String getSimExecLogFileName() {
-		return SimExecLogFileName;
+		return this.SimExecLogFileName;
 	}
 	/**SimulationExecutorのログファイル名をロガーの名前から設定．
 	 * @param simExecLogFileName
 	 */
 	public void setSimExecLogFileName() {
-		SimExecLogFileName = SimExecLogger.getName() + ".log";
+		this.SimExecLogFileName = this.SimExecLogger.getName() + ".log";
 	}
 	
 	/**ロガーを初期化し、ファイルハンドラ・コンソールハンドラを設定する。<br />
@@ -89,9 +92,9 @@ public final class SimulationExecutor {
 	 */
 	private void initSimExecLogger() {
 		
-		SimExecLogger = Logger.getLogger(this.getClass().getName()); //pseudo-constructor
-		setSimExecLogFileName();
-		SimExecLogger.setUseParentHandlers(false);
+		this.SimExecLogger = Logger.getLogger(this.getClass().getName()); //pseudo-constructor
+		this.setSimExecLogFileName();
+		this.SimExecLogger.setUseParentHandlers(false);
 		 //this is essential for disabling 'root logger' to display your logs in default settings and formats.
 		 //with this setting, LogRecord from this class won't be passed up to root logger.
 		
@@ -99,17 +102,18 @@ public final class SimulationExecutor {
 		if (!logDir.isDirectory()) logDir.mkdirs();
 		
 		ConsoleHandler ch = new ConsoleHandler();
+		//StreamHandler ch = new StreamHandler(System.out, new ShortLogFormatter());			//stdout
 		ch.setFormatter(new ShortLogFormatter());
 		ch.setLevel(Level.INFO);
-		SimExecLogger.addHandler(ch);														//stderr
+		this.SimExecLogger.addHandler(ch);														//stderr
 
 		try {
-			FileHandler fh = new FileHandler(logDir + "/" + getSimExecLogFileName(), true);
+			FileHandler fh = new FileHandler(logDir + "/" + this.getSimExecLogFileName(), true);
 			fh.setFormatter(new ShortLogFormatter());
 			fh.setLevel(Level.ALL);
-			SimExecLogger.addHandler(fh);														//logfile
+			this.SimExecLogger.addHandler(fh);														//logfile
 		} catch (Exception e) {
-			logStackTrace(e);
+			this.logStackTrace(e);
 		}
 	}
 	/**ロガーのファイルハンドラをクローズする．<br />
@@ -117,7 +121,7 @@ public final class SimulationExecutor {
 	 * 
 	 */
 	private void closeLogFileHandler() {
-		for (Handler handler : SimExecLogger.getHandlers()) {
+		for (Handler handler : this.SimExecLogger.getHandlers()) {
 			handler.flush();
 			handler.close();
 		}
@@ -128,31 +132,24 @@ public final class SimulationExecutor {
 	 * @param thrown
 	 */
 	public void logStackTrace(Throwable thrown) {
-		SimExecLogger.log(Level.SEVERE, thrown.getLocalizedMessage(), thrown);
+		this.SimExecLogger.log(Level.SEVERE, thrown.getLocalizedMessage(), thrown);
 	}
 	/**デフォルトのスレッド数(8)でSimulationExecutorを初期化．
 	 * 
 	 */
 	public SimulationExecutor() {
-		try {
-			setNumThreads(NumThreadsDefault);
-			initSimExecServ();
-			initSimExecLogger();
-		} catch (Exception e) {
-			logStackTrace(e);
-			
-		}
+		this(NumThreadsDefault);
 	}
 	/**指定したスレッド数でSimulationExecutorを初期化．
 	 * @param numThreads - int
 	 */
 	public SimulationExecutor(int numThreads) {
 		try {
-			setNumThreads(numThreads);
-			initSimExecServ();
-			initSimExecLogger();
+			this.setNumThreads(numThreads);
+			this.initSimExecServ();
+			this.initSimExecLogger();
 		} catch (Exception e) {
-			logStackTrace(e);
+			this.logStackTrace(e);
 		}
 	}
 	

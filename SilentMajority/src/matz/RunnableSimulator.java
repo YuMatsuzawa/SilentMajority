@@ -17,7 +17,7 @@ public class RunnableSimulator implements Runnable {
 	 * @return
 	 */
 	public String getInstanceName() {
-		return InstanceName;
+		return this.InstanceName;
 	}
 
 	/**シミュレータインスタンスの名前を指定する．
@@ -25,47 +25,47 @@ public class RunnableSimulator implements Runnable {
 	 * @param instanceName
 	 */
 	public void setInstanceName(Object instanceName) {
-		InstanceName = String.valueOf(instanceName);
+		this.InstanceName = String.valueOf(instanceName);
 	}
 	/**サイレント率を取得．
 	 * @return
 	 */
 	public double getSilentAgentsRatio() {
-		return SilentAgentsRatio;
+		return this.SilentAgentsRatio;
 	}
 
 	/**サイレント率を入力．
 	 * @param silentAgentsRatio
 	 */
 	public void setSilentAgentsRatio(double silentAgentsRatio) {
-		SilentAgentsRatio = silentAgentsRatio;
+		this.SilentAgentsRatio = silentAgentsRatio;
 	}
 
 	/**モデル選択比を取得．
 	 * @return
 	 */
 	public double getModelReferenceRatio() {
-		return ModelReferenceRatio;
+		return this.ModelReferenceRatio;
 	}
 
 	/**モデル選択比を入力．
 	 * @param modelReferenceRatio
 	 */
 	public void setModelReferenceRatio(double modelReferenceRatio) {
-		ModelReferenceRatio = modelReferenceRatio;
+		this.ModelReferenceRatio = modelReferenceRatio;
 	}
 
 	/**Taskごとのログファイル名を取得。
 	 * @return taskLogFileName
 	 */
 	public String getTaskLogFileName() {
-		return TaskLogFileName;
+		return this.TaskLogFileName;
 	}
 	/**SimulationExecutorのログファイル名をスレッド情報ベースで設定．
 	 * @param simExecLogFileName
 	 */
 	public void setTaskLogFileName() {
-		TaskLogFileName = TaskLogger.getName() + ".log";
+		this.TaskLogFileName = this.TaskLogger.getName() + ".log";
 	}
 	/**ロガーを初期化し、ファイルハンドラを設定する。<br />
 	 * ログファイルはアペンドする。
@@ -73,10 +73,10 @@ public class RunnableSimulator implements Runnable {
 	 * そのために，initTaskLoggerはThread.currendThread（）を使用するので，Runnableオブジェクトのrun()メソッド内で実行されなければならない．
 	 */
 	private void initTaskLogger() {
-		TaskLogger = Logger.getLogger(this.getClass().getName()+"."+Thread.currentThread().getName()); //pseudo-constructor
-		setTaskLogFileName();		
+		this.TaskLogger = Logger.getLogger(this.getClass().getName()+"."+Thread.currentThread().getName()); //pseudo-constructor
+		this.setTaskLogFileName();		
 		//for (Handler handler : TaskLogger.getHandlers()) TaskLogger.removeHandler(handler); //remove default handlers
-		TaskLogger.setUseParentHandlers(false);
+		this.TaskLogger.setUseParentHandlers(false);
 		 //this is essential for disabling 'root logger' to display your logs in default settings and formats.
 		 //with this setting, LogRecord from this class won't be passed up to root logger.
 		
@@ -84,16 +84,16 @@ public class RunnableSimulator implements Runnable {
 		if (!logDir.isDirectory()) logDir.mkdirs();
 		
 		try {
-			FileHandler fh = new FileHandler(logDir + "/" + getTaskLogFileName(), true);
+			FileHandler fh = new FileHandler(logDir + "/" + this.getTaskLogFileName(), true);
 			fh.setFormatter(new ShortLogFormatter());
 			fh.setLevel(Level.ALL);
-			TaskLogger.addHandler(fh);														//logfile
+			this.TaskLogger.addHandler(fh);														//logfile
 		} catch (Exception e) {
 			ConsoleHandler ch = new ConsoleHandler();
 			ch.setLevel(Level.WARNING);
 			ch.setFormatter(new ShortLogFormatter());
-			TaskLogger.addHandler(ch);
-			logStackTrace(e);
+			this.TaskLogger.addHandler(ch);
+			this.logStackTrace(e);
 		}
 	}
 	/**ロガーのファイルハンドラをクローズする．<br />
@@ -101,7 +101,7 @@ public class RunnableSimulator implements Runnable {
 	 * 
 	 */
 	private void closeLogFileHandler() {
-		for (Handler handler : TaskLogger.getHandlers()) {
+		for (Handler handler : this.TaskLogger.getHandlers()) {
 			handler.flush();
 			handler.close();
 		}
@@ -112,20 +112,20 @@ public class RunnableSimulator implements Runnable {
 	 * @param thrown
 	 */
 	public void logStackTrace(Throwable thrown) {
-		TaskLogger.log(Level.SEVERE, thrown.getLocalizedMessage(), thrown);
+		this.TaskLogger.log(Level.SEVERE, thrown.getLocalizedMessage(), thrown);
 	}
 	/**入力データを格納してあるディレクトリパスを取得。
 	 * @return dataDir
 	 */
 	public String getDataDir() {
-		return DataDir;
+		return this.DataDir;
 	}
 
 	/**入力データを格納してあるディレクトリパスを指定。デフォルト値は<current>/data
 	 * @param dataDir セットする dataDir
 	 */
 	public void setDataDir(String dataDir) {
-		DataDir = dataDir;
+		this.DataDir = dataDir;
 	}
 
 	/**ランダムなサイレント率とモデル選択比でシミュレーションを初期化．
@@ -133,14 +133,7 @@ public class RunnableSimulator implements Runnable {
 	 * @param instanceName - 名前
 	 */
 	public RunnableSimulator(Object instanceName) {
-		try {
-			setInstanceName(instanceName);
-			setSilentAgentsRatio(Math.random());
-			setModelReferenceRatio(Math.random());
-			//initTaskLogger();
-		} catch (Exception e) {
-			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．
-		}
+		this(instanceName,Math.random(),Math.random());
 	}
 	
 	/**指定したサイレント率とモデル選択比でシミュレーションを初期化．
@@ -151,9 +144,9 @@ public class RunnableSimulator implements Runnable {
 	 */
 	public RunnableSimulator(Object instanceName, double silentAgentsRatio, double modelReferenceRatio) {
 		try {
-			setInstanceName(instanceName);
-			setSilentAgentsRatio(silentAgentsRatio);
-			setModelReferenceRatio(modelReferenceRatio);
+			this.setInstanceName(instanceName);
+			this.setSilentAgentsRatio(silentAgentsRatio);
+			this.setModelReferenceRatio(modelReferenceRatio);
 			//initTaskLogger();
 		} catch (Exception e) {
 			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．
@@ -180,7 +173,7 @@ public class RunnableSimulator implements Runnable {
 				}
 			}	
 		} catch (IOException e) {
-			logStackTrace(e);
+			this.logStackTrace(e);
 		}
 		br.close();
 		
@@ -201,7 +194,7 @@ public class RunnableSimulator implements Runnable {
 		try {
 			osw.write(entries.toString());
 		} catch (IOException e) {
-			logStackTrace(e);
+			this.logStackTrace(e);
 		}
 		osw.close();		
 	}
@@ -210,17 +203,19 @@ public class RunnableSimulator implements Runnable {
 	public void run() {
 		this.initTaskLogger();
 			//threadごとのログを取得するために，run()内でロガーを初期化する．
-			//このRunnableタスクそのものをコンストラクトするのはExecutorのメインthreadなので，その時点でロガーを初期化してしまうと各々のthread名が取得できない
+			//このRunnableタスクそのものをコンストラクトするのはExecutorのメインthreadなので，
+			//その時点でロガーを初期化してしまうと各々のthread名が取得できない(mainのthread情報が返ってくる)
+			//run()内でロガーを初期化すれば、run()内のプロシージャを実行するthread(＝プールされているthreadのうちの一つ)の情報を取得できる
 		
 		this.TaskLogger.info("Start: "+this.getInstanceName());
 		try {
 			//main procedure calling bracket
-			WordCount(new File(this.getDataDir(),"zarathustra.txt"));
+			this.WordCount(new File(this.getDataDir(),"zarathustra.txt"));
 			//TODO deploy actual simulation method
 			//();
 			this.TaskLogger.info("Done.");
 		} catch (Exception e) {
-			logStackTrace(e);
+			this.logStackTrace(e);
 		} finally {
 			this.closeLogFileHandler();
 		}
