@@ -1,4 +1,4 @@
-package matz;
+package matz.agentsim;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;

@@ -1,4 +1,4 @@
-package matz;
+package matz.agentsim;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

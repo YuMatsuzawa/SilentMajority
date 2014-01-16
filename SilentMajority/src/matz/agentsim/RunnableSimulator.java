@@ -1,4 +1,4 @@
-package matz;
+package matz.agentsim;
 
 import java.io.*;
 import java.util.*;
