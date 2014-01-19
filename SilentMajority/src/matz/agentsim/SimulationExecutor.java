@@ -134,13 +134,13 @@ public final class SimulationExecutor {
 	public void logStackTrace(Throwable thrown) {
 		this.SimExecLogger.log(Level.SEVERE, thrown.getLocalizedMessage(), thrown);
 	}
-	/**デフォルトのスレッド数(8)でSimulationExecutorを初期化．
+	/**デフォルトのスレッド数(8)でSimulationExecutorを初期化するコンストラクタ．
 	 * 
 	 */
 	public SimulationExecutor() {
 		this(NumThreadsDefault);
 	}
-	/**指定したスレッド数でSimulationExecutorを初期化．
+	/**指定したスレッド数でSimulationExecutorを初期化するコンストラクタ．
 	 * @param numThreads - int
 	 */
 	public SimulationExecutor(int numThreads) {

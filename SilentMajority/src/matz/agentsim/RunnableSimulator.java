@@ -7,11 +7,114 @@ import java.util.logging.*;
 public class RunnableSimulator implements Runnable {
 
 	private String InstanceName;
+	private int nAgents;
+	private static final int NAGENTS_DEFAUT = 1000;
 	private double SilentAgentsRatio;
 	private double ModelReferenceRatio;
 	private String TaskLogFileName;
 	private Logger TaskLogger = null;
 	private String DataDir = "data";
+	private InfoAgent[] infoAgentsArray;
+	private final int NAME_BASED = 0;
+	private final int INDEX_BASED = 1;
+	private Random localRNG = new Random();
+	private final int NULL_PATTERN = 0;
+	private final int MIX_PATTERN = 1;
+	
+	@Override
+	public void run() {
+		this.initTaskLogger();
+			//threadごとのログを取得するために，run()内でロガーを初期化する．
+			//このRunnableタスクそのものをコンストラクトするのはExecutorのメインthreadなので，
+			//その時点でロガーを初期化してしまうと各々のthread名が取得できない(mainのthread情報が返ってくる)
+			//run()内でロガーを初期化すれば、run()内のプロシージャを実行するthread(＝プールされているthreadのうちの一つ)の情報を取得できる
+		
+		this.TaskLogger.info("Start: "+this.getInstanceName());
+		try {
+			//main procedure calling bracket
+			//this.WordCount(new File(this.getDataDir(),"zarathustra.txt"));
+			
+			//TODO deploy actual simulation method
+			//エージェント集合の配列を初期化する．
+			this.initInfoAgentsArray(this.getnAgents());
+			//ネットワークを生成する．
+			CNNModel ntwk = new CNNModel();
+			this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
+			
+			this.TaskLogger.info("Done.");
+		} catch (Exception e) {
+			this.logStackTrace(e);
+		} finally {
+			this.closeLogFileHandler();
+		}
+	}
+	
+	
+
+	
+
+
+	/**情報エージェントからなるネットワークを張るためのビルダ・インターフェース．<br />
+	 * 情報エージェント配列を受け取り，各エージェントに隣接リストを与えたものを返すようなメソッドbuild()を実装する．
+	 * @author Matsuzawa
+	 *
+	 */
+	public interface InfoNetworkBuilder {
+		final int NAME_BASED = 0;
+		final int INDEX_BASED = 1;
+		InfoAgent[] build(InfoAgent[] infoAgentsArray);
+	}
+	
+	/**情報エージェント配列を初期化する．この処理はrun()内で呼ばれるべきである（子スレッド内で処理されるべきである）．
+	 * @param nAgents
+	 */
+	private void initInfoAgentsArray(int nAgents) {
+		for (int index = 0; index < nAgents; index++) {
+			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(this.MIX_PATTERN)); 
+		}
+	}
+
+	/**意見の初期値を与える．patternによって挙動が変わる．<br />
+	 * ・NULL_PATTERN（=0）の場合：全てnullにする．nullは意見未決定状態．<br />
+	 * ・MIX_PATTERN（=1)の場合：0,1,2のいずれかにする．
+	 * @param pattern
+	 * @return
+	 */
+	private Integer initOpinion(int pattern) {
+		Integer opinion = null;
+		if (pattern == this.NULL_PATTERN ) {
+			opinion = null;
+		} else if (pattern == this.MIX_PATTERN) {
+			opinion = this.localRNG.nextInt(3);
+		}
+		return opinion;
+	}
+
+	/**デフォルトエージェント数（1000）とランダムなサイレント率・モデル選択比でシミュレーションを初期化するコンストラクタ．
+	 * 適当な可読型で名前を与えること。
+	 * @param instanceName - 名前
+	 */
+	public RunnableSimulator(Object instanceName) {
+		this(instanceName, NAGENTS_DEFAUT, Math.random(),Math.random());
+	}
+	
+	/**指定したサイレント率とモデル選択比でシミュレーションを初期化するコンストラクタ．
+	 * 適当な可読型で名前を与えること。
+	 * @param instanceName - 名前
+	 * @param silentAgentsRatio
+	 * @param modelReferenceRatio
+	 */
+	public RunnableSimulator(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
+		try {
+			this.setInstanceName(instanceName);
+			this.setnAgents(nAgents);
+			this.setSilentAgentsRatio(silentAgentsRatio);
+			this.setModelReferenceRatio(modelReferenceRatio);
+			//initTaskLogger();
+		} catch (Exception e) {
+			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．
+		}
+	}
 	
 	/**シミュレータインスタンスの名前を取得する．
 	 * @return
@@ -27,6 +130,20 @@ public class RunnableSimulator implements Runnable {
 	public void setInstanceName(Object instanceName) {
 		this.InstanceName = String.valueOf(instanceName);
 	}
+	/**エージェント数を取得．
+	 * @return nAgents
+	 */
+	public int getnAgents() {
+		return nAgents;
+	}
+
+	/**エージェント数を指定．
+	 * @param nAgents セットする nAgents
+	 */
+	public void setnAgents(int nAgents) {
+		this.nAgents = nAgents;
+	}
+
 	/**サイレント率を取得．
 	 * @return
 	 */
@@ -127,31 +244,9 @@ public class RunnableSimulator implements Runnable {
 	public void setDataDir(String dataDir) {
 		this.DataDir = dataDir;
 	}
-
-	/**ランダムなサイレント率とモデル選択比でシミュレーションを初期化．
-	 * 適当な可読型で名前を与えること。
-	 * @param instanceName - 名前
-	 */
-	public RunnableSimulator(Object instanceName) {
-		this(instanceName,Math.random(),Math.random());
-	}
 	
-	/**指定したサイレント率とモデル選択比でシミュレーションを初期化．
-	 * 適当な可読型で名前を与えること。
-	 * @param instanceName - 名前
-	 * @param silentAgentsRatio
-	 * @param modelReferenceRatio
-	 */
-	public RunnableSimulator(Object instanceName, double silentAgentsRatio, double modelReferenceRatio) {
-		try {
-			this.setInstanceName(instanceName);
-			this.setSilentAgentsRatio(silentAgentsRatio);
-			this.setModelReferenceRatio(modelReferenceRatio);
-			//initTaskLogger();
-		} catch (Exception e) {
-			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．
-		}
-	}
+	
+	
 	/**並列タスク処理のテスト用のメソッド．<br />
 	 * 適当なテキストファイルを入力とし，単語の出現数を数え上げる．<br />
 	 * HashMapとString．splitを使い，最後にArrayListとCollection．sortで並び替える．<br />
@@ -197,28 +292,6 @@ public class RunnableSimulator implements Runnable {
 			this.logStackTrace(e);
 		}
 		osw.close();		
-	}
-	
-	@Override
-	public void run() {
-		this.initTaskLogger();
-			//threadごとのログを取得するために，run()内でロガーを初期化する．
-			//このRunnableタスクそのものをコンストラクトするのはExecutorのメインthreadなので，
-			//その時点でロガーを初期化してしまうと各々のthread名が取得できない(mainのthread情報が返ってくる)
-			//run()内でロガーを初期化すれば、run()内のプロシージャを実行するthread(＝プールされているthreadのうちの一つ)の情報を取得できる
-		
-		this.TaskLogger.info("Start: "+this.getInstanceName());
-		try {
-			//main procedure calling bracket
-			this.WordCount(new File(this.getDataDir(),"zarathustra.txt"));
-			//TODO deploy actual simulation method
-			//();
-			this.TaskLogger.info("Done.");
-		} catch (Exception e) {
-			this.logStackTrace(e);
-		} finally {
-			this.closeLogFileHandler();
-		}
 	}
 
 }
