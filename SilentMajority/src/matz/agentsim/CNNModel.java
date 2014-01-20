@@ -3,9 +3,6 @@ package matz.agentsim;
 import java.util.ArrayList;
 import java.util.Random;
 
-import matz.agentsim.RunnableSimulator.InfoNetworkBuilder;
-
-
 
 /**InfoAgentクラスで作られたエージェント間にリンクを張り,その参照関係を各エージェントの持つリストに記録していく.
  * パラメータとして，あるタイムステップで「友達の友達」間にリンクを張るか,「全く無関係or遠い関係の二者」間に張るかの選択閾値を持つ．
