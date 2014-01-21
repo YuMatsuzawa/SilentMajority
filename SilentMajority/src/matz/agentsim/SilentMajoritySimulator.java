@@ -40,6 +40,8 @@ public class SilentMajoritySimulator implements Runnable {
 			//ネットワークを生成する．
 			CNNModel ntwk = new CNNModel();
 			this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
+			
+			//ネットワークのチェック
 			File outDir = new File("results/cnn");
 			if (!outDir.isDirectory()) outDir.mkdirs();
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
@@ -51,6 +53,13 @@ public class SilentMajoritySimulator implements Runnable {
 				bw.write("\n");
 			}
 			bw.close();
+			
+			//情報伝播を試行する
+			int nUpdated = 0, iStable = 0;
+			while(iStable < 5) {
+				
+			}
+			
 			this.TaskLogger.info("Done.");
 		} catch (Exception e) {
 			e.printStackTrace();

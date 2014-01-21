@@ -11,10 +11,43 @@ public class InfoAgent {
 	private ArrayList<Integer> followingIndexList;
 	private ArrayList<Integer> followedIndexList;
 	private boolean isSilent = false;
-	private int Opinion;
+	private Integer opinion;
+	private double influence = Math.random();
+	private double threshold = 0.5;
 	private static final int NAME_BASED = 0;
 	private static final int INDEX_BASED = 1;
 	private int style;
+	
+	/**自分が中立的・あるいは未定義の状態にあるとき，肯定的・否定的問わず何らかの先進的意見に触れると，それに影響される．<br />
+	 * 影響を受けるか否かは，相手の影響力の強さによる．
+	 */
+	public void IndependentCascade(InfoAgent[] infoAgentsArray) {
+		if (!(this.getOpinion() == 0 || this.getOpinion() == null)) return;
+
+		Integer tmpOp = this.getOpinion();
+		for (Object neighbor : this.getIndirectedList()) {
+			//TODO とりあえずIndexベース
+			double influence = -1;
+			try {
+				if (this.getOpinion() == null || infoAgentsArray[(Integer) neighbor].getOpinion() > this.getOpinion()) {
+					if (infoAgentsArray[(Integer) neighbor].getInfluence() > influence) {
+						tmpOp = infoAgentsArray[(Integer) neighbor].getOpinion();
+						influence = infoAgentsArray[(Integer) neighbor].getInfluence();
+					}
+				}
+			} catch(Exception e) {
+				continue;
+			}
+		}
+		this.setOpinion(tmpOp);
+	}
+	
+	/**隣接しているノードの中での多数派を知覚して，その影響を受ける．
+	 * @param infoAgentsArray
+	 */
+	public void LinearThreashold(InfoAgent[] infoAgentsArray) {
+		
+	}
 	
 	/**文字列名を与えて情報エージェントを初期化するコンストラクタ．
 	 * リストも全て文字列名で取り扱う．
@@ -262,18 +295,32 @@ public class InfoAgent {
 	 * エージェントがサイレントである場合は取得できない。null値を返す
 	 * @return opinion
 	 */
-	public int getOpinion() {
+	public Integer getOpinion() {
 		if (!this.isSilent()) {
-			return Opinion;
+			return this.opinion;
 		} else {
-			return (Integer)null;
+			return null;
 		}
 	}
 	/**情報エージェントの意見を指定する。
 	 * @param opinion セットする opinion
 	 */
 	public void setOpinion(int opinion) {
-		Opinion = opinion;
+		this.opinion = opinion;
+	}
+
+	/**
+	 * @return influence
+	 */
+	public double getInfluence() {
+		return influence;
+	}
+
+	/**
+	 * @param influence セットする influence
+	 */
+	public void setInfluence(double influence) {
+		this.influence = influence;
 	}
 
 	/**情報エージェントが文字列名ベースか整数識別番号ベースかどちらで管理されているか取得する．
