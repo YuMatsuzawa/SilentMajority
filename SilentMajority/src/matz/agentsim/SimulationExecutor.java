@@ -170,7 +170,7 @@ public final class SimulationExecutor {
 		
 		SE.SimExecLogger.info("Starting Simulation Executor. NumThreads = " + SE.getNumThreads());
 		
-		int resol = 100;
+		int resol = 1;
 		//Future<?>[] futures = new Future<?>[resol];
 		for (int i = 0; i < resol; i++) {
 			SilentMajoritySimulator rn = new SilentMajoritySimulator("instance" + i);

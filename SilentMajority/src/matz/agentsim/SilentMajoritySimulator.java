@@ -8,7 +8,7 @@ public class SilentMajoritySimulator implements Runnable {
 
 	private String InstanceName;
 	private int nAgents;
-	private static final int NAGENTS_DEFAUT = 1000;
+	private final static int NAGENTS_DEFAUT = 100;
 	private double SilentAgentsRatio;
 	private double ModelReferenceRatio;
 	private String TaskLogFileName;
@@ -40,9 +40,20 @@ public class SilentMajoritySimulator implements Runnable {
 			//ネットワークを生成する．
 			CNNModel ntwk = new CNNModel();
 			this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
-			
+			File outDir = new File("results/cnn");
+			if (!outDir.isDirectory()) outDir.mkdirs();
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
+			for (InfoAgent iAgent : this.infoAgentsArray) {
+				bw.write(iAgent.getAgentIndex() + "\t:\t");
+				for (Object neighbor : iAgent.getIndirectedList()) {
+					bw.write((Integer)neighbor + ",");
+				}
+				bw.write("\n");
+			}
+			bw.close();
 			this.TaskLogger.info("Done.");
 		} catch (Exception e) {
+			e.printStackTrace();
 			this.logStackTrace(e);
 		} finally {
 			this.closeLogFileHandler();
@@ -58,6 +69,7 @@ public class SilentMajoritySimulator implements Runnable {
 	 * @param nAgents
 	 */
 	private void initInfoAgentsArray(int nAgents) {
+		this.infoAgentsArray= new InfoAgent[nAgents];
 		for (int index = 0; index < nAgents; index++) {
 			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(this.MIX_PATTERN)); 
 		}

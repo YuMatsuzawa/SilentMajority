@@ -12,8 +12,8 @@ public class InfoAgent {
 	private ArrayList<Integer> followedIndexList;
 	private boolean isSilent = false;
 	private int Opinion;
-	private final int NAME_BASED = 0;
-	private final int INDEX_BASED = 1;
+	private static final int NAME_BASED = 0;
+	private static final int INDEX_BASED = 1;
 	private int style;
 	
 	/**文字列名を与えて情報エージェントを初期化するコンストラクタ．
@@ -23,7 +23,7 @@ public class InfoAgent {
 	 * @param isSilent -サイレントであるか
 	 */
 	public InfoAgent(String name, int opinion, boolean isSilent) {
-		this.setStyle(this.NAME_BASED);
+		this.setStyle(NAME_BASED);
 		this.setAgentName(name);
 		this.initFollowingNameList();
 		this.initFollowedNameList();
@@ -37,7 +37,7 @@ public class InfoAgent {
 	 * @param opinion
 	 */
 	public InfoAgent(String name, int opinion) {
-		this.setStyle(this.NAME_BASED);
+		this.setStyle(NAME_BASED);
 		this.setAgentName(name);
 		this.initFollowingNameList();
 		this.initFollowedNameList();
@@ -51,7 +51,7 @@ public class InfoAgent {
 	 * @param isSilent -サイレントであるか
 	 */
 	public InfoAgent(int index, int opinion, boolean isSilent) {
-		this.setStyle(this.INDEX_BASED);
+		this.setStyle(INDEX_BASED);
 		this.setAgentIndex(index);
 		this.initFollowingIndexList();
 		this.initFollowedIndexList();
@@ -65,7 +65,7 @@ public class InfoAgent {
 	 * @param opinion -整数値の意見
 	 */
 	public InfoAgent(int index, int opinion) {
-		this.setStyle(this.INDEX_BASED);
+		this.setStyle(INDEX_BASED);
 		this.setAgentIndex(index);
 		this.initFollowingIndexList();
 		this.initFollowedIndexList();
@@ -181,7 +181,7 @@ public class InfoAgent {
 	 * @return 
 	 */
 	public ArrayList<?> getFollowingList() {
-		if (this.getStyle() == this.NAME_BASED) {
+		if (this.getStyle() == NAME_BASED) {
 			return this.getFollowingNameList();
 		}
 		return this.getFollowingIndexList();
@@ -190,7 +190,7 @@ public class InfoAgent {
 	 * @return 
 	 */
 	public ArrayList<?> getFollowedList() {
-		if (this.getStyle() == this.NAME_BASED) {
+		if (this.getStyle() == NAME_BASED) {
 			return this.getFollowedNameList();
 		}
 		return this.getFollowedIndexList();
@@ -200,7 +200,7 @@ public class InfoAgent {
 	 * @param nameOrIndex -StringかIntegerの値
 	 */
 	public <SorI> void appendFolowingList (SorI nameOrIndex) {
-		if (this.getStyle() == this.NAME_BASED) {
+		if (this.getStyle() == NAME_BASED) {
 			this.appendFollowingNameList((String) nameOrIndex);
 		} else {
 			this.appendFollowingIndexList((Integer) nameOrIndex);
@@ -211,23 +211,33 @@ public class InfoAgent {
 	 * @param nameOrIndex -StringかIntegerの値
 	 */
 	public <SorI> void appendFolowedList (SorI nameOrIndex) {
-		if (this.getStyle() == this.NAME_BASED) {
+		if (this.getStyle() == NAME_BASED) {
 			this.appendFollowedNameList((String) nameOrIndex);
 		} else {
 			this.appendFollowedIndexList((Integer) nameOrIndex);
 		}
 	}
-	/**リンクが対象であるような無方向ネットワークの場合は参照リストと被参照リストどちらにもどうじに追加されるので，そのためのメソッド．
+	/**リンクが対象であるような無方向ネットワークの場合は参照リストと被参照リストどちらにも同時に追加されるので，そのためのメソッド．
 	 * @param nameOrIndex
 	 */
 	public <SorI> void appendIndirectedList (SorI nameOrIndex) {
-		if (this.getStyle() == this.NAME_BASED) {
+		if (this.getStyle() == NAME_BASED) {
 			this.appendFollowedNameList((String) nameOrIndex);
 			this.appendFollowingNameList((String) nameOrIndex);
 		} else {
 			this.appendFollowedIndexList((Integer) nameOrIndex);
 			this.appendFollowingIndexList((Integer) nameOrIndex);
 		}
+	}
+	/**リンクが対象であるような無方向ネットワークの場合のリスト取得メソッド．
+	 * 追加時に両方に追加されているはずなので，どちらか取ってくればいい．
+	 * @param nameOrIndex
+	 */
+	public ArrayList<?> getIndirectedList () {
+		if (this.getStyle() == NAME_BASED) {
+			return this.getFollowedNameList();
+		}
+		return this.getFollowedIndexList();
 	}
 	
 	
