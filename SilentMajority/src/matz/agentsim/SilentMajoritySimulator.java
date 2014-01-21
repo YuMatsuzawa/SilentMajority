@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 
-public class RunnableSimulator implements Runnable {
+public class SilentMajoritySimulator implements Runnable {
 
 	private String InstanceName;
 	private int nAgents;
@@ -83,7 +83,7 @@ public class RunnableSimulator implements Runnable {
 	 * 適当な可読型で名前を与えること。
 	 * @param instanceName - 名前
 	 */
-	public RunnableSimulator(Object instanceName) {
+	public SilentMajoritySimulator(Object instanceName) {
 		this(instanceName, NAGENTS_DEFAUT, Math.random(),Math.random());
 	}
 	
@@ -93,7 +93,7 @@ public class RunnableSimulator implements Runnable {
 	 * @param silentAgentsRatio
 	 * @param modelReferenceRatio
 	 */
-	public RunnableSimulator(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
+	public SilentMajoritySimulator(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
 		try {
 			this.setInstanceName(instanceName);
 			this.setnAgents(nAgents);

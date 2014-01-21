@@ -173,7 +173,7 @@ public final class SimulationExecutor {
 		int resol = 100;
 		//Future<?>[] futures = new Future<?>[resol];
 		for (int i = 0; i < resol; i++) {
-			RunnableSimulator rn = new RunnableSimulator("instance" + i);
+			SilentMajoritySimulator rn = new SilentMajoritySimulator("instance" + i);
 			//futures[i] = SE.submit(rn);
 			SE.execute(rn);
 			SE.SimExecLogger.info("Submitted: " + rn.getInstanceName());
