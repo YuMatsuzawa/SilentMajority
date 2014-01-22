@@ -1,8 +1,8 @@
 package matz.agentsim;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
-
 
 /**InfoAgentクラスで作られたエージェント間にリンクを張り,その参照関係を各エージェントの持つリストに記録していく.
  * パラメータとして，あるタイムステップで「友達の友達」間にリンクを張るか,「全く無関係or遠い関係の二者」間に張るかの選択閾値を持つ．
@@ -10,41 +10,28 @@ import java.util.Random;
  */
 public class CNNModel implements InfoNetworkBuilder {
 	private double p_nn;
-	private final double P_NN_DEFAULT = 0.667;
-	private ArrayList<String[]> PotentialLinksByName = new ArrayList<String[]>();
-	private ArrayList<Integer[]> PotentialLinksByIndex = new ArrayList<Integer[]>();
+	private static final double P_NN_DEFAULT = 0.666667;
+	private ArrayList<Integer[]> potentialLinks = new ArrayList<Integer[]>();
 	private Random localRNG = new Random();
 	private int includedAgents;
-//	private InfoAgent[] infoAgentsArray;
-	
-	/**CNNモデルでネットワーク生成するクラス．確率パラメータを与えるコンストラクタ．
-	 * build()メソッドがメインとなる生成イテレータ．
-	 * @param infoAgentsArray
-	 */
-	public CNNModel(double p_nn) {
-		this.setP_nn(p_nn);
-	}
-	/**デフォルトの確率パラメータでコンストラクト．
-	 * 
-	 */
-	public CNNModel() {
-		this.setP_nn(this.P_NN_DEFAULT);
-	}
 	
 	public InfoAgent[] build(InfoAgent[] infoAgentsArray) {
 		InfoAgent[] tmpAgentsArray = infoAgentsArray;
-		int style = infoAgentsArray[0].getStyle();
 		int nAgents = infoAgentsArray.length;
 		
-		//ネットワークの種を作る（とりあえず無向グラフ）
+		/*ネットワークの種を作る（とりあえず無向グラフ）
+		 * 
+		 * 0----2----1
+		 * 
+		 */
 		tmpAgentsArray[0].appendIndirectedList(2);
 		tmpAgentsArray[1].appendIndirectedList(2);
 
 		tmpAgentsArray[2].appendIndirectedList(0);
 		tmpAgentsArray[2].appendIndirectedList(1);
 		
-		Integer[] initpLink = {0, 1};
-		this.appendPotentialLinks(initpLink, style);
+		Integer[] firstPLink = {0, 1};
+		this.potentialLinks.add(firstPLink);
 		
 		this.includedAgents = 3;
 		
@@ -57,6 +44,11 @@ public class CNNModel implements InfoNetworkBuilder {
 			}
 		}
 		
+		//チェックのために，全エージェントの隣接リストをソートする．
+		for (InfoAgent agent : tmpAgentsArray) {
+			agent.sortLists();
+		}
+		
 		return tmpAgentsArray;
 	}
 	
@@ -64,65 +56,81 @@ public class CNNModel implements InfoNetworkBuilder {
 	 * @param tmpAgentsArray
 	 */
 	private void connectPotential(InfoAgent[] tmpAgentsArray) {
-		int listSize = this.getPotentialLinksLength(); 
+		int listSize = this.getPotentialLinksLength();
 		if (listSize == 0) return;
 		
 		int roll = this.localRNG.nextInt(listSize);
-		Integer[] pLink = this.PotentialLinksByIndex.get(roll);
-		/*int index1,index2;
-		index1 = this.PotentialLinksByIndex.get(roll)[0];
-		index2 = this.PotentialLinksByIndex.get(roll)[1];
-		this.PotentialLinksByIndex.remove(roll);
-		Integer[] pLink = {index1, index2};*/
-		Integer[] rLink = {pLink[1], pLink[0]};
-		while (this.PotentialLinksByIndex.contains(pLink) || this.PotentialLinksByIndex.contains(rLink)) {
-			int index = this.PotentialLinksByIndex.indexOf(pLink);
-			if (index == -1) index = this.PotentialLinksByIndex.indexOf(rLink);
-			this.PotentialLinksByIndex.remove(index);
-		}
+		Integer[] pLink = this.potentialLinks.get(roll);
+		this.potentialLinks.remove(roll);
 			//rollで適当なポテンシャルリンクを選び出し，これをエッジに変換する．
-			//ちょっと問題あるが，もし逆表記された同じポテンシャルリンクがあったならこれも同時に掃除する．
-			//TODO 時間がないので，Indexベースの方のみ作る．後でNameベースの方にも対応するよう整合性を取る．
 
-		this.safeAppendIndexPotentialLink(pLink[0], pLink[1], tmpAgentsArray);
-		this.safeAppendIndexPotentialLink(pLink[1], pLink[0], tmpAgentsArray);
-		if (!tmpAgentsArray[pLink[0]].getIndirectedList().contains(pLink[1])) tmpAgentsArray[pLink[0]].appendIndirectedList(pLink[1]);
-			//FIXME どうしてか，隣接ノード追加が重複することがある．これは対処療法なので原因を探る
-		if (!tmpAgentsArray[pLink[1]].getIndirectedList().contains(pLink[0])) tmpAgentsArray[pLink[1]].appendIndirectedList(pLink[0]);
+		this.constructLink(pLink[0], pLink[1], tmpAgentsArray);
 	}
 	/**まだ接続されていないエージェントをランダムに加える．
 	 * @param tmpAgentsArray
 	 */
 	private void includeAgent(InfoAgent[] tmpAgentsArray) {	
 		int target = this.localRNG.nextInt(this.includedAgents);
-		int newComer = this.includedAgents++;
+		int newcomer = this.includedAgents++;
 
-		this.safeAppendIndexPotentialLink(newComer, target, tmpAgentsArray);
-		if (!tmpAgentsArray[target].getIndirectedList().contains(newComer)) tmpAgentsArray[target].appendIndirectedList(newComer);
-		if (!tmpAgentsArray[newComer].getIndirectedList().contains(target)) tmpAgentsArray[newComer].appendIndirectedList(target);
+		this.constructLink(newcomer, target, tmpAgentsArray);
 	}
-	/**index2の隣接リストを走査し，index1との間にポテンシャルリンクを張る．
-	 * @param index1
-	 * @param index2
+	/**targetとnewcomoerとの間にリンクを張り，生じるポテンシャルリンクを登録する.<br />
+	 * 二重登録がないよう細かくチェックする．<br />
+	 * 互いのインデックスを一度に互いの隣接リストに漏れ無く登録するので，このメソッドを引数を逆にして二度呼ぶ必要はないし，呼んではならない．
+	 * @param newcomer
+	 * @param target
 	 * @param tmpAgentsArray
 	 */
-	private void safeAppendIndexPotentialLink(int index1, int index2, InfoAgent[] tmpAgentsArray) {
-		for (Object pObj : tmpAgentsArray[index2].getIndirectedList()) {
-			int pIndex = (Integer) pObj;
-			if (pIndex == index1 || tmpAgentsArray[index1].getIndirectedList().contains(pIndex)) continue;
-			Integer[] pLink = {index1, pIndex};
-			Integer[] rLink = {pIndex, index1};	//追加の際，逆向きに表記された等価なリンクがないことも確認する．
-			if (this.PotentialLinksByIndex.contains(pLink) || this.PotentialLinksByIndex.contains(rLink)) continue;
-			this.appendPotentialLinks(pLink, INDEX_BASED);
+	private void constructLink(int newcomer, int target, InfoAgent[] tmpAgentsArray) {
+		tmpAgentsArray[newcomer].appendIndirectedList(target);
+		tmpAgentsArray[target].appendIndirectedList(newcomer);
+		safeAppendPotentialLink(newcomer,target,tmpAgentsArray);
+		safeAppendPotentialLink(target,newcomer,tmpAgentsArray);
+	}
+	/**重複がないよう確認しながらポテンシャルリンクを追加する．<br />
+	 * 自分からみた際のポテンシャルリンクを登録するために一度，相手から見た際のポテンシャルリンクを登録するためにインデックス引数を逆にしてもう一度呼ぶ必要がある．
+	 * @param newcomer
+	 * @param target
+	 * @param tmpAgentsArray
+	 */
+	private void safeAppendPotentialLink(int newcomer, int target, InfoAgent[] tmpAgentsArray) {
+		for(int pIndex : tmpAgentsArray[target].getIndirectedList()) {
+			if (pIndex != newcomer && !tmpAgentsArray[newcomer].getIndirectedList().contains(pIndex)) {
+				Integer[] pLink = {pIndex, newcomer};
+				Integer[] rLink = {newcomer, pIndex};
+				boolean isNew = true;
+				for(Integer[] link : this.potentialLinks) { //ArrayList<Integer[]>での重複回避はこういった方法でないとダメ.ノート参照
+					if (Arrays.equals(pLink, link) || Arrays.equals(rLink, link)) {
+						isNew = false;
+						break;
+					}
+				}
+				if (isNew) this.potentialLinks.add(pLink);
+			}
 		}
 	}
+	
+	/**CNNモデルでネットワーク生成するクラス．確率パラメータを与えるコンストラクタ．
+	 * build()メソッドがメインとなる生成イテレータ．
+	 * @param infoAgentsArray
+	 */
+	public CNNModel(double p_nn) {
+		this.setP_nn(p_nn);
+	}
+	/**デフォルトの確率パラメータでコンストラクト．<br />
+	 * 2/3の確率で「友達の友達」，1/3の確率でそれ以外をリンクする．
+	 */
+	public CNNModel() {
+		this.setP_nn(P_NN_DEFAULT);
+	}
+	
 	/**確率パラメータを取得．
 	 * @return p_nn
 	 */
 	public double getP_nn() {
 		return p_nn;
 	}
-
 	/**確率パラメータを指定．
 	 * @param p_nn セットする p_nn
 	 */
@@ -134,19 +142,8 @@ public class CNNModel implements InfoNetworkBuilder {
 	 */
 	private int getPotentialLinksLength() {
 		int length = 0;
-		length = (this.PotentialLinksByName.size() > 0)? this.PotentialLinksByName.size() : length;
-		length = (this.PotentialLinksByIndex.size() > 0)? this.PotentialLinksByIndex.size() : length;
+		length = (this.potentialLinks.size() > 0)? this.potentialLinks.size() : length;
 		return length;
-	}
-	/**ポテンシャルリンクのリストに追加する．スタイルを判別する．
-	 * @param nameOrIndex
-	 */
-	public <SorI> void appendPotentialLinks (SorI[] nameOrIndex, int style) {
-		if (style == NAME_BASED) {
-			this.PotentialLinksByName.add((String[]) nameOrIndex);
-		} else {
-			this.PotentialLinksByIndex.add((Integer[]) nameOrIndex);
-		}
 	}
 
 }

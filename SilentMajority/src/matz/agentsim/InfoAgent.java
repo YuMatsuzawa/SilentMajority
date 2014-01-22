@@ -1,23 +1,21 @@
 package matz.agentsim;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class InfoAgent {
 	
-	private String agentName;
 	private int agentIndex;
-	private ArrayList<String> followingNameList;
-	private ArrayList<String> followedNameList;
-	private ArrayList<Integer> followingIndexList;
-	private ArrayList<Integer> followedIndexList;
+	private ArrayList<Integer> followingList;
+	private ArrayList<Integer> followedList;
 	private boolean isSilent = false;
 	private Integer tmpOpinion;
+	/**抽象的な意見（情報）を表す状態変数．<br />
+	 * プリミティブintではなくラッパ型のIntegerにしておき，nullを使えるようにする．
+	 */
 	private Integer opinion;
 	private double influence = Math.random();
 	private double threshold = 0.5;
-	private static final int NAME_BASED = 0;
-	private static final int INDEX_BASED = 1;
-	private int style;
 	
 	/**自分が中立的・あるいは未定義の状態にあるとき，肯定的・否定的問わず何らかの先進的意見に触れると，それに影響される．<br />
 	 * 影響を受けるか否かは，相手の影響力の強さによる．
@@ -28,7 +26,6 @@ public class InfoAgent {
 
 		Integer tmpOp = this.forceGetOpinion();
 		for (Object neighbor : this.getIndirectedList()) {
-			//TODO とりあえずIndexベース
 			double influence = -1;
 			try {
 				if (this.getOpinion() == null || infoAgentsArray[(Integer) neighbor].getOpinion() > this.getOpinion()) {
@@ -85,35 +82,7 @@ public class InfoAgent {
 		this.tmpOpinion = tmpOp;
 	}
 	
-	/**文字列名を与えて情報エージェントを初期化するコンストラクタ．
-	 * リストも全て文字列名で取り扱う．
-	 * @param name -文字列の名前
-	 * @param opinion -整数値の意見
-	 * @param isSilent -サイレントであるか
-	 */
-	public InfoAgent(String name, Integer opinion, boolean isSilent) {
-		this.setStyle(NAME_BASED);
-		this.setAgentName(name);
-		this.initFollowingNameList();
-		this.initFollowedNameList();
-		this.setOpinion(opinion);
-		this.setTmpOpinion(this.forceGetOpinion());
-		if (isSilent) this.muzzle();
-	}
-	
-	/**文字列名を与えて情報エージェントを初期化するコンストラクタ．
-	 * 全てサイレントでない（ヴォーカルである）ものとしている．
-	 * @param name
-	 * @param opinion
-	 */
-	public InfoAgent(String name, Integer opinion) {
-		this.setStyle(NAME_BASED);
-		this.setAgentName(name);
-		this.initFollowingNameList();
-		this.initFollowedNameList();
-		this.setOpinion(opinion);
-		this.setTmpOpinion(this.forceGetOpinion());	
-	}
+	//文字列名を与えるスタイルはやめる.
 	
 	/**整数識別番号を与えて情報エージェントを初期化するコンストラクタ．
 	 * リストも全て識別番号で取り扱う．
@@ -122,10 +91,9 @@ public class InfoAgent {
 	 * @param isSilent -サイレントであるか
 	 */
 	public InfoAgent(int index, Integer opinion, boolean isSilent) {
-		this.setStyle(INDEX_BASED);
 		this.setAgentIndex(index);
-		this.initFollowingIndexList();
-		this.initFollowedIndexList();
+		this.initFollowingList();
+		this.initFollowedList();
 		this.setOpinion(opinion);
 		this.setTmpOpinion(this.forceGetOpinion());
 		if (isSilent) this.muzzle();	
@@ -137,28 +105,14 @@ public class InfoAgent {
 	 * @param opinion -整数値の意見
 	 */
 	public InfoAgent(int index, Integer opinion) {
-		this.setStyle(INDEX_BASED);
 		this.setAgentIndex(index);
-		this.initFollowingIndexList();
-		this.initFollowedIndexList();
+		this.initFollowingList();
+		this.initFollowedList();
 		this.setTmpOpinion(this.forceGetOpinion());
 		this.setOpinion(opinion);
 	}
 	
-	/**情報エージェントの文字列名を取得．
-	 * @return
-	 */
-	public String getAgentName() {
-		return this.agentName;
-	}
-	/**情報エージェントの文字列名を指定．
-	 * 
-	 * @param agentName
-	 */
-	public void setAgentName(String agentName) {
-		this.agentName = agentName;
-	}
-	/**情報エージェントの整数識別番号を取得．
+		/**情報エージェントの整数識別番号を取得．
 	 * @return
 	 */
 	public int getAgentIndex() {
@@ -171,146 +125,70 @@ public class InfoAgent {
 		this.agentIndex = agentIndex;
 	}
 	
-	/**以下，リスト関連のメソッド．
-	 * ただし，これらのメソッドはprivateとし，内部でしか使わない．
-	 * 最後にある型を自動判定するようにしたメソッド群のみpublicにする．
-	 * 初期化メソッドもprivateとする．
+	/**以下，リスト関連のメソッド． 初期化メソッドはprivateとする．
 	 */	
 	
-	/**情報エージェントが参照しているエージェントの文字列名リストを取得．
-	 * @return
-	 */
-	private ArrayList<String> getFollowingNameList() {
-		return this.followingNameList;
-	}
-	/**情報エージェントが参照しているエージェントの文字列名リストを空のリストに初期化．
-	 */
-	private void initFollowingNameList() {
-		this.followingNameList = new ArrayList<String>();
-	}
-	/**情報エージェントが参照しているエージェントの文字列名リストに新たなエージェントの文字列名を追加．
-	 * @param name
-	 */
-	private void appendFollowingNameList(String name) {
-		this.followingNameList.add(name);
-	}
-	/**情報エージェントが参照されているエージェントの文字列名リストを取得．
-	 * @return
-	 */
-	private ArrayList<String> getFollowedNameList() {
-		return followedNameList;
-	}
-	/**情報エージェントが参照されているエージェントの文字列名リストを空のリストに初期化．
-	 * 
-	 */
-	private void initFollowedNameList() {
-		this.followedNameList = new ArrayList<String>();
-	}
-	/**情報エージェントが参照されているエージェントの文字列名リストに新たなエージェントの文字列名を追加．
-	 * @param followedNameList
-	 */
-	private void appendFollowedNameList(String name) {
-		this.followedNameList.add(name);
-	}
 	/**情報エージェントが参照しているエージェントの整数インデックスリストを取得。
 	 * @return followingIndexList
 	 */
-	private ArrayList<Integer> getFollowingIndexList() {
-		return followingIndexList;
+	public ArrayList<Integer> getFollowingList() {
+		return this.followingList;
 	}
 	/**情報エージェントが参照しているエージェントの整数インデックスリストを空のリストに初期化。
-	 * @param followingIndexList セットする followingIndexList
+	 * @param followingList セットする followingIndexList
 	 */
-	private void initFollowingIndexList() {
-		this.followingIndexList = new ArrayList<Integer>();
+	private void initFollowingList() {
+		this.followingList = new ArrayList<Integer>();
 	}
 	/**情報エージェントが参照しているエージェントの整数インデックスリストに新たなエージェントの整数インデックスを追加。
-	 * @param followingIndexList セットする followingIndexList
+	 * @param followingList セットする followingIndexList
 	 */
-	private void appendFollowingIndexList(int index) {
-		this.followingIndexList.add(index);
+	public void appendFollowingList(int index) {
+		this.followingList.add(index);
 	}
 	/**情報エージェントが参照されているエージェントの整数インデックスリストを取得。
 	 * @return followedIndexList
 	 */
-	private ArrayList<Integer> getFollowedIndexList() {
-		return followedIndexList;
+	public ArrayList<Integer> getFollowedList() {
+		return this.followedList;
 	}
 	/**情報エージェントが参照されているエージェントの整数インデックスリストを空のリストに初期化。
-	 * @param followedIndexList セットする followedIndexList
+	 * @param followedList セットする followedIndexList
 	 */
-	private void initFollowedIndexList() {
-		this.followedIndexList = new ArrayList<Integer>();
+	private void initFollowedList() {
+		this.followedList = new ArrayList<Integer>();
 	}
 	/**情報エージェントが参照されているエージェントの整数インデックスリストに新たなエージェントの整数インデックスを追加。
-	 * @param followedIndexList セットする followedIndexList
+	 * @param followedList セットする followedIndexList
 	 */
-	private void appendFollowedIndexList(int index) {
-		this.followedIndexList.add(index);
+	public void appendFollowedList(int index) {
+		this.followedList.add(index);
 	}
 
-
-	/**情報エージェントの定義に従い，適切なスタイルの参照リストを返す．
-	 * @return 
+	
+	/**リンクが対称であるような無向ネットワークの場合は参照リストと被参照リストどちらにも同時に追加されるので，そのためのメソッド．<br />
+	 * 
+	 * @param index
 	 */
-	public ArrayList<?> getFollowingList() {
-		if (this.getStyle() == NAME_BASED) {
-			return this.getFollowingNameList();
-		}
-		return this.getFollowingIndexList();
+	public void appendIndirectedList (int index) {
+		this.appendFollowedList(index);
+		this.appendFollowingList(index);
 	}
-	/**情報エージェントの定義に従い，適切なスタイルの被参照リストを返す．
-	 * @return 
-	 */
-	public ArrayList<?> getFollowedList() {
-		if (this.getStyle() == NAME_BASED) {
-			return this.getFollowedNameList();
-		}
-		return this.getFollowedIndexList();
-	}
-	/**情報エージェントの定義に従い，適切なスタイルの参照リストに新規エージェントを追加．
-	 * StringかIntegerで引数を与える．
-	 * @param nameOrIndex -StringかIntegerの値
-	 */
-	public <SorI> void appendFolowingList (SorI nameOrIndex) {
-		if (this.getStyle() == NAME_BASED) {
-			this.appendFollowingNameList((String) nameOrIndex);
-		} else {
-			this.appendFollowingIndexList((Integer) nameOrIndex);
-		}
-	}
-	/**情報エージェントの定義に従い，適切なスタイルの被参照リストに新規エージェントを追加．
-	 * StringかIntegerで引数を与える．
-	 * @param nameOrIndex -StringかIntegerの値
-	 */
-	public <SorI> void appendFolowedList (SorI nameOrIndex) {
-		if (this.getStyle() == NAME_BASED) {
-			this.appendFollowedNameList((String) nameOrIndex);
-		} else {
-			this.appendFollowedIndexList((Integer) nameOrIndex);
-		}
-	}
-	/**リンクが対象であるような無方向ネットワークの場合は参照リストと被参照リストどちらにも同時に追加されるので，そのためのメソッド．
-	 * @param nameOrIndex
-	 */
-	public <SorI> void appendIndirectedList (SorI nameOrIndex) {
-		if (this.getStyle() == NAME_BASED) {
-			this.appendFollowedNameList((String) nameOrIndex);
-			this.appendFollowingNameList((String) nameOrIndex);
-		} else {
-			this.appendFollowedIndexList((Integer) nameOrIndex);
-			this.appendFollowingIndexList((Integer) nameOrIndex);
-		}
-	}
-	/**リンクが対象であるような無方向ネットワークの場合のリスト取得メソッド．
+	/**リンクが対称であるような無向ネットワークの場合のリスト取得メソッド．<br />
 	 * 追加時に両方に追加されているはずなので，どちらか取ってくればいい．
 	 * @param nameOrIndex
 	 */
-	public ArrayList<?> getIndirectedList () {
-		if (this.getStyle() == NAME_BASED) {
-			return this.getFollowedNameList();
-		}
-		return this.getFollowedIndexList();
+	public ArrayList<Integer> getIndirectedList () {
+		return this.getFollowedList();
+	}
+	
+	/**Collection.sortを用いて，2つのリストをソートする．<br />
+	 * ネットワーク生成の検証用であり，実際のシミュレーションでは呼ぶ必要はない．
+	 * 
+	 */
+	public void sortLists () {
+		Collections.sort(this.followedList);
+		Collections.sort(this.followingList);
 	}
 	
 	
@@ -367,23 +245,6 @@ public class InfoAgent {
 	 */
 	public void setInfluence(double influence) {
 		this.influence = influence;
-	}
-
-	/**情報エージェントが文字列名ベースか整数識別番号ベースかどちらで管理されているか取得する．
-	 * 文字列ベースならば0，整数ベースなら1を返す．
-	 * @return nameOrIndex
-	 */
-	public int getStyle() {
-		return style;
-	}
-
-	/**コンストラクタで呼ぶ．
-	 * 文字列ベースのコンストラクタではNAME_BASEDを引数に入れる．
-	 * 整数ベースのコンストラクタではINDEX_BASEDを引数に入れる．
-	 * @param nameOrIndex セットする nameOrIndex
-	 */
-	public void setStyle(int nameOrIndex) {
-		this.style = nameOrIndex;
 	}
 	
 }

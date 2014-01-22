@@ -25,6 +25,47 @@ public final class SimulationExecutor {
 	private Logger SimExecLogger = null;
 	private String SimExecLogFileName;
 	
+
+	
+	public static final void main(String[] args) {
+		SimulationExecutor SE = null;
+		
+		//引数はコア数のみ．Corei7以上なら8を指定していい．Corei5,i3,Core2 Quadなら4，Core2 Duoなら2.
+		if (args.length > 0) {
+			for (String arg : args) {
+				try {
+					int numThreads = Integer.parseInt(arg);
+					SE = new SimulationExecutor(numThreads);
+				} catch (NumberFormatException e) {
+					SE = new SimulationExecutor();
+				}
+			}
+		} else {
+			SE = new SimulationExecutor();
+		}
+		
+		SE.SimExecLogger.info("Starting Simulation Executor. NumThreads = " + SE.getNumThreads());
+		//パラメータを変更させながらシミュレーションするイテレータ．
+		//nIterは同一条件でのシミュレーションを何回ずつ行うか指定する．
+		//シミュレーションの解像度はパラメータごとのResolで指定する．
+		int nIter = 1, sRatioResol = 10, mRatioResol = 1;
+		for (int k = 0; k < mRatioResol; k++) {
+			//double mRatio = k * 0.10;
+			double mRatio = 0.50;
+			for (int j = 0; j < sRatioResol; j++) {
+				double sRatio = j * 0.10;
+				for (int i = 0; i < nIter; i++) {
+					SilentMajoritySimulator rn = new SilentMajoritySimulator("condition" + j + "-" + i, 500, sRatio, mRatio);
+					SE.execute(rn);
+					SE.SimExecLogger.info("Submitted: " + rn.getInstanceName());
+				}
+			}
+		}
+		
+		SE.safeShutdown();
+		SE.closeLogFileHandler();
+	}	
+	
 	/**ExecutorServiceのスレッド数を取得する．
 	 * @return
 	 */
@@ -151,39 +192,6 @@ public final class SimulationExecutor {
 		} catch (Exception e) {
 			this.logStackTrace(e);
 		}
-	}
-	
-	public static final void main(String[] args) {
-		SimulationExecutor SE = null;
-		if (args.length > 0) {
-			for (String arg : args) {
-				try {
-					int numThreads = Integer.parseInt(arg);
-					SE = new SimulationExecutor(numThreads);
-				} catch (NumberFormatException e) {
-					SE = new SimulationExecutor();
-				}
-			}
-		} else {
-			SE = new SimulationExecutor();
-		}
-		
-		SE.SimExecLogger.info("Starting Simulation Executor. NumThreads = " + SE.getNumThreads());
-		
-		int resol = 1;
-		//Future<?>[] futures = new Future<?>[resol];
-		for (int j = 0; j < 10; j++) {
-			double sRatio = j * 0.10;
-			for (int i = 0; i < resol; i++) {
-				SilentMajoritySimulator rn = new SilentMajoritySimulator("instance" + (i+1)*(j+1), 500, sRatio, 0.5);
-				//futures[i] = SE.submit(rn);
-				SE.execute(rn);
-				SE.SimExecLogger.info("Submitted: " + rn.getInstanceName());
-			}
-		}
-		
-		SE.safeShutdown();
-		SE.closeLogFileHandler();
 	}
 
 }

@@ -6,7 +6,5 @@ package matz.agentsim;
  *
  */
 public interface InfoNetworkBuilder {
-	final int NAME_BASED = 0;
-	final int INDEX_BASED = 1;
 	InfoAgent[] build(InfoAgent[] infoAgentsArray);
 }

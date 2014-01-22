@@ -8,7 +8,7 @@ public class SilentMajoritySimulator implements Runnable {
 
 	private String InstanceName;
 	private int nAgents;
-	private final static int NAGENTS_DEFAUT = 100;
+	private static final int NAGENTS_DEFAUT = 100;
 	private double SilentAgentsRatio;
 	private double ModelReferenceRatio;
 	private String TaskLogFileName;
@@ -19,6 +19,7 @@ public class SilentMajoritySimulator implements Runnable {
 	private final int NULL_PATTERN = 0;
 	private final int MIX_PATTERN = 1;
 	private final int SPARSE_PATTERN = 2;
+	private static final double CONVERGENCE_CONDITION = 0.05;
 	
 	@Override
 	public void run() {
@@ -33,7 +34,6 @@ public class SilentMajoritySimulator implements Runnable {
 			//main procedure calling bracket
 			//this.WordCount(new File(this.getDataDir(),"zarathustra.txt"));
 			
-			//TODO deploy actual simulation method
 			//エージェント集合の配列を初期化する．
 			this.initInfoAgentsArray(this.getnAgents());
 			//ネットワークを生成する．
@@ -85,7 +85,7 @@ public class SilentMajoritySimulator implements Runnable {
 					}
 				}
 				for (InfoAgent agent : this.infoAgentsArray) agent.applyOpinion();
-				if (((double)nUpdated / (double)nAgents) < 0.1){
+				if (((double)nUpdated / (double)nAgents) < CONVERGENCE_CONDITION){
 					iStable++;
 				} else {
 					iStable = 0;
