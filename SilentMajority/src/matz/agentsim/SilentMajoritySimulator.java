@@ -15,11 +15,10 @@ public class SilentMajoritySimulator implements Runnable {
 	private Logger TaskLogger = null;
 	private String DataDir = "data";
 	private InfoAgent[] infoAgentsArray;
-	private final int NAME_BASED = 0;
-	private final int INDEX_BASED = 1;
 	private Random localRNG = new Random();
 	private final int NULL_PATTERN = 0;
 	private final int MIX_PATTERN = 1;
+	private final int SPARSE_PATTERN = 2;
 	
 	@Override
 	public void run() {
@@ -42,7 +41,7 @@ public class SilentMajoritySimulator implements Runnable {
 			this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
 			
 			//ネットワークのチェック
-			File outDir = new File("results/cnn");
+			File outDir = new File("results/" + "n="+this.getnAgents()+"s="+this.getSilentAgentsRatio()+"m="+this.getModelReferenceRatio());
 			if (!outDir.isDirectory()) outDir.mkdirs();
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
 			for (InfoAgent iAgent : this.infoAgentsArray) {
@@ -50,15 +49,49 @@ public class SilentMajoritySimulator implements Runnable {
 				for (Object neighbor : iAgent.getIndirectedList()) {
 					bw.write((Integer)neighbor + ",");
 				}
-				bw.write("\n");
+				bw.newLine();
 			}
 			bw.close();
 			
 			//情報伝播を試行する
-			int nUpdated = 0, iStable = 0;
-			while(iStable < 5) {
+			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.nAgents;
+			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, this.getInstanceName()+".csv"))));
+			while(iStable < 10 && cStep < 20) {
+				cStep++;
+				Integer[][] record = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+				for (InfoAgent agent :this.infoAgentsArray) {
+					Integer opinion = agent.forceGetOpinion();
+					if(opinion == null) opinion = 3;
+					record[0][opinion]++;
+					if(agent.isSilent()) record[1][opinion]++;
+					else record[2][opinion]++;
+				}
+				rbw.write(record[0][0]+","+record[0][1]+","+record[0][2]+","+record[0][3]+", ,"
+						+record[1][0]+","+record[1][1]+","+record[1][2]+","+record[1][3]+", ,"
+						+record[2][0]+","+record[2][1]+","+record[2][2]+","+record[2][3]);
+				rbw.newLine();
 				
+				nUpdated = 0;
+				double roll = this.localRNG.nextDouble();
+				if (roll < this.getModelReferenceRatio()) {
+					for (InfoAgent agent : this.infoAgentsArray) {
+						boolean isUpdated = agent.IndependentCascade(infoAgentsArray);
+						if (isUpdated) nUpdated++;
+					}
+				} else {
+					for (InfoAgent agent : this.infoAgentsArray) {
+						boolean isUpdated = agent.LinearThreashold(infoAgentsArray);
+						if (isUpdated) nUpdated++;
+					}
+				}
+				for (InfoAgent agent : this.infoAgentsArray) agent.applyOpinion();
+				if (((double)nUpdated / (double)nAgents) < 0.1){
+					iStable++;
+				} else {
+					iStable = 0;
+				}
 			}
+			rbw.close();
 			
 			this.TaskLogger.info("Done.");
 		} catch (Exception e) {
@@ -80,8 +113,10 @@ public class SilentMajoritySimulator implements Runnable {
 	private void initInfoAgentsArray(int nAgents) {
 		this.infoAgentsArray= new InfoAgent[nAgents];
 		for (int index = 0; index < nAgents; index++) {
-			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(this.MIX_PATTERN)); 
+			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(this.SPARSE_PATTERN));
+			if (this.localRNG.nextDouble() < this.getSilentAgentsRatio()) this.infoAgentsArray[index].muzzle();
 		}
+		
 	}
 
 	/**意見の初期値を与える．patternによって挙動が変わる．<br />
@@ -96,6 +131,12 @@ public class SilentMajoritySimulator implements Runnable {
 			opinion = null;
 		} else if (pattern == this.MIX_PATTERN) {
 			opinion = this.localRNG.nextInt(3);
+		} else if (pattern == this.SPARSE_PATTERN) {
+			opinion = null;
+			double roll = this.localRNG.nextDouble();
+			if (roll < 0.1) {
+				opinion = this.localRNG.nextInt(3);
+			}
 		}
 		return opinion;
 	}

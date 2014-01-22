@@ -172,11 +172,14 @@ public final class SimulationExecutor {
 		
 		int resol = 1;
 		//Future<?>[] futures = new Future<?>[resol];
-		for (int i = 0; i < resol; i++) {
-			SilentMajoritySimulator rn = new SilentMajoritySimulator("instance" + i);
-			//futures[i] = SE.submit(rn);
-			SE.execute(rn);
-			SE.SimExecLogger.info("Submitted: " + rn.getInstanceName());
+		for (int j = 0; j < 10; j++) {
+			double sRatio = j * 0.10;
+			for (int i = 0; i < resol; i++) {
+				SilentMajoritySimulator rn = new SilentMajoritySimulator("instance" + (i+1)*(j+1), 500, sRatio, 0.5);
+				//futures[i] = SE.submit(rn);
+				SE.execute(rn);
+				SE.SimExecLogger.info("Submitted: " + rn.getInstanceName());
+			}
 		}
 		
 		SE.safeShutdown();

@@ -11,6 +11,7 @@ public class InfoAgent {
 	private ArrayList<Integer> followingIndexList;
 	private ArrayList<Integer> followedIndexList;
 	private boolean isSilent = false;
+	private Integer tmpOpinion;
 	private Integer opinion;
 	private double influence = Math.random();
 	private double threshold = 0.5;
@@ -20,11 +21,12 @@ public class InfoAgent {
 	
 	/**自分が中立的・あるいは未定義の状態にあるとき，肯定的・否定的問わず何らかの先進的意見に触れると，それに影響される．<br />
 	 * 影響を受けるか否かは，相手の影響力の強さによる．
+	 * @return 変化があったらtrue
 	 */
-	public void IndependentCascade(InfoAgent[] infoAgentsArray) {
-		if (!(this.getOpinion() == 0 || this.getOpinion() == null)) return;
+	public boolean IndependentCascade(InfoAgent[] infoAgentsArray) {
+		if (!(this.getOpinion() == null || this.getOpinion() == 0)) return false;
 
-		Integer tmpOp = this.getOpinion();
+		Integer tmpOp = this.forceGetOpinion();
 		for (Object neighbor : this.getIndirectedList()) {
 			//TODO とりあえずIndexベース
 			double influence = -1;
@@ -36,17 +38,51 @@ public class InfoAgent {
 					}
 				}
 			} catch(Exception e) {
+				//このExecptionが、サイレントエージェントを参照した時のものである（getOpinionがNullを返してくるので比較時に例外）
 				continue;
 			}
 		}
-		this.setOpinion(tmpOp);
+		this.setTmpOpinion(tmpOp);
+		if (this.tmpOpinion != this.getOpinion()) return true;
+		return false;
 	}
-	
+
 	/**隣接しているノードの中での多数派を知覚して，その影響を受ける．
 	 * @param infoAgentsArray
+	 * @return
 	 */
-	public void LinearThreashold(InfoAgent[] infoAgentsArray) {
+	public boolean LinearThreashold(InfoAgent[] infoAgentsArray) {
+		Integer tmpOp = this.forceGetOpinion();
 		
+		int sum = 0;
+		Integer[] opinions = {0,0,0};
+		for (Object neighbor : this.getIndirectedList()) {
+			Integer neighborOp = infoAgentsArray[(Integer) neighbor].getOpinion(); 
+			if (neighborOp == null) continue;
+			
+			sum++;
+			opinions[neighborOp]++;
+		}
+		if (sum == 0) return false;
+		for (int opIndex = 0; opIndex < 3; opIndex++) {
+			if (opinions[opIndex] / sum > this.threshold) tmpOp = opIndex;
+		}
+		this.setTmpOpinion(tmpOp);
+		if (this.tmpOpinion != this.getOpinion()) return true;
+		return false;
+	}
+	
+	/**中間意見を確定意見として適用する。イテレータの最後に呼ぶ。
+	 * 
+	 */
+	public void applyOpinion() {
+		if (this.tmpOpinion != null) this.setOpinion(this.tmpOpinion);
+	}
+	/**一時的に意見を格納する。イテレータの中間データの保存に使う。
+	 * @param tmpOp
+	 */
+	private void setTmpOpinion(Integer tmpOp) {
+		this.tmpOpinion = tmpOp;
 	}
 	
 	/**文字列名を与えて情報エージェントを初期化するコンストラクタ．
@@ -55,12 +91,13 @@ public class InfoAgent {
 	 * @param opinion -整数値の意見
 	 * @param isSilent -サイレントであるか
 	 */
-	public InfoAgent(String name, int opinion, boolean isSilent) {
+	public InfoAgent(String name, Integer opinion, boolean isSilent) {
 		this.setStyle(NAME_BASED);
 		this.setAgentName(name);
 		this.initFollowingNameList();
 		this.initFollowedNameList();
 		this.setOpinion(opinion);
+		this.setTmpOpinion(this.forceGetOpinion());
 		if (isSilent) this.muzzle();
 	}
 	
@@ -69,12 +106,13 @@ public class InfoAgent {
 	 * @param name
 	 * @param opinion
 	 */
-	public InfoAgent(String name, int opinion) {
+	public InfoAgent(String name, Integer opinion) {
 		this.setStyle(NAME_BASED);
 		this.setAgentName(name);
 		this.initFollowingNameList();
 		this.initFollowedNameList();
-		this.setOpinion(opinion);	
+		this.setOpinion(opinion);
+		this.setTmpOpinion(this.forceGetOpinion());	
 	}
 	
 	/**整数識別番号を与えて情報エージェントを初期化するコンストラクタ．
@@ -83,12 +121,13 @@ public class InfoAgent {
 	 * @param opinion -整数値の意見
 	 * @param isSilent -サイレントであるか
 	 */
-	public InfoAgent(int index, int opinion, boolean isSilent) {
+	public InfoAgent(int index, Integer opinion, boolean isSilent) {
 		this.setStyle(INDEX_BASED);
 		this.setAgentIndex(index);
 		this.initFollowingIndexList();
 		this.initFollowedIndexList();
 		this.setOpinion(opinion);
+		this.setTmpOpinion(this.forceGetOpinion());
 		if (isSilent) this.muzzle();	
 	}
 	
@@ -97,11 +136,12 @@ public class InfoAgent {
 	 * @param index -整数の識別番号
 	 * @param opinion -整数値の意見
 	 */
-	public InfoAgent(int index, int opinion) {
+	public InfoAgent(int index, Integer opinion) {
 		this.setStyle(INDEX_BASED);
 		this.setAgentIndex(index);
 		this.initFollowingIndexList();
 		this.initFollowedIndexList();
+		this.setTmpOpinion(this.forceGetOpinion());
 		this.setOpinion(opinion);
 	}
 	
@@ -302,10 +342,16 @@ public class InfoAgent {
 			return null;
 		}
 	}
+	/**サイレント如何を問わず意見を取得する。
+	 * @return
+	 */
+	public Integer forceGetOpinion() {
+		return this.opinion;
+	}
 	/**情報エージェントの意見を指定する。
 	 * @param opinion セットする opinion
 	 */
-	public void setOpinion(int opinion) {
+	public void setOpinion(Integer opinion) {
 		this.opinion = opinion;
 	}
 
