@@ -25,7 +25,7 @@ public class InfoAgent {
 		if (!(this.getOpinion() == null || this.getOpinion() == 0)) return false;
 
 		Integer tmpOp = this.forceGetOpinion();
-		for (Object neighbor : this.getIndirectedList()) {
+		for (Object neighbor : this.getUndirectedList()) {
 			double influence = -1;
 			try {
 				if (this.getOpinion() == null || infoAgentsArray[(Integer) neighbor].getOpinion() > this.getOpinion()) {
@@ -53,7 +53,7 @@ public class InfoAgent {
 		
 		int sum = 0;
 		Integer[] opinions = {0,0,0};
-		for (Object neighbor : this.getIndirectedList()) {
+		for (Object neighbor : this.getUndirectedList()) {
 			Integer neighborOp = infoAgentsArray[(Integer) neighbor].getOpinion(); 
 			if (neighborOp == null) continue;
 			
@@ -170,7 +170,7 @@ public class InfoAgent {
 	 * 
 	 * @param index
 	 */
-	public void appendIndirectedList (int index) {
+	public void appendUndirectedList (int index) {
 		this.appendFollowedList(index);
 		this.appendFollowingList(index);
 	}
@@ -178,7 +178,7 @@ public class InfoAgent {
 	 * 追加時に両方に追加されているはずなので，どちらか取ってくればいい．
 	 * @param nameOrIndex
 	 */
-	public ArrayList<Integer> getIndirectedList () {
+	public ArrayList<Integer> getUndirectedList () {
 		return this.getFollowedList();
 	}
 	
@@ -189,6 +189,27 @@ public class InfoAgent {
 	public void sortLists () {
 		Collections.sort(this.followedList);
 		Collections.sort(this.followingList);
+	}
+	/**参照しているエージェントの数を返す。
+	 * 
+	 * @return
+	 */
+	public int getnFollowing () {
+		return this.followingList.size();
+	}
+	/**参照されているエージェントの数を返す。
+	 * 
+	 * @return
+	 */
+	public int getnFollowed () {
+		return this.followedList.size();
+	}
+	/**無向ネットワークでの接続次数を返す。
+	 * 
+	 * @return
+	 */
+	public int getDegree () {
+		return this.followedList.size();
 	}
 	
 	

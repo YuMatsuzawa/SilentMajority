@@ -14,45 +14,48 @@ public class CNNModel implements InfoNetworkBuilder {
 	private ArrayList<Integer[]> potentialLinks = new ArrayList<Integer[]>();
 	private Random localRNG = new Random();
 	private int includedAgents;
+	private boolean isDirected;
 	
 	public InfoAgent[] build(InfoAgent[] infoAgentsArray) {
 		InfoAgent[] tmpAgentsArray = infoAgentsArray;
 		int nAgents = infoAgentsArray.length;
 		
-		/*ネットワークの種を作る（とりあえず無向グラフ）
-		 * 
-		 * 0----2----1
-		 * 
-		 */
-		tmpAgentsArray[0].appendIndirectedList(2);
-		tmpAgentsArray[1].appendIndirectedList(2);
+		if (this.getOrientation() == UNDIRECTED) {
+			/*ネットワークの種を作る（とりあえず無向グラフ）
+			 * 
+			 * 0----2----1
+			 * 
+			 */
+			tmpAgentsArray[0].appendUndirectedList(2);
+			tmpAgentsArray[1].appendUndirectedList(2);
 
-		tmpAgentsArray[2].appendIndirectedList(0);
-		tmpAgentsArray[2].appendIndirectedList(1);
-		
-		Integer[] firstPLink = {0, 1};
-		this.potentialLinks.add(firstPLink);
-		
-		this.includedAgents = 3;
-		
-		while (this.includedAgents < nAgents) {
-			double roll = this.localRNG.nextDouble();
-			if (roll < this.getP_nn()){
-				this.connectPotential(tmpAgentsArray);
-			} else {
-				this.includeAgent(tmpAgentsArray);
+			tmpAgentsArray[2].appendUndirectedList(0);
+			tmpAgentsArray[2].appendUndirectedList(1);
+
+			Integer[] firstPLink = {0, 1};
+			this.potentialLinks.add(firstPLink);
+
+			this.includedAgents = 3;
+
+			while (this.includedAgents < nAgents) {
+				double roll = this.localRNG.nextDouble();
+				if (roll < this.getP_nn()){
+					this.connectPotential(tmpAgentsArray);
+				} else {
+					this.includeAgent(tmpAgentsArray);
+				}
 			}
-		}
-		
-		//チェックのために，全エージェントの隣接リストをソートする．
-		for (InfoAgent agent : tmpAgentsArray) {
-			agent.sortLists();
+
+			//チェックのために，全エージェントの隣接リストをソートする．
+			for (InfoAgent agent : tmpAgentsArray) {
+				agent.sortLists();
+			}
 		}
 		
 		return tmpAgentsArray;
 	}
 	
-	/**潜在的リンクを実際に接続する．
+	/**ポテンシャルリンクを実際に接続する．
 	 * @param tmpAgentsArray
 	 */
 	private void connectPotential(InfoAgent[] tmpAgentsArray) {
@@ -83,8 +86,8 @@ public class CNNModel implements InfoNetworkBuilder {
 	 * @param tmpAgentsArray
 	 */
 	private void constructLink(int newcomer, int target, InfoAgent[] tmpAgentsArray) {
-		tmpAgentsArray[newcomer].appendIndirectedList(target);
-		tmpAgentsArray[target].appendIndirectedList(newcomer);
+		tmpAgentsArray[newcomer].appendUndirectedList(target);
+		tmpAgentsArray[target].appendUndirectedList(newcomer);
 		safeAppendPotentialLink(newcomer,target,tmpAgentsArray);
 		safeAppendPotentialLink(target,newcomer,tmpAgentsArray);
 	}
@@ -95,8 +98,8 @@ public class CNNModel implements InfoNetworkBuilder {
 	 * @param tmpAgentsArray
 	 */
 	private void safeAppendPotentialLink(int newcomer, int target, InfoAgent[] tmpAgentsArray) {
-		for(int pIndex : tmpAgentsArray[target].getIndirectedList()) {
-			if (pIndex != newcomer && !tmpAgentsArray[newcomer].getIndirectedList().contains(pIndex)) {
+		for(int pIndex : tmpAgentsArray[target].getUndirectedList()) {
+			if (pIndex != newcomer && !tmpAgentsArray[newcomer].getUndirectedList().contains(pIndex)) {
 				Integer[] pLink = {pIndex, newcomer};
 				Integer[] rLink = {newcomer, pIndex};
 				boolean isNew = true;
@@ -111,18 +114,29 @@ public class CNNModel implements InfoNetworkBuilder {
 		}
 	}
 	
-	/**CNNモデルでネットワーク生成するクラス．確率パラメータを与えるコンストラクタ．
-	 * build()メソッドがメインとなる生成イテレータ．
+	/**確率パラメータと指向性を与えてネットワークをコンストラクト．
+	 * 
 	 * @param infoAgentsArray
 	 */
-	public CNNModel(double p_nn) {
+	public CNNModel(double p_nn, boolean isDirected) {
 		this.setP_nn(p_nn);
+		this.setOrientation(isDirected);
 	}
-	/**デフォルトの確率パラメータでコンストラクト．<br />
+
+	/**指向性を与えてネットワークをコンストラクト．<br />
+	 * 2/3の確率で「友達の友達」，1/3の確率でそれ以外をリンクする．
+	 */
+	public CNNModel(boolean isDirected) {
+		this.setP_nn(P_NN_DEFAULT);
+		this.setOrientation(UNDIRECTED);
+	}
+
+	/**デフォルトの確率パラメータで無向ネットワークをコンストラクト．<br />
 	 * 2/3の確率で「友達の友達」，1/3の確率でそれ以外をリンクする．
 	 */
 	public CNNModel() {
 		this.setP_nn(P_NN_DEFAULT);
+		this.setOrientation(UNDIRECTED);
 	}
 	
 	/**確率パラメータを取得．
@@ -136,6 +150,22 @@ public class CNNModel implements InfoNetworkBuilder {
 	 */
 	public void setP_nn(double p_nn) {
 		this.p_nn = p_nn;
+	}
+	/**有向か無向かを取得。
+	 * 
+	 * @param isDirected
+	 */
+	public boolean getOrientation() {
+		return this.isDirected;
+		
+	}
+	/**有向か無向かを指定。
+	 * 
+	 * @param isDirected
+	 */
+	public void setOrientation(boolean isDirected) {
+		this.isDirected = isDirected;
+		
 	}
 	/**現在使用されている方のポテンシャルリンクのサイズを返す．
 	 * @return

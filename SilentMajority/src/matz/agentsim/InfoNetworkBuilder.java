@@ -6,5 +6,7 @@ package matz.agentsim;
  *
  */
 public interface InfoNetworkBuilder {
+	final boolean DIRECTED = true;
+	final boolean UNDIRECTED = false;
 	InfoAgent[] build(InfoAgent[] infoAgentsArray);
 }

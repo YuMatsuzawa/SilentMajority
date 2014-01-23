@@ -19,6 +19,9 @@ public class SilentMajoritySimulator implements Runnable {
 	private final int NULL_PATTERN = 0;
 	private final int MIX_PATTERN = 1;
 	private final int SPARSE_PATTERN = 2;
+	private static boolean DIRECTED = true;
+	@SuppressWarnings("unused")
+	private static boolean UNDIRECTED = false;
 	private static final double CONVERGENCE_CONDITION = 0.05;
 	
 	@Override
@@ -39,6 +42,8 @@ public class SilentMajoritySimulator implements Runnable {
 			//ネットワークを生成する．
 			CNNModel ntwk = new CNNModel();
 			this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
+			//ネットワーク確定後、次数に依存する確率分布に従い、エージェントをサイレントにする。
+			this.muzzleAgents(ntwk.getOrientation());
 			
 			//ネットワークのチェック
 			File outDir = new File("results/" + "n="+this.getnAgents()+"s="+this.getSilentAgentsRatio()+"m="+this.getModelReferenceRatio());
@@ -46,7 +51,7 @@ public class SilentMajoritySimulator implements Runnable {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
 			for (InfoAgent iAgent : this.infoAgentsArray) {
 				bw.write(iAgent.getAgentIndex() + "\t:\t");
-				for (Object neighbor : iAgent.getIndirectedList()) {
+				for (Object neighbor : iAgent.getUndirectedList()) {
 					bw.write((Integer)neighbor + ",");
 				}
 				bw.newLine();
@@ -115,9 +120,39 @@ public class SilentMajoritySimulator implements Runnable {
 		for (int index = 0; index < nAgents; index++) {
 			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(this.SPARSE_PATTERN));
 			if (this.localRNG.nextDouble() < this.getSilentAgentsRatio()) this.infoAgentsArray[index].muzzle();
+				//初期状態では単純にランダムで指定割合のエージェントをサイレントにしておく。
 		}
 		
 	}
+	/**次数に依存する確率分布に従い、エージェントをサイレントにする。<br />
+	 * 無向グラフならgetDegree()で次数を取れる。getnFollowed()でも取ってくる数値は同じだが。<br />
+	 * 有向グラフなら多くの参照を集めるエージェントがハブと考えられるので、getnFollowed()を使う。
+	 * @param directivity
+	 */
+	private void muzzleAgents(boolean orientation) {
+		for (InfoAgent agent : this.infoAgentsArray) {
+			int degree = (orientation == DIRECTED)? agent.getnFollowed(): agent.getDegree();
+			double roll = this.localRNG.nextDouble();
+			if (roll <= this.silentPDF(degree)) agent.muzzle(); else agent.unmuzzle();
+		}
+	}
+
+	/**次数に依存するサイレント性の確率分布関数。<br />
+	 * 引数は離散値の次数なのでProbability Distribution Function(PDF)。Probability Mass Function(PMF)とも言える。<br />
+	 * @param degree 次数
+	 * @return
+	 */
+	private double silentPDF(int degree) {
+		// TODO 実装
+		double probability = 0.0;
+		
+		return probability;
+	}
+
+
+
+
+
 
 	/**意見の初期値を与える．patternによって挙動が変わる．<br />
 	 * ・NULL_PATTERN（=0）の場合：全てnullにする．nullは意見未決定状態．<br />
@@ -127,7 +162,7 @@ public class SilentMajoritySimulator implements Runnable {
 	 */
 	private Integer initOpinion(int pattern) {
 		Integer opinion = null;
-		if (pattern == this.NULL_PATTERN ) {
+		if (pattern == this.NULL_PATTERN) {
 			opinion = null;
 		} else if (pattern == this.MIX_PATTERN) {
 			opinion = this.localRNG.nextInt(3);
