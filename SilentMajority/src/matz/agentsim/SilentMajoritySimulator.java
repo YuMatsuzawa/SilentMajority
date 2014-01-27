@@ -156,7 +156,8 @@ public class SilentMajoritySimulator implements Runnable {
 
 	/**意見の初期値を与える．patternによって挙動が変わる．<br />
 	 * ・NULL_PATTERN（=0）の場合：全てnullにする．nullは意見未決定状態．<br />
-	 * ・MIX_PATTERN（=1)の場合：0,1,2のいずれかにする．
+	 * ・MIX_PATTERN（=1)の場合：0,1,2のいずれかにする．<br />
+	 * ・SPARSE_PATTERN(=2)の場合：90%はNULL，10%はランダムで0.1.2のいずれかにする。
 	 * @param pattern
 	 * @return
 	 */
