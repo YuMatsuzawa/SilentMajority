@@ -19,6 +19,7 @@ public class SilentMajoritySimulator implements Runnable {
 	private final int NULL_PATTERN = 0;
 	private final int MIX_PATTERN = 1;
 	private final int SPARSE_PATTERN = 2;
+	private int MAX_ITER = 20;
 	private static boolean DIRECTED = true;
 	@SuppressWarnings("unused")
 	private static boolean UNDIRECTED = false;
@@ -50,7 +51,7 @@ public class SilentMajoritySimulator implements Runnable {
 			if (!outDir.isDirectory()) outDir.mkdirs();
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
 			for (InfoAgent iAgent : this.infoAgentsArray) {
-				bw.write(iAgent.getAgentIndex() + "\t:\t");
+				bw.write(iAgent.getAgentIndex() + "(" + iAgent.getnFollowed() + ")\t:\t");
 				for (Object neighbor : iAgent.getUndirectedList()) {
 					bw.write((Integer)neighbor + ",");
 				}
@@ -61,19 +62,20 @@ public class SilentMajoritySimulator implements Runnable {
 			//情報伝播を試行する
 			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.nAgents;
 			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, this.getInstanceName()+".csv"))));
-			while(iStable < 10 && cStep < 20) {
+			while(iStable < 10 && cStep < MAX_ITER) { //収束条件は意見変化のあったエージェントが全体の5%以下の状態が10ステップ継続するか、あるいは20ステップに到達するか。
 				cStep++;
-				Integer[][] record = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+				Integer[][] sumRecord = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+					// 意見比率の追跡。全体、サイレント、ヴォーカルの順。
 				for (InfoAgent agent :this.infoAgentsArray) {
 					Integer opinion = agent.forceGetOpinion();
 					if(opinion == null) opinion = 3;
-					record[0][opinion]++;
-					if(agent.isSilent()) record[1][opinion]++;
-					else record[2][opinion]++;
+					sumRecord[0][opinion]++;
+					if(agent.isSilent()) sumRecord[1][opinion]++;
+					else sumRecord[2][opinion]++;
 				}
-				rbw.write(record[0][0]+","+record[0][1]+","+record[0][2]+","+record[0][3]+", ,"
-						+record[1][0]+","+record[1][1]+","+record[1][2]+","+record[1][3]+", ,"
-						+record[2][0]+","+record[2][1]+","+record[2][2]+","+record[2][3]);
+				rbw.write(sumRecord[0][0]+","+sumRecord[0][1]+","+sumRecord[0][2]+","+sumRecord[0][3]+", ,"
+						+sumRecord[1][0]+","+sumRecord[1][1]+","+sumRecord[1][2]+","+sumRecord[1][3]+", ,"
+						+sumRecord[2][0]+","+sumRecord[2][1]+","+sumRecord[2][2]+","+sumRecord[2][3]);
 				rbw.newLine();
 				
 				nUpdated = 0;
@@ -130,6 +132,11 @@ public class SilentMajoritySimulator implements Runnable {
 	 * @param directivity
 	 */
 	private void muzzleAgents(boolean orientation) {
+		int sumDegree = 0;
+		for (InfoAgent agent : this.infoAgentsArray) {
+			sumDegree += agent.getnFollowed();
+		}
+		
 		for (InfoAgent agent : this.infoAgentsArray) {
 			int degree = (orientation == DIRECTED)? agent.getnFollowed(): agent.getDegree();
 			double roll = this.localRNG.nextDouble();
@@ -145,7 +152,9 @@ public class SilentMajoritySimulator implements Runnable {
 	private double silentPDF(int degree) {
 		// TODO 実装
 		double probability = 0.0;
-		
+		if (degree < 10) {
+			probability = this.getSilentAgentsRatio();
+		}
 		return probability;
 	}
 
