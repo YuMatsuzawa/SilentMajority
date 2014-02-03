@@ -20,6 +20,8 @@ public class SilentMajoritySimulator implements Runnable {
 	private final int MIX_PATTERN = 1;
 	private final int SPARSE_PATTERN = 2;
 	private int MAX_ITER = 20;
+	private String timeStamp;
+	@SuppressWarnings("unused")
 	private static boolean DIRECTED = true;
 	@SuppressWarnings("unused")
 	private static boolean UNDIRECTED = false;
@@ -44,10 +46,10 @@ public class SilentMajoritySimulator implements Runnable {
 			CNNModel ntwk = new CNNModel();
 			this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
 			//ネットワーク確定後、次数に依存する確率分布に従い、エージェントをサイレントにする。
-			this.muzzleAgents(ntwk.getOrientation());
+			this.muzzleAgents();
 			
 			//ネットワークのチェック
-			File outDir = new File("results/" + "n="+this.getnAgents()+"s="+this.getSilentAgentsRatio()+"m="+this.getModelReferenceRatio());
+			File outDir = new File("results/" + this.getTimeStamp() + "/"+ "n="+this.getnAgents()+"s="+this.getSilentAgentsRatio()+"m="+this.getModelReferenceRatio());
 			if (!outDir.isDirectory()) outDir.mkdirs();
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
 			for (InfoAgent iAgent : this.infoAgentsArray) {
@@ -62,36 +64,68 @@ public class SilentMajoritySimulator implements Runnable {
 			//情報伝播を試行する
 			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.nAgents;
 			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, this.getInstanceName()+".csv"))));
-			while(iStable < 10 && cStep < MAX_ITER) { //収束条件は意見変化のあったエージェントが全体の5%以下の状態が10ステップ継続するか、あるいは20ステップに到達するか。
+			//TODO 各ステップのsumRecordとupdateRecordをArrayListか何かに取り込んで、試行終了時点でさらに統計的な評価ができるよう準備する
+			//TODO 上と合わせて、jfreechartで画像自動出力＋何かサイレント率に依存しそうな統計指標を用意し、同条件での複数回試行を前提とした解析を準備する
+			while(iStable < 10 && cStep < MAX_ITER) {
+				//収束条件は意見変化のあったエージェントが全体の5%以下の状態が10ステップ継続するか、あるいは20ステップに到達するか。
+				
 				cStep++;
+				// 意見比率の追跡。全体、サイレント、ヴォーカルの順。
 				Integer[][] sumRecord = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};
-					// 意見比率の追跡。全体、サイレント、ヴォーカルの順。
-				for (InfoAgent agent :this.infoAgentsArray) {
+				for (InfoAgent agent : this.infoAgentsArray) {
 					Integer opinion = agent.forceGetOpinion();
 					if(opinion == null) opinion = 3;
 					sumRecord[0][opinion]++;
 					if(agent.isSilent()) sumRecord[1][opinion]++;
 					else sumRecord[2][opinion]++;
 				}
+				//意見比率の書き込み。
 				rbw.write(sumRecord[0][0]+","+sumRecord[0][1]+","+sumRecord[0][2]+","+sumRecord[0][3]+", ,"
 						+sumRecord[1][0]+","+sumRecord[1][1]+","+sumRecord[1][2]+","+sumRecord[1][3]+", ,"
 						+sumRecord[2][0]+","+sumRecord[2][1]+","+sumRecord[2][2]+","+sumRecord[2][3]);
-				rbw.newLine();
+				rbw.write(", ,");
 				
 				nUpdated = 0;
+				//updateの追跡。
+				Integer[][] updateRecord = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 				double roll = this.localRNG.nextDouble();
-				if (roll < this.getModelReferenceRatio()) {
+				//全エージェントについて、モデルに基づく相互作用を実行
+				for (InfoAgent agent : this.infoAgentsArray) {
+					boolean isUpdated = (roll < this.getModelReferenceRatio())? //モデル選択比を閾値として確率選択している。
+							agent.IndependentCascade(infoAgentsArray)
+							: agent.LinearThreashold(infoAgentsArray);
+					if (isUpdated) {
+						nUpdated++;
+						Integer updatedOpinion = agent.getTmpOpinion();
+						if(updatedOpinion == null) updatedOpinion = 3;
+						updateRecord[0][updatedOpinion]++;
+						if(agent.isSilent()) updateRecord[1][updatedOpinion]++;
+						else updateRecord[2][updatedOpinion]++;
+					}
+				}
+				//update記録の書き込み
+				rbw.write(updateRecord[0][0]+","+updateRecord[0][1]+","+updateRecord[0][2]+","+updateRecord[0][3]+", ,"
+						+updateRecord[1][0]+","+updateRecord[1][1]+","+updateRecord[1][2]+","+updateRecord[1][3]+", ,"
+						+updateRecord[2][0]+","+updateRecord[2][1]+","+updateRecord[2][2]+","+updateRecord[2][3]);
+				rbw.newLine();
+				
+/*				if (roll < this.getModelReferenceRatio()) { //こっちはなんかおかしい。各ステップごとにどちらかのパターンでの相互作用しかしなくなってる。
 					for (InfoAgent agent : this.infoAgentsArray) {
 						boolean isUpdated = agent.IndependentCascade(infoAgentsArray);
-						if (isUpdated) nUpdated++;
+						if (isUpdated) {
+							nUpdated++;
+							
+						}
 					}
 				} else {
 					for (InfoAgent agent : this.infoAgentsArray) {
 						boolean isUpdated = agent.LinearThreashold(infoAgentsArray);
 						if (isUpdated) nUpdated++;
 					}
-				}
-				for (InfoAgent agent : this.infoAgentsArray) agent.applyOpinion();
+				}*/
+				
+				for (InfoAgent agent : this.infoAgentsArray) agent.applyOpinion(); //中間データを本適用する。
+				
 				if (((double)nUpdated / (double)nAgents) < CONVERGENCE_CONDITION){
 					iStable++;
 				} else {
@@ -129,16 +163,16 @@ public class SilentMajoritySimulator implements Runnable {
 	/**次数に依存する確率分布に従い、エージェントをサイレントにする。<br />
 	 * 無向グラフならgetDegree()で次数を取れる。getnFollowed()でも取ってくる数値は同じだが。<br />
 	 * 有向グラフなら多くの参照を集めるエージェントがハブと考えられるので、getnFollowed()を使う。
-	 * @param directivity
 	 */
-	private void muzzleAgents(boolean orientation) {
+	@SuppressWarnings("unused")
+	private void muzzleAgents() {
 		int sumDegree = 0;
 		for (InfoAgent agent : this.infoAgentsArray) {
 			sumDegree += agent.getnFollowed();
 		}
 		
 		for (InfoAgent agent : this.infoAgentsArray) {
-			int degree = (orientation == DIRECTED)? agent.getnFollowed(): agent.getDegree();
+			int degree = agent.getnFollowed();
 			double roll = this.localRNG.nextDouble();
 			if (roll <= this.silentPDF(degree)) agent.muzzle(); else agent.unmuzzle();
 		}
@@ -186,22 +220,36 @@ public class SilentMajoritySimulator implements Runnable {
 		return opinion;
 	}
 
-	/**デフォルトエージェント数（1000）とランダムなサイレント率・モデル選択比でシミュレーションを初期化するコンストラクタ．
-	 * 適当な可読型で名前を与えること。
+	/**名前以外何も与えず、ランダムなパラメータで初期化するコンストラクタ。
+	 * 
 	 * @param instanceName - 名前
 	 */
 	public SilentMajoritySimulator(Object instanceName) {
-		this(instanceName, NAGENTS_DEFAUT, Math.random(),Math.random());
+		this("recent", instanceName, NAGENTS_DEFAUT, Math.random(),Math.random());
 	}
 	
-	/**指定したサイレント率とモデル選択比でシミュレーションを初期化するコンストラクタ．
-	 * 適当な可読型で名前を与えること。
-	 * @param instanceName - 名前
+	/**タイムスタンプを与えずに初期化するコンストラクタ。ディレクトリ結果は"recent"以下に出力される。
+	 * 
+	 * @param instanceName
+	 * @param nAgents
 	 * @param silentAgentsRatio
 	 * @param modelReferenceRatio
 	 */
 	public SilentMajoritySimulator(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
+		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio);
+	}
+	
+	/**基本コンストラクタ。
+	 * 
+	 * @param timeStamp - シミュレーション全体の識別のために与えるExectorServiceが起動した時刻。
+	 * @param instanceName - 適当な可読な名前。
+	 * @param nAgents - エージェント数
+	 * @param silentAgentsRatio - サイレント率
+	 * @param modelReferenceRatio - モデル選択比
+	 */
+	public SilentMajoritySimulator(String timeStamp, Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
 		try {
+			this.setTimeStamp(timeStamp);
 			this.setInstanceName(instanceName);
 			this.setnAgents(nAgents);
 			this.setSilentAgentsRatio(silentAgentsRatio);
@@ -211,7 +259,20 @@ public class SilentMajoritySimulator implements Runnable {
 			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．
 		}
 	}
+
+
+
+
+
+
+	public String getTimeStamp() {
+		return this.timeStamp;
+	}
 	
+	public void setTimeStamp(String timeStamp) {
+		this.timeStamp = timeStamp;
+	}
+
 	/**シミュレータインスタンスの名前を取得する．
 	 * @return
 	 */

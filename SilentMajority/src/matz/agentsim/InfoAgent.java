@@ -75,6 +75,12 @@ public class InfoAgent {
 	public void applyOpinion() {
 		if (this.tmpOpinion != null) this.setOpinion(this.tmpOpinion);
 	}
+	/**中間意見を取得する。意見変化をチェックするために使う。
+	 * 
+	 */
+	public Integer getTmpOpinion() {
+		return this.tmpOpinion;
+	}
 	/**一時的に意見を格納する。イテレータの中間データの保存に使う。
 	 * @param tmpOp
 	 */

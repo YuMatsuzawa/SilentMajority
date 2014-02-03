@@ -1,6 +1,7 @@
 package matz.agentsim;
 
 import java.io.File;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -48,6 +49,8 @@ public final class SimulationExecutor {
 		//パラメータを変更させながらシミュレーションするイテレータ．
 		//nIterは同一条件でのシミュレーションを何回ずつ行うか指定する．
 		//シミュレーションの解像度はパラメータごとのResolで指定する．
+		@SuppressWarnings("unused")
+		Date date = new Date();
 		int nIter = 1, sRatioResol = 10, mRatioResol = 1;
 		for (int k = 0; k < mRatioResol; k++) {
 			//double mRatio = k * 0.10;
@@ -55,7 +58,9 @@ public final class SimulationExecutor {
 			for (int j = 0; j < sRatioResol; j++) {
 				double sRatio = j * 0.10;
 				for (int i = 0; i < nIter; i++) {
+					//SilentMajoritySimulator rn = new SilentMajoritySimulator(String.valueOf(date.getTime()), "condition" + j + "-" + i, 500, sRatio, mRatio);
 					SilentMajoritySimulator rn = new SilentMajoritySimulator("condition" + j + "-" + i, 500, sRatio, mRatio);
+						//コンストラクト時に時刻を与えないと、"recent"以下に結果が上書き出力される。
 					SE.execute(rn);
 					SE.SimExecLogger.info("Submitted: " + rn.getInstanceName());
 				}

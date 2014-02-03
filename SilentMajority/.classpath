@@ -2,5 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="libs/jfreechart-1.0.17/lib/jcommon-1.0.21.jar" sourcepath="libs/jfreechart-1.0.17/source"/>
+	<classpathentry kind="lib" path="libs/jfreechart-1.0.17/lib/jfreechart-1.0.17-experimental.jar"/>
+	<classpathentry kind="lib" path="libs/jfreechart-1.0.17/lib/jfreechart-1.0.17-swt.jar" sourcepath="libs/jfreechart-1.0.17/source"/>
+	<classpathentry kind="lib" path="libs/jfreechart-1.0.17/lib/jfreechart-1.0.17.jar" sourcepath="libs/jfreechart-1.0.17/source"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
