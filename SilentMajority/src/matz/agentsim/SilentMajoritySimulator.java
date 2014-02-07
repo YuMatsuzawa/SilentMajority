@@ -20,6 +20,9 @@ public class SilentMajoritySimulator implements Runnable {
 	private final int MIX_PATTERN = 1;
 	private final int SPARSE_PATTERN = 2;
 	private int MAX_ITER = 20;
+	public final int SUM_INDEX = 0, UPDATE_INDEX = 1,
+			TOTAL_INDEX = 0, SILENT_INDEX = 1, VOCAL_INDEX = 2,
+			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_IDEX = 3;
 	private String timeStamp;
 	@SuppressWarnings("unused")
 	private static boolean DIRECTED = true;
@@ -36,9 +39,9 @@ public class SilentMajoritySimulator implements Runnable {
 			//run()内でロガーを初期化すれば、run()内のプロシージャを実行するthread(＝プールされているthreadのうちの一つ)の情報を取得できる
 		
 		this.TaskLogger.info("Start: "+this.getInstanceName());
-		try {
-			//main procedure calling bracket
-			//this.WordCount(new File(this.getDataDir(),"zarathustra.txt"));
+		try { // main procedure calling bracket
+			
+			//this.WordCount(new File(this.getDataDir(),"zarathustra.txt")); //test procedure
 			
 			//エージェント集合の配列を初期化する．
 			this.initInfoAgentsArray(this.getnAgents());
@@ -62,28 +65,31 @@ public class SilentMajoritySimulator implements Runnable {
 			bw.close();
 			
 			//情報伝播を試行する
-			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.nAgents;
+			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.getnAgents();
 			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, this.getInstanceName()+".csv"))));
-			//TODO 各ステップのsumRecordとupdateRecordをArrayListか何かに取り込んで、試行終了時点でさらに統計的な評価ができるよう準備する
+			Integer[][][][] records = new Integer[MAX_ITER][2][3][4];
 			//TODO 上と合わせて、jfreechartで画像自動出力＋何かサイレント率に依存しそうな統計指標を用意し、同条件での複数回試行を前提とした解析を準備する
 			while(iStable < 10 && cStep < MAX_ITER) {
 				//収束条件は意見変化のあったエージェントが全体の5%以下の状態が10ステップ継続するか、あるいは20ステップに到達するか。
 				
-				cStep++;
 				// 意見比率の追跡。全体、サイレント、ヴォーカルの順。
 				Integer[][] sumRecord = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 				for (InfoAgent agent : this.infoAgentsArray) {
 					Integer opinion = agent.forceGetOpinion();
 					if(opinion == null) opinion = 3;
-					sumRecord[0][opinion]++;
-					if(agent.isSilent()) sumRecord[1][opinion]++;
-					else sumRecord[2][opinion]++;
+					sumRecord[TOTAL_INDEX][opinion]++;
+					if(agent.isSilent()) sumRecord[SILENT_INDEX][opinion]++;
+					else sumRecord[VOCAL_INDEX][opinion]++;
 				}
 				//意見比率の書き込み。
+				for (int i = 0; i < 3; i++) {
+					for (int j = 0; j < 4; j++) rbw.write(sumRecord[i][j] + ",");
+					rbw.write(" ,");					
+				}/*
 				rbw.write(sumRecord[0][0]+","+sumRecord[0][1]+","+sumRecord[0][2]+","+sumRecord[0][3]+", ,"
 						+sumRecord[1][0]+","+sumRecord[1][1]+","+sumRecord[1][2]+","+sumRecord[1][3]+", ,"
 						+sumRecord[2][0]+","+sumRecord[2][1]+","+sumRecord[2][2]+","+sumRecord[2][3]);
-				rbw.write(", ,");
+				rbw.write(", ,");*/
 				
 				nUpdated = 0;
 				//updateの追跡。
@@ -98,31 +104,20 @@ public class SilentMajoritySimulator implements Runnable {
 						nUpdated++;
 						Integer updatedOpinion = agent.getTmpOpinion();
 						if(updatedOpinion == null) updatedOpinion = 3;
-						updateRecord[0][updatedOpinion]++;
-						if(agent.isSilent()) updateRecord[1][updatedOpinion]++;
-						else updateRecord[2][updatedOpinion]++;
+						updateRecord[TOTAL_INDEX][updatedOpinion]++;
+						if(agent.isSilent()) updateRecord[SILENT_INDEX][updatedOpinion]++;
+						else updateRecord[VOCAL_INDEX][updatedOpinion]++;
 					}
 				}
 				//update記録の書き込み
-				rbw.write(updateRecord[0][0]+","+updateRecord[0][1]+","+updateRecord[0][2]+","+updateRecord[0][3]+", ,"
-						+updateRecord[1][0]+","+updateRecord[1][1]+","+updateRecord[1][2]+","+updateRecord[1][3]+", ,"
-						+updateRecord[2][0]+","+updateRecord[2][1]+","+updateRecord[2][2]+","+updateRecord[2][3]);
+				for (int i = 0; i < 3; i++) {
+					for (int j = 0; j < 4; j++) rbw.write(updateRecord[i][j] + ",");
+					rbw.write(" ,");					
+				}
 				rbw.newLine();
-				
-/*				if (roll < this.getModelReferenceRatio()) { //こっちはなんかおかしい。各ステップごとにどちらかのパターンでの相互作用しかしなくなってる。
-					for (InfoAgent agent : this.infoAgentsArray) {
-						boolean isUpdated = agent.IndependentCascade(infoAgentsArray);
-						if (isUpdated) {
-							nUpdated++;
-							
-						}
-					}
-				} else {
-					for (InfoAgent agent : this.infoAgentsArray) {
-						boolean isUpdated = agent.LinearThreashold(infoAgentsArray);
-						if (isUpdated) nUpdated++;
-					}
-				}*/
+
+				records[cStep][SUM_INDEX] = sumRecord;
+				records[cStep][UPDATE_INDEX] = updateRecord;
 				
 				for (InfoAgent agent : this.infoAgentsArray) agent.applyOpinion(); //中間データを本適用する。
 				
@@ -131,6 +126,8 @@ public class SilentMajoritySimulator implements Runnable {
 				} else {
 					iStable = 0;
 				}
+
+				cStep++;
 			}
 			rbw.close();
 			
@@ -142,11 +139,6 @@ public class SilentMajoritySimulator implements Runnable {
 			this.closeLogFileHandler();
 		}
 	}
-	
-	
-
-	
-
 
 	/**情報エージェント配列を初期化する．この処理はrun()内で呼ばれるべきである（子スレッド内で処理されるべきである）．
 	 * @param nAgents
@@ -192,15 +184,10 @@ public class SilentMajoritySimulator implements Runnable {
 		return probability;
 	}
 
-
-
-
-
-
 	/**意見の初期値を与える．patternによって挙動が変わる．<br />
 	 * ・NULL_PATTERN（=0）の場合：全てnullにする．nullは意見未決定状態．<br />
 	 * ・MIX_PATTERN（=1)の場合：0,1,2のいずれかにする．<br />
-	 * ・SPARSE_PATTERN(=2)の場合：90%はNULL，10%はランダムで0.1.2のいずれかにする。
+	 * ・SPARSE_PATTERN(=2)の場合：90%はNULL，10%はランダムで0,1,2のいずれかにする。
 	 * @param pattern
 	 * @return
 	 */
