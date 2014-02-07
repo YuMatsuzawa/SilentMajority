@@ -37,9 +37,9 @@ public class FigGen {
 
 	    File file = new File("./chart.png");
 	    try {
-	      ChartUtilities.saveChartAsPNG(file, chart, 500, 500);
+	    	ChartUtilities.saveChartAsPNG(file, chart, 500, 500);
 	    } catch (IOException e) {
-	      e.printStackTrace();
+	    	e.printStackTrace();
 	    }
 	}
 

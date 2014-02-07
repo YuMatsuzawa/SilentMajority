@@ -22,7 +22,7 @@ public class SilentMajoritySimulator implements Runnable {
 	private int MAX_ITER = 20;
 	public final int SUM_INDEX = 0, UPDATE_INDEX = 1,
 			TOTAL_INDEX = 0, SILENT_INDEX = 1, VOCAL_INDEX = 2,
-			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_IDEX = 3;
+			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_INDEX = 3;
 	private String timeStamp;
 	@SuppressWarnings("unused")
 	private static boolean DIRECTED = true;
@@ -68,7 +68,7 @@ public class SilentMajoritySimulator implements Runnable {
 			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.getnAgents();
 			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, this.getInstanceName()+".csv"))));
 			Integer[][][][] records = new Integer[MAX_ITER][2][3][4];
-			//TODO 上と合わせて、jfreechartで画像自動出力＋何かサイレント率に依存しそうな統計指標を用意し、同条件での複数回試行を前提とした解析を準備する
+			//TODO 何かサイレント率に依存しそうな統計指標を探し、同条件での複数回試行を前提とした解析を準備する
 			while(iStable < 10 && cStep < MAX_ITER) {
 				//収束条件は意見変化のあったエージェントが全体の5%以下の状態が10ステップ継続するか、あるいは20ステップに到達するか。
 				
@@ -84,12 +84,8 @@ public class SilentMajoritySimulator implements Runnable {
 				//意見比率の書き込み。
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 4; j++) rbw.write(sumRecord[i][j] + ",");
-					rbw.write(" ,");					
-				}/*
-				rbw.write(sumRecord[0][0]+","+sumRecord[0][1]+","+sumRecord[0][2]+","+sumRecord[0][3]+", ,"
-						+sumRecord[1][0]+","+sumRecord[1][1]+","+sumRecord[1][2]+","+sumRecord[1][3]+", ,"
-						+sumRecord[2][0]+","+sumRecord[2][1]+","+sumRecord[2][2]+","+sumRecord[2][3]);
-				rbw.write(", ,");*/
+					rbw.write(" ,");
+				}
 				
 				nUpdated = 0;
 				//updateの追跡。
@@ -130,6 +126,12 @@ public class SilentMajoritySimulator implements Runnable {
 				cStep++;
 			}
 			rbw.close();
+			try {
+				AreaChartGenerator acg = new AreaChartGenerator(records);
+				acg.generateGraph(outDir, this.getInstanceName() + ".sum.png");
+			} catch (Exception e) {
+				this.logStackTrace(e);
+			}
 			
 			this.TaskLogger.info("Done.");
 		} catch (Exception e) {
@@ -345,16 +347,17 @@ public class SilentMajoritySimulator implements Runnable {
 		if (!logDir.isDirectory()) logDir.mkdirs();
 		
 		try {
+			ConsoleHandler ch = new ConsoleHandler();
+			ch.setFormatter(new ShortLogFormatter());
+			ch.setLevel(Level.WARNING);
+			this.TaskLogger.addHandler(ch);				//stderr
+			
 			FileHandler fh = new FileHandler(logDir + "/" + this.getTaskLogFileName(), true);
 			fh.setFormatter(new ShortLogFormatter());
 			fh.setLevel(Level.ALL);
-			this.TaskLogger.addHandler(fh);														//logfile
+			this.TaskLogger.addHandler(fh);				//logfile
 		} catch (Exception e) {
-			ConsoleHandler ch = new ConsoleHandler();
-			ch.setLevel(Level.WARNING);
-			ch.setFormatter(new ShortLogFormatter());
-			this.TaskLogger.addHandler(ch);
-			this.logStackTrace(e);
+			e.printStackTrace();
 		}
 	}
 	/**ロガーのファイルハンドラをクローズする．<br />
