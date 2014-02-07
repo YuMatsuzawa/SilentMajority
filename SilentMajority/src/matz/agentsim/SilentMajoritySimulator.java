@@ -19,7 +19,7 @@ public class SilentMajoritySimulator implements Runnable {
 	private final int NULL_PATTERN = 0;
 	private final int MIX_PATTERN = 1;
 	private final int SPARSE_PATTERN = 2;
-	private int MAX_ITER = 20;
+	private int MAX_ITER = 30;
 	public final int SUM_INDEX = 0, UPDATE_INDEX = 1,
 			TOTAL_INDEX = 0, SILENT_INDEX = 1, VOCAL_INDEX = 2,
 			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_INDEX = 3;
@@ -67,7 +67,8 @@ public class SilentMajoritySimulator implements Runnable {
 			//情報伝播を試行する
 			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.getnAgents();
 			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, this.getInstanceName()+".csv"))));
-			Integer[][][][] records = new Integer[MAX_ITER][2][3][4];
+			//Integer[][][][] records = new Integer[MAX_ITER][2][3][4];
+			ArrayList<Integer[][][]> records = new ArrayList<Integer[][][]>();
 			//TODO 何かサイレント率に依存しそうな統計指標を探し、同条件での複数回試行を前提とした解析を準備する
 			while(iStable < 10 && cStep < MAX_ITER) {
 				//収束条件は意見変化のあったエージェントが全体の5%以下の状態が10ステップ継続するか、あるいは20ステップに到達するか。
@@ -112,8 +113,10 @@ public class SilentMajoritySimulator implements Runnable {
 				}
 				rbw.newLine();
 
-				records[cStep][SUM_INDEX] = sumRecord;
-				records[cStep][UPDATE_INDEX] = updateRecord;
+				Integer[][][] tmpRecords = {sumRecord, updateRecord};
+				records.add(tmpRecords);
+//				records[cStep][SUM_INDEX] = sumRecord;
+//				records[cStep][UPDATE_INDEX] = updateRecord;
 				
 				for (InfoAgent agent : this.infoAgentsArray) agent.applyOpinion(); //中間データを本適用する。
 				
