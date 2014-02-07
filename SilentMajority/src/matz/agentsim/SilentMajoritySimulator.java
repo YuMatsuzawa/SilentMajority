@@ -343,7 +343,7 @@ public class SilentMajoritySimulator implements Runnable {
 	}
 	/**ロガーを初期化し、ファイルハンドラを設定する。<br />
 	 * ログファイルはアペンドする。
-	 * Runnableタスクのログは（数百以上に及ぶことのある）タスクごとではなく，（たかだかプロセッサ数*コア数に収まる）実行スレッドごとに取得したい．
+	 * Runnableタスクのログは（数百以上に及ぶことのある）タスクごとではなく，（たかだかプロセッサ数*コア数に収まる）実行スレッドごとに取得したい．<br />
 	 * そのために，initTaskLoggerはThread.currendThread（）を使用するので，Runnableオブジェクトのrun()メソッド内で実行されなければならない．
 	 */
 	private void initTaskLogger() {
