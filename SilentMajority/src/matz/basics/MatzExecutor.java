@@ -1,14 +1,20 @@
-package matz.agentsim;
+package matz.basics;
 
 import java.io.File;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.*;
 
-public final class SimulationExecutor {
+/**
+ * ExecutorServiceを使ってマルチスレッドでシミュレーション等を走らせるための抽象クラス。<br>
+ * 実際の処理内容をprocedure()メソッド内に定義して使用する。<br>
+ * 基本的にあまりOverrideせず、実装する際はprocedure内だけ定義すればいいようにつくること。
+ * @author Romancer
+ *
+ */
+public class MatzExecutor {
 
 	private int NumThreads;
 	/**ExecutorServiceが持つThread数のデフォルト値。Core i7以上を想定しているので8としている。
@@ -23,55 +29,11 @@ public final class SimulationExecutor {
 	/**SimulationExecutorのLogger。
 	 * @see java.util.logging.Logger
 	 */
-	private Logger SimExecLogger = null;
+	public Logger SimExecLogger = null;
 	private String SimExecLogFileName;
 	
-
-	
-	public static final void main(String[] args) {
-		SimulationExecutor SE = null;
-		
-		//引数はコア数のみ．Corei7以上なら8を指定していい．Corei5,i3,Core2 Quadなら4，Core2 Duoなら2.
-		if (args.length > 0) {
-			for (String arg : args) {
-				try {
-					int numThreads = Integer.parseInt(arg);
-					SE = new SimulationExecutor(numThreads);
-				} catch (NumberFormatException e) {
-					SE = new SimulationExecutor();
-				}
-			}
-		} else {
-			SE = new SimulationExecutor();
-		}
-		
-		SE.SimExecLogger.info("Starting Simulation Executor. NumThreads = " + SE.getNumThreads());
-		//パラメータを変更させながらシミュレーションするイテレータ．
-		//nIterは同一条件でのシミュレーションを何回ずつ行うか指定する．
-		//シミュレーションの解像度はパラメータごとのResolで指定する．
-		@SuppressWarnings("unused")
-		Date date = new Date();
-		int nIter = 1, sRatioResol = 10, mRatioResol = 1;
-		for (int k = 0; k < mRatioResol; k++) {
-			//double mRatio = k * 0.10;
-			double mRatio = 0.50;
-			for (int j = 0; j < sRatioResol; j++) {
-				double sRatio = j * 0.10;
-				for (int i = 0; i < nIter; i++) {
-					//SilentMajoritySimulator rn = new SilentMajoritySimulator(String.valueOf(date.getTime()), "condition" + j + "-" + i, 500, sRatio, mRatio);
-					SilentMajoritySimulator rn = new SilentMajoritySimulator("condition" + j + "-" + i, 500, sRatio, mRatio);
-						//コンストラクト時に時刻を与えないと、"recent"以下に結果が上書き出力される。
-					SE.execute(rn);
-					SE.SimExecLogger.info("Submitted: " + rn.getInstanceName());
-				}
-			}
-		}
-		
-		SE.safeShutdown();
-		SE.closeLogFileHandler();
-	}	
-	
-	/**ExecutorServiceのスレッド数を取得する．
+	/**
+	 * ExecutorServiceのスレッド数を取得する．
 	 * @return
 	 */
 	public int getNumThreads() {
@@ -99,13 +61,15 @@ public final class SimulationExecutor {
 		};
 		this.SimExecServ = Executors.newFixedThreadPool(this.getNumThreads(),tf);
 	}
-	/**RunnableタスクをSimulationExecutorのExecutorServiceに投入する．
+	/**
+	 * RunnableタスクをSimulationExecutorのExecutorServiceに投入する．
 	 * @param runnable
 	 */
 	public void execute(Runnable command) {
 		this.SimExecServ.execute(command);
 	}
-	/**RunnableタスクあるいはCallableオブジェクトを投入し，非同期計算の結果を取得するオブジェクトFutureを得る．
+	/**
+	 * RunnableタスクあるいはCallableオブジェクトを投入し，非同期計算の結果を取得するオブジェクトFutureを得る．
 	 * @param command
 	 * @return
 	 */
@@ -118,7 +82,7 @@ public final class SimulationExecutor {
 	 */
 	public void safeShutdown() {
 		this.SimExecServ.shutdown();
-		this.SimExecLogger.info("SimulationExecutor going to be terminated after all submitted tasks done.");
+		this.SimExecLogger.info(this.getClass().getName() + " going to be terminated after all submitted tasks done.");
 	}
 	/**SimulationExecutorのログファイル名を取得．
 	 * @return
@@ -133,7 +97,8 @@ public final class SimulationExecutor {
 		this.SimExecLogFileName = this.SimExecLogger.getName() + ".log";
 	}
 	
-	/**ロガーを初期化し、ファイルハンドラ・コンソールハンドラを設定する。<br />
+	/**
+	 * ロガーを初期化し、ファイルハンドラ・コンソールハンドラを設定する。<br>
 	 * ログファイルはアペンドする。
 	 */
 	private void initSimExecLogger() {
@@ -162,17 +127,17 @@ public final class SimulationExecutor {
 			this.logStackTrace(e);
 		}
 	}
-	/**ロガーのファイルハンドラをクローズする．<br />
+	/**ロガーのファイルハンドラをクローズする．<br>
 	 * この処理はlckファイルを掃除するために必要．
 	 * 
 	 */
-	private void closeLogFileHandler() {
+	public void closeLogFileHandler() {
 		for (Handler handler : this.SimExecLogger.getHandlers()) {
 			handler.flush();
 			handler.close();
 		}
 	}
-	/**例外をロガーに流すメソッド。<br />
+	/**例外をロガーに流すメソッド。<br>
 	 * SEVEREレベル（Fatalレベル）で出力される。
 	 * 
 	 * @param thrown
@@ -183,13 +148,13 @@ public final class SimulationExecutor {
 	/**デフォルトのスレッド数(8)でSimulationExecutorを初期化するコンストラクタ．
 	 * 
 	 */
-	public SimulationExecutor() {
+	public MatzExecutor() {
 		this(NumThreadsDefault);
 	}
 	/**指定したスレッド数でSimulationExecutorを初期化するコンストラクタ．
 	 * @param numThreads - int
 	 */
-	public SimulationExecutor(int numThreads) {
+	public MatzExecutor(int numThreads) {
 		try {
 			this.setNumThreads(numThreads);
 			this.initSimExecServ();

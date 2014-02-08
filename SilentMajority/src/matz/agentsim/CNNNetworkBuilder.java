@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import matz.basics.NetworkBuilder;
+
 /**InfoAgentクラスで作られたエージェント間にリンクを張り,その参照関係を各エージェントの持つリストに記録していく.
  * パラメータとして，あるタイムステップで「友達の友達」間にリンクを張るか,「全く無関係or遠い関係の二者」間に張るかの選択閾値を持つ．
  * @param infoAgentsArray
  */
-public class CNNModel implements InfoNetworkBuilder {
+public class CNNNetworkBuilder implements NetworkBuilder {
 	private double p_nn;
 	private static final double P_NN_DEFAULT = 0.666667;
 	private ArrayList<Integer[]> potentialLinks = new ArrayList<Integer[]>();
@@ -78,8 +80,8 @@ public class CNNModel implements InfoNetworkBuilder {
 
 		this.constructLink(newcomer, target, tmpAgentsArray);
 	}
-	/**targetとnewcomoerとの間にリンクを張り，生じるポテンシャルリンクを登録する.<br />
-	 * 二重登録がないよう細かくチェックする．<br />
+	/**targetとnewcomoerとの間にリンクを張り，生じるポテンシャルリンクを登録する.<br>
+	 * 二重登録がないよう細かくチェックする．<br>
 	 * 互いのインデックスを一度に互いの隣接リストに漏れ無く登録するので，このメソッドを引数を逆にして二度呼ぶ必要はないし，呼んではならない．
 	 * @param newcomer
 	 * @param target
@@ -91,7 +93,7 @@ public class CNNModel implements InfoNetworkBuilder {
 		safeAppendPotentialLink(newcomer,target,tmpAgentsArray);
 		safeAppendPotentialLink(target,newcomer,tmpAgentsArray);
 	}
-	/**重複がないよう確認しながらポテンシャルリンクを追加する．<br />
+	/**重複がないよう確認しながらポテンシャルリンクを追加する．<br>
 	 * 自分からみた際のポテンシャルリンクを登録するために一度，相手から見た際のポテンシャルリンクを登録するためにインデックス引数を逆にしてもう一度呼ぶ必要がある．
 	 * @param newcomer
 	 * @param target
@@ -118,23 +120,23 @@ public class CNNModel implements InfoNetworkBuilder {
 	 * 
 	 * @param infoAgentsArray
 	 */
-	public CNNModel(double p_nn, boolean isDirected) {
+	public CNNNetworkBuilder(double p_nn, boolean isDirected) {
 		this.setP_nn(p_nn);
 		this.setOrientation(isDirected);
 	}
 
-	/**指向性を与えてネットワークをコンストラクト．<br />
+	/**指向性を与えてネットワークをコンストラクト．<br>
 	 * 2/3の確率で「友達の友達」，1/3の確率でそれ以外をリンクする．
 	 */
-	public CNNModel(boolean isDirected) {
+	public CNNNetworkBuilder(boolean isDirected) {
 		this.setP_nn(P_NN_DEFAULT);
 		this.setOrientation(UNDIRECTED);
 	}
 
-	/**デフォルトの確率パラメータで無向ネットワークをコンストラクト．<br />
+	/**デフォルトの確率パラメータで無向ネットワークをコンストラクト．<br>
 	 * 2/3の確率で「友達の友達」，1/3の確率でそれ以外をリンクする．
 	 */
-	public CNNModel() {
+	public CNNNetworkBuilder() {
 		this.setP_nn(P_NN_DEFAULT);
 		this.setOrientation(UNDIRECTED);
 	}

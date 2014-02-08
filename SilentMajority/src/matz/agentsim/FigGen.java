@@ -9,7 +9,9 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.data.general.DefaultPieDataset;
 
-/**JFreeChartを用いたグラフ生成のサンプル。<br />
+/**
+ * JFreeChartを用いたグラフ生成のサンプル。<br>
+ * 単体で動作するのでeclipse等でのテスト・デバッグ時は起動構成を作成すること。<br>
  * JFreeChartのライブラリはlibs以下に収めてある。
  * @author Yu
  *

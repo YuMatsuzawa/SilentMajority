@@ -4,7 +4,9 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 
-public class SilentMajoritySimulator implements Runnable {
+import matz.basics.ShortLogFormatter;
+
+public class SimulationTask implements Runnable {
 
 	private String InstanceName;
 	private int nAgents;
@@ -46,7 +48,7 @@ public class SilentMajoritySimulator implements Runnable {
 			//エージェント集合の配列を初期化する．
 			this.initInfoAgentsArray(this.getnAgents());
 			//ネットワークを生成する．
-			CNNModel ntwk = new CNNModel();
+			CNNNetworkBuilder ntwk = new CNNNetworkBuilder();
 			this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
 			//ネットワーク確定後、次数に依存する確率分布に従い、エージェントをサイレントにする。
 			this.muzzleAgents();
@@ -141,7 +143,7 @@ public class SilentMajoritySimulator implements Runnable {
 				this.logStackTrace(e);
 			}
 			
-			this.TaskLogger.info("Done.");
+			this.TaskLogger.info("Done: " + this.getInstanceName());
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.logStackTrace(e);
@@ -162,8 +164,8 @@ public class SilentMajoritySimulator implements Runnable {
 		}
 		
 	}
-	/**次数に依存する確率分布に従い、エージェントをサイレントにする。<br />
-	 * 無向グラフならgetDegree()で次数を取れる。getnFollowed()でも取ってくる数値は同じだが。<br />
+	/**次数に依存する確率分布に従い、エージェントをサイレントにする。<br>
+	 * 無向グラフならgetDegree()で次数を取れる。getnFollowed()でも取ってくる数値は同じだが。<br>
 	 * 有向グラフなら多くの参照を集めるエージェントがハブと考えられるので、getnFollowed()を使う。
 	 */
 	@SuppressWarnings("unused")
@@ -180,8 +182,9 @@ public class SilentMajoritySimulator implements Runnable {
 		}
 	}
 
-	/**次数に依存するサイレント性の確率分布関数。<br />
-	 * 引数は離散値の次数なのでProbability Distribution Function(PDF)。Probability Mass Function(PMF)とも言える。<br />
+	/**
+	 * 次数に依存するサイレント性の確率分布関数。<br>
+	 * 引数は離散値の次数なのでProbability Distribution Function(PDF)。Probability Mass Function(PMF)とも言える。<br>
 	 * @param degree 次数
 	 * @return
 	 */
@@ -194,9 +197,9 @@ public class SilentMajoritySimulator implements Runnable {
 		return probability;
 	}
 
-	/**意見の初期値を与える．patternによって挙動が変わる．<br />
-	 * ・NULL_PATTERN（=0）の場合：全てnullにする．nullは意見未決定状態．<br />
-	 * ・MIX_PATTERN（=1)の場合：0,1,2のいずれかにする．<br />
+	/**意見の初期値を与える．patternによって挙動が変わる．<br>
+	 * ・NULL_PATTERN（=0）の場合：全てnullにする．nullは意見未決定状態．<br>
+	 * ・MIX_PATTERN（=1)の場合：0,1,2のいずれかにする．<br>
 	 * ・SPARSE_PATTERN(=2)の場合：90%はNULL，10%はランダムで0,1,2のいずれかにする。
 	 * @param pattern
 	 * @return
@@ -221,7 +224,7 @@ public class SilentMajoritySimulator implements Runnable {
 	 * 
 	 * @param instanceName - 名前
 	 */
-	public SilentMajoritySimulator(Object instanceName) {
+	public SimulationTask(Object instanceName) {
 		this("recent", instanceName, NAGENTS_DEFAUT, Math.random(),Math.random());
 	}
 	
@@ -232,7 +235,7 @@ public class SilentMajoritySimulator implements Runnable {
 	 * @param silentAgentsRatio
 	 * @param modelReferenceRatio
 	 */
-	public SilentMajoritySimulator(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
+	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
 		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio);
 	}
 	
@@ -244,7 +247,7 @@ public class SilentMajoritySimulator implements Runnable {
 	 * @param silentAgentsRatio - サイレント率
 	 * @param modelReferenceRatio - モデル選択比
 	 */
-	public SilentMajoritySimulator(String timeStamp, Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
+	public SimulationTask(String timeStamp, Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
 		try {
 			this.setTimeStamp(timeStamp);
 			this.setInstanceName(instanceName);
@@ -338,9 +341,9 @@ public class SilentMajoritySimulator implements Runnable {
 	public void setTaskLogFileName() {
 		this.TaskLogFileName = this.TaskLogger.getName() + ".log";
 	}
-	/**ロガーを初期化し、ファイルハンドラを設定する。<br />
+	/**ロガーを初期化し、ファイルハンドラを設定する。<br>
 	 * ログファイルはアペンドする。
-	 * Runnableタスクのログは（数百以上に及ぶことのある）タスクごとではなく，（たかだかプロセッサ数*コア数に収まる）実行スレッドごとに取得したい．<br />
+	 * Runnableタスクのログは（数百以上に及ぶことのある）タスクごとではなく，（たかだかプロセッサ数*コア数に収まる）実行スレッドごとに取得したい．<br>
 	 * そのために，initTaskLoggerはThread.currendThread（）を使用するので，Runnableオブジェクトのrun()メソッド内で実行されなければならない．
 	 */
 	private void initTaskLogger() {
@@ -368,7 +371,7 @@ public class SilentMajoritySimulator implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	/**ロガーのファイルハンドラをクローズする．<br />
+	/**ロガーのファイルハンドラをクローズする．<br>
 	 * この処理はlckファイルを掃除するために必要．
 	 * 
 	 */
@@ -378,7 +381,7 @@ public class SilentMajoritySimulator implements Runnable {
 			handler.close();
 		}
 	}
-	/**例外をロガーに流すメソッド。<br />
+	/**例外をロガーに流すメソッド。<br>
 	 * SEVEREレベル（Fatalレベル）で出力される。
 	 * 
 	 * @param thrown
@@ -402,9 +405,9 @@ public class SilentMajoritySimulator implements Runnable {
 	
 	
 	
-	/**並列タスク処理のテスト用のメソッド．<br />
-	 * 適当なテキストファイルを入力とし，単語の出現数を数え上げる．<br />
-	 * HashMapとString．splitを使い，最後にArrayListとCollection．sortで並び替える．<br />
+	/**並列タスク処理のテスト用のメソッド．<br>
+	 * 適当なテキストファイルを入力とし，単語の出現数を数え上げる．<br>
+	 * HashMapとString．splitを使い，最後にArrayListとCollection．sortで並び替える．<br>
 	 * @param input
 	 * @throws IOException 
 	 */

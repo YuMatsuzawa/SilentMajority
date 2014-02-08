@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import matz.basics.ChartGenerator;
+
 import org.jfree.chart.*;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -24,7 +26,7 @@ public class LineChartGenerator implements ChartGenerator {
 	private String[] opinionType = {"Neutral", "Positive", "Negative", "Undecided"};
 	
 	/**
-	 * SilentMajoritySimulatorの結果を用いたコンストラクタ。<br />
+	 * SilentMajoritySimulatorの結果を用いたコンストラクタ。<br>
 	 * 4次元Integer配列を引数に取る。それぞれの次元は、「ステップ数」「記録の種類（累積/更新）」「記録のスコープ（全体/サイレント/ヴォーカル）」「意見（中立/肯定/否定/未定義）」である。
 	 * 
 	 * @param records

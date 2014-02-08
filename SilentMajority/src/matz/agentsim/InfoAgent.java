@@ -10,15 +10,15 @@ public class InfoAgent {
 	private ArrayList<Integer> followedList;
 	private boolean isSilent = false;
 	private Integer tmpOpinion;
-	/**抽象的な意見（情報）を表す状態変数．<br />
+	/**抽象的な意見（情報）を表す状態変数．<br>
 	 * プリミティブintではなくラッパ型のIntegerにしておき，nullを使えるようにする．
 	 */
 	private Integer opinion;
 	private double influence = Math.random();
 	private double threshold = 0.5;
 	
-	/**自分が中立的・あるいは未定義の状態にあるとき，肯定的・否定的問わず何らかの先進的意見に触れると，それに影響される．<br />
-	 * 影響を受けるか否かは，相手の影響力の強さによる．<br />
+	/**自分が中立的・あるいは未定義の状態にあるとき，肯定的・否定的問わず何らかの先進的意見に触れると，それに影響される．<br>
+	 * 影響を受けるか否かは，相手の影響力の強さによる．<br>
 	 * 隣接リストにいる人を順に参照していき、ヴォーカルな人の中で最も影響力の高い人から影響される。
 	 * @return 変化があったらtrue
 	 */
@@ -27,15 +27,18 @@ public class InfoAgent {
 
 		Integer preOp = this.forceGetOpinion();
 		Integer tmpOp = this.forceGetOpinion();
-		double influence = -1;
+		double topInfluence = -1;
 		for (Object neighbor : this.getUndirectedList()) {
 			Integer neighborOp = infoAgentsArray[(Integer) neighbor].getOpinion();
 			double neighborInfluence = infoAgentsArray[(Integer) neighbor].getInfluence();
+				//サイレントエージェントのinfluenceは-1と返ってくる。
 			try {
-				if (preOp == null || neighborOp > preOp) {
-					if (neighborInfluence > influence) {
+				if (preOp == null || preOp == 0) {
+					if (neighborInfluence > topInfluence && neighborOp > 0) { //ここで、相手がサイレントなら不適
 						tmpOp = neighborOp;
-						influence = neighborInfluence;
+						topInfluence = neighborInfluence;
+					} else {
+						continue;
 					}
 				}
 			} catch(Exception e) {
@@ -177,7 +180,7 @@ public class InfoAgent {
 	}
 
 	
-	/**リンクが対称であるような無向ネットワークの場合は参照リストと被参照リストどちらにも同時に追加されるので，そのためのメソッド．<br />
+	/**リンクが対称であるような無向ネットワークの場合は参照リストと被参照リストどちらにも同時に追加されるので，そのためのメソッド．<br>
 	 * 
 	 * @param index
 	 */
@@ -185,7 +188,7 @@ public class InfoAgent {
 		this.appendFollowedList(index);
 		this.appendFollowingList(index);
 	}
-	/**リンクが対称であるような無向ネットワークの場合のリスト取得メソッド．<br />
+	/**リンクが対称であるような無向ネットワークの場合のリスト取得メソッド．<br>
 	 * 追加時に両方に追加されているはずなので，どちらか取ってくればいい．
 	 * @param nameOrIndex
 	 */
@@ -193,7 +196,7 @@ public class InfoAgent {
 		return this.getFollowedList();
 	}
 	
-	/**Collection.sortを用いて，2つのリストをソートする．<br />
+	/**Collection.sortを用いて，2つのリストをソートする．<br>
 	 * ネットワーク生成の検証用であり，実際のシミュレーションでは呼ぶ必要はない．
 	 * 
 	 */
@@ -224,7 +227,7 @@ public class InfoAgent {
 	}
 	
 	
-	/**情報エージェントがサイレントであればtrue，ヴォーカルであればfalseを返す<br />
+	/**情報エージェントがサイレントであればtrue，ヴォーカルであればfalseを返す<br>
 	 * デフォルトはfalse
 	 * @return isSilent
 	 */
@@ -241,7 +244,7 @@ public class InfoAgent {
 	public void unmuzzle() {
 		this.isSilent = false;
 	}
-	/**情報エージェントの現在の意見を取得する。<br />
+	/**情報エージェントの現在の意見を取得する。<br>
 	 * エージェントがサイレントである場合は取得できない。null値を返す
 	 * @return opinion
 	 */
@@ -269,7 +272,7 @@ public class InfoAgent {
 	 * @return influence
 	 */
 	public double getInfluence() {
-		return influence;
+		return (this.isSilent())? -1 : this.influence;
 	}
 
 	/**
