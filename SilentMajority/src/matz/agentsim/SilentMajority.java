@@ -42,6 +42,8 @@ public final class SilentMajority {
 		Date date = new Date();
 		int nIter = 1, sRatioResol = 10, mRatioResol = 1;
 		int nAgents = 500;
+		//TODO ここでネットワーク生成
+		//TODO 小西流の、エージェントの外に置いて、使用時に参照できる共有ネットワークマップを生成するクラスを実装（StaticNetworkにインターフェースも作る）
 		for (int k = 0; k < mRatioResol; k++) {
 			//double mRatio = k * 0.10;
 			double mRatio = 0.50;
@@ -52,7 +54,6 @@ public final class SilentMajority {
 					SimulationTask rn = new SimulationTask("condition" + j + "-" + i, nAgents, sRatio, mRatio);
 						//コンストラクト時に時刻を与えないと、"recent"以下に結果が上書き出力される。
 					_E.execute(rn);
-					//TODO ここでエージェントを初期化・ネットワーク生成
 					_E.SimExecLogger.info("Submitted: " + rn.getInstanceName());
 				}
 			}

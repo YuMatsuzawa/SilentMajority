@@ -120,8 +120,6 @@ public class SimulationTask implements Runnable {
 
 				Integer[][][] tmpRecords = {sumRecord, updateRecord};
 				records.add(tmpRecords);
-//				records[cStep][SUM_INDEX] = sumRecord;
-//				records[cStep][UPDATE_INDEX] = updateRecord;
 				
 				for (InfoAgent agent : this.infoAgentsArray) agent.applyOpinion(); //中間データを本適用する。
 				
@@ -189,7 +187,7 @@ public class SimulationTask implements Runnable {
 	 * @return
 	 */
 	private double silentPDF(int degree) {
-		// TODO 実装
+		// TODO サイレントになる確率の分布を実装
 		double probability = 0.0;
 		if (degree < 10) {
 			probability = this.getSilentAgentsRatio();
@@ -197,7 +195,9 @@ public class SimulationTask implements Runnable {
 		return probability;
 	}
 
-	/**意見の初期値を与える．patternによって挙動が変わる．<br>
+	//TODO 情報の出所が次数の高いユーザの場合、低いユーザの場合、という初期状態の傾向の違いが考えられるので、それを盛り込む。
+	/**
+	 * 意見の初期値を与える．patternによって挙動が変わる．<br>
 	 * ・NULL_PATTERN（=0）の場合：全てnullにする．nullは意見未決定状態．<br>
 	 * ・MIX_PATTERN（=1)の場合：0,1,2のいずれかにする．<br>
 	 * ・SPARSE_PATTERN(=2)の場合：90%はNULL，10%はランダムで0,1,2のいずれかにする。
