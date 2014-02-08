@@ -18,29 +18,33 @@ public class InfoAgent {
 	private double threshold = 0.5;
 	
 	/**自分が中立的・あるいは未定義の状態にあるとき，肯定的・否定的問わず何らかの先進的意見に触れると，それに影響される．<br />
-	 * 影響を受けるか否かは，相手の影響力の強さによる．
+	 * 影響を受けるか否かは，相手の影響力の強さによる．<br />
+	 * 隣接リストにいる人を順に参照していき、ヴォーカルな人の中で最も影響力の高い人から影響される。
 	 * @return 変化があったらtrue
 	 */
 	public boolean IndependentCascade(InfoAgent[] infoAgentsArray) {
 		if (!(this.getOpinion() == null || this.getOpinion() == 0)) return false;
 
+		Integer preOp = this.forceGetOpinion();
 		Integer tmpOp = this.forceGetOpinion();
+		double influence = -1;
 		for (Object neighbor : this.getUndirectedList()) {
-			double influence = -1;
+			Integer neighborOp = infoAgentsArray[(Integer) neighbor].getOpinion();
+			double neighborInfluence = infoAgentsArray[(Integer) neighbor].getInfluence();
 			try {
-				if (this.getOpinion() == null || infoAgentsArray[(Integer) neighbor].getOpinion() > this.getOpinion()) {
-					if (infoAgentsArray[(Integer) neighbor].getInfluence() > influence) {
-						tmpOp = infoAgentsArray[(Integer) neighbor].getOpinion();
-						influence = infoAgentsArray[(Integer) neighbor].getInfluence();
+				if (preOp == null || neighborOp > preOp) {
+					if (neighborInfluence > influence) {
+						tmpOp = neighborOp;
+						influence = neighborInfluence;
 					}
 				}
 			} catch(Exception e) {
-				//このExecptionが、サイレントエージェントを参照した時のものである（getOpinionがNullを返してくるので比較時に例外）
+				//このExecptionが、サイレントエージェントを参照した時のものである（getOpinionがNullを返してくるのでneighborOpとpreOpの比較時に例外）
 				continue;
 			}
 		}
 		this.setTmpOpinion(tmpOp);
-		if (this.tmpOpinion != this.getOpinion()) return true;
+		if (this.getTmpOpinion() != preOp) return true;
 		return false;
 	}
 
@@ -49,6 +53,7 @@ public class InfoAgent {
 	 * @return
 	 */
 	public boolean LinearThreashold(InfoAgent[] infoAgentsArray) {
+		Integer preOp = this.forceGetOpinion();
 		Integer tmpOp = this.forceGetOpinion();
 		
 		int sum = 0;
@@ -65,7 +70,7 @@ public class InfoAgent {
 			if (opinions[opIndex] / sum > this.threshold) tmpOp = opIndex;
 		}
 		this.setTmpOpinion(tmpOp);
-		if (this.tmpOpinion != this.getOpinion()) return true;
+		if (this.getTmpOpinion() != preOp) return true;
 		return false;
 	}
 	

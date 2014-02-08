@@ -19,13 +19,12 @@ import org.jfree.data.xy.XYSeries;
  * @author Yu
  *
  */
-public class AreaChartGenerator {
+public class AreaChartGenerator implements ChartGenerator {
 	
 	public final int SUM_INDEX = 0, UPDATE_INDEX = 1,
 			TOTAL_INDEX = 0, SILENT_INDEX = 1, VOCAL_INDEX = 2,
 			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_INDEX = 3;
 	private JFreeChart stackedAreaChart = null;
-	//private CombinedRangeXYPlot combinedPlot = new CombinedRangeXYPlot();
 	private CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
 	@SuppressWarnings("unused")
 	private String[] scopeType = {"Total", "Silent", "Vocal"};
@@ -93,8 +92,8 @@ public class AreaChartGenerator {
 		
 	}
 	
+	@Override
 	public void generateGraph(File outDir, String outFile) throws IOException {
 		ChartUtilities.saveChartAsPNG(new File(outDir, outFile), this.stackedAreaChart, 300, 600);
-		
 	}
 }

@@ -92,7 +92,10 @@ public class SilentMajoritySimulator implements Runnable {
 				//updateの追跡。
 				Integer[][] updateRecord = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 				double roll = this.localRNG.nextDouble();
-				//全エージェントについて、モデルに基づく相互作用を実行
+				/*
+				 * 全エージェントについて、モデルに基づく相互作用を実行
+				 * 
+				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
 					boolean isUpdated = (roll < this.getModelReferenceRatio())? //モデル選択比を閾値として確率選択している。
 							agent.IndependentCascade(infoAgentsArray)
@@ -132,6 +135,8 @@ public class SilentMajoritySimulator implements Runnable {
 			try {
 				AreaChartGenerator acg = new AreaChartGenerator(records);
 				acg.generateGraph(outDir, this.getInstanceName() + ".sum.png");
+				LineChartGenerator lcg = new LineChartGenerator(records);
+				lcg.generateGraph(outDir, this.getInstanceName() + ".update.png");
 			} catch (Exception e) {
 				this.logStackTrace(e);
 			}
