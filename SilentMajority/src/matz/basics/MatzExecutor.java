@@ -8,9 +8,25 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.*;
 
 /**
- * ExecutorServiceを使ってマルチスレッドでシミュレーション等を走らせるための抽象クラス。<br>
- * 実際の処理内容をprocedure()メソッド内に定義して使用する。<br>
- * 基本的にあまりOverrideせず、実装する際はprocedure内だけ定義すればいいようにつくること。
+ * ExecutorServiceを使ってマルチスレッドでシミュレーション等を走らせるためのクラス。<br>
+ * シミュレーション等、個別のプロジェクトごとにmainメソッドをホストするエントリポイントクラスを作り、<br>
+ * そのmainの中でインスタンス化して使用する。<br>
+ * 個別の処理内容はRunnable（Callable）を実装したタスククラスを定義し、それをインスタンス化して投入する。<br>
+ * 以下スニペット：<br>
+ * <br>
+ * <code>
+ * public class MySimulation {<br>
+ * <br>
+ * public static main (String[] args) {<br>
+ * 	<strong>MatzExecutor _E = new MatzExecutor()</strong>;<br>
+ *  RunnableTask rt = new RunnableTask(); //Runnableを実装したタスク<br>
+ *  <br>
+ *  _E.execute(rt);<br>
+ *  <br>
+ *  _E.safeShutdown();<br>
+ * }<br>
+ * }</code>
+ * 
  * @author Romancer
  *
  */
@@ -21,12 +37,12 @@ public class MatzExecutor {
 	 * デフォルト値なのでStatic。
 	 */
 	private static int NumThreadsDefault = 8;
-	/**SimulationExecutorの基幹となるスレッドプールを保持するExecutorService.
+	/**MatzExecutorの基幹となるスレッドプールを保持するExecutorService.
 	 * @see java.util.concurrent.ExecutorService
 	 * 
 	 */
 	private ExecutorService SimExecServ;
-	/**SimulationExecutorのLogger。
+	/**MatzExecutorのロガー。
 	 * @see java.util.logging.Logger
 	 */
 	public Logger SimExecLogger = null;
@@ -62,7 +78,7 @@ public class MatzExecutor {
 		this.SimExecServ = Executors.newFixedThreadPool(this.getNumThreads(),tf);
 	}
 	/**
-	 * RunnableタスクをSimulationExecutorのExecutorServiceに投入する．
+	 * RunnableタスクをExecutorServiceに投入する．
 	 * @param runnable
 	 */
 	public void execute(Runnable command) {
@@ -83,14 +99,15 @@ public class MatzExecutor {
 	public void safeShutdown() {
 		this.SimExecServ.shutdown();
 		this.SimExecLogger.info(this.getClass().getName() + " going to be terminated after all submitted tasks done.");
+		this.closeLogFileHandler();
 	}
-	/**SimulationExecutorのログファイル名を取得．
+	/**ログファイル名を取得．
 	 * @return
 	 */
 	public String getSimExecLogFileName() {
 		return this.SimExecLogFileName;
 	}
-	/**SimulationExecutorのログファイル名をロガーの名前から設定．
+	/**ログファイル名をロガーの名前から設定．
 	 * @param simExecLogFileName
 	 */
 	public void setSimExecLogFileName() {
@@ -131,7 +148,7 @@ public class MatzExecutor {
 	 * この処理はlckファイルを掃除するために必要．
 	 * 
 	 */
-	public void closeLogFileHandler() {
+	private void closeLogFileHandler() {
 		for (Handler handler : this.SimExecLogger.getHandlers()) {
 			handler.flush();
 			handler.close();
@@ -145,13 +162,13 @@ public class MatzExecutor {
 	public void logStackTrace(Throwable thrown) {
 		this.SimExecLogger.log(Level.SEVERE, thrown.getLocalizedMessage(), thrown);
 	}
-	/**デフォルトのスレッド数(8)でSimulationExecutorを初期化するコンストラクタ．
+	/**デフォルトのスレッド数(8)で初期化するコンストラクタ．
 	 * 
 	 */
 	public MatzExecutor() {
 		this(NumThreadsDefault);
 	}
-	/**指定したスレッド数でSimulationExecutorを初期化するコンストラクタ．
+	/**指定したスレッド数で初期化するコンストラクタ．
 	 * @param numThreads - int
 	 */
 	public MatzExecutor(int numThreads) {

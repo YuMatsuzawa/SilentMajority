@@ -60,6 +60,5 @@ public final class SilentMajority {
 		}
 		
 		_E.safeShutdown();
-		_E.closeLogFileHandler();
 	}
 }
