@@ -5,9 +5,9 @@ import java.util.ArrayList;
 /**
  * 外部から参照可能な静的ネットワークマップを生成し，保持するクラス．<br>
  * エージェント数をintで与えてコンストラクトする．<br>
- * ネットワークマップを生成するbuild(int)メソッドを実装する．<br>
- * ネットワークマップはArrayListで管理する．<br>
- * ArrayListからは以下のgetterで値やリストを取得できる．<br>
+ * ネットワークマップを生成するbuild()メソッドを実装する．<br>
+ * ネットワークマップはArrayListの配列で管理する．<br>
+ * ArrayListの配列から以下のgetterで値やリストを取得できる．<br>
  * getUndirectedListOf(int),getFollowedListOf(int),getFollowingListOf(int),<br>
  * getDegreeOf(int),getnFollowedOf(int),getnFollowingOf(int)
  * @author Matsuzawa
@@ -18,6 +18,7 @@ public abstract class StaticNetwork {
 	static int FOLLOWING_INDEX = 0, FOLLOWED_INDEX = 1;
 	
 	private ArrayList<Integer> networkList[][] = null;
+		// 総称型の配列なので扱いに注意する．意味論的に使いやすいのでこうしているが，本来あまりやらないほうがいいらしい
 	
 	public abstract void build();
 	
@@ -25,7 +26,9 @@ public abstract class StaticNetwork {
 	 * エージェント数を与えるコンストラクタ.エージェント数を与えないコンストラクタはない.
 	 * @param nAgents
 	 */
+	@SuppressWarnings("unchecked")
 	public StaticNetwork(int nAgents) {
+		networkList = new ArrayList[nAgents][2];
 		for (int i = 0; i < nAgents; i++) {
 			for (int j = 0; j < 2; j++) networkList[i][j] = new ArrayList<Integer>();
 		}
