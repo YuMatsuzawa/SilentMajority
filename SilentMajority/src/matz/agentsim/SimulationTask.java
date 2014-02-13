@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.logging.*;
 
 import matz.basics.ShortLogFormatter;
+import matz.basics.StaticNetwork;
 
 public class SimulationTask implements Runnable {
 
@@ -26,6 +27,7 @@ public class SimulationTask implements Runnable {
 			TOTAL_INDEX = 0, SILENT_INDEX = 1, VOCAL_INDEX = 2,
 			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_INDEX = 3;
 	private String timeStamp;
+	private StaticNetwork refNetwork = null;
 	@SuppressWarnings("unused")
 	private static boolean DIRECTED = true;
 	@SuppressWarnings("unused")
@@ -46,10 +48,13 @@ public class SimulationTask implements Runnable {
 			//this.WordCount(new File(this.getDataDir(),"zarathustra.txt")); //test procedure
 			
 			//エージェント集合の配列を初期化する．
-			this.initInfoAgentsArray(this.getnAgents());
-			//ネットワークを生成する．
-			CNNNetworkBuilder ntwk = new CNNNetworkBuilder();
-			this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
+			//refNetworkフィールドは、静的ネットワークが与えられているならそのインスタンスが、与えられていないならnullが入っている。
+			this.initInfoAgentsArray(this.getnAgents(), this.refNetwork);
+			if (this.refNetwork == null) {
+				//静的ネットワークを使わないなら、シミュレーション個別のネットワークを生成する．
+				CNNNetworkBuilder ntwk = new CNNNetworkBuilder();
+				this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
+			}
 			//ネットワーク確定後、次数に依存する確率分布に従い、エージェントをサイレントにする。
 			this.muzzleAgents();
 			
@@ -153,15 +158,16 @@ public class SimulationTask implements Runnable {
 	/**情報エージェント配列を初期化する．この処理はrun()内で呼ばれるべきである（子スレッド内で処理されるべきである）．
 	 * @param nAgents
 	 */
-	private void initInfoAgentsArray(int nAgents) {
+	private void initInfoAgentsArray(int nAgents, StaticNetwork ntwk) {
 		this.infoAgentsArray= new InfoAgent[nAgents];
 		for (int index = 0; index < nAgents; index++) {
-			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(this.SPARSE_PATTERN));
+			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(this.SPARSE_PATTERN), ntwk);
 			if (this.localRNG.nextDouble() < this.getSilentAgentsRatio()) this.infoAgentsArray[index].muzzle();
 				//初期状態では単純にランダムで指定割合のエージェントをサイレントにしておく。
 		}
 		
 	}
+	
 	/**次数に依存する確率分布に従い、エージェントをサイレントにする。<br>
 	 * 無向グラフならgetDegree()で次数を取れる。getnFollowed()でも取ってくる数値は同じだが。<br>
 	 * 有向グラフなら多くの参照を集めるエージェントがハブと考えられるので、getnFollowed()を使う。
@@ -225,20 +231,31 @@ public class SimulationTask implements Runnable {
 	 * @param instanceName - 名前
 	 */
 	public SimulationTask(Object instanceName) {
-		this("recent", instanceName, NAGENTS_DEFAUT, Math.random(),Math.random());
+		this("recent", instanceName, NAGENTS_DEFAUT, Math.random(),Math.random(), null);
 	}
 	
-	/**タイムスタンプを与えずに初期化するコンストラクタ。ディレクトリ結果は"recent"以下に出力される。
-	 * 
+	/**
+	 * タイムスタンプを与えずに初期化するコンストラクタ。ネットワークは個別に生成する。結果は"recent"以下に出力される。
 	 * @param instanceName
 	 * @param nAgents
 	 * @param silentAgentsRatio
 	 * @param modelReferenceRatio
 	 */
 	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
-		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio);
+		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, null);
 	}
 	
+	/**
+	 * タイムスタンプを与えずに初期化するコンストラクタ。静的ネットワークを与える。結果は"recent"以下に出力される。
+	 * @param instanceName
+	 * @param nAgents
+	 * @param silentAgentsRatio
+	 * @param modelReferenceRatio
+	 * @param ntwk
+	 */
+	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, StaticNetwork ntwk) {
+		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, ntwk);
+	}
 	/**基本コンストラクタ。
 	 * 
 	 * @param timeStamp - シミュレーション全体の識別のために与えるExectorServiceが起動した時刻。
@@ -246,14 +263,16 @@ public class SimulationTask implements Runnable {
 	 * @param nAgents - エージェント数
 	 * @param silentAgentsRatio - サイレント率
 	 * @param modelReferenceRatio - モデル選択比
+	 * @param ntwk - ネットワークインスタンス
 	 */
-	public SimulationTask(String timeStamp, Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
+	public SimulationTask(String timeStamp, Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, StaticNetwork ntwk) {
 		try {
 			this.setTimeStamp(timeStamp);
 			this.setInstanceName(instanceName);
 			this.setnAgents(nAgents);
 			this.setSilentAgentsRatio(silentAgentsRatio);
 			this.setModelReferenceRatio(modelReferenceRatio);
+			this.refNetwork  = (ntwk == null)? null : ntwk;
 			//initTaskLogger();
 		} catch (Exception e) {
 			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．

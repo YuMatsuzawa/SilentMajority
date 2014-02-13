@@ -1,8 +1,10 @@
 package matz.agentsim;
 
+import java.io.File;
 import java.util.Date;
 
 import matz.basics.MatzExecutor;
+import matz.basics.StaticNetwork;
 
 /**
  * 情報伝播ネットワークにおけるサイレント・ユーザの影響を分析するシミュレーション。<br>
@@ -40,10 +42,12 @@ public final class SilentMajority {
 		//シミュレーションの解像度はパラメータごとのResolで指定する．
 		@SuppressWarnings("unused")
 		Date date = new Date();
+		File outDir = new File("results");
 		int nIter = 1, sRatioResol = 10, mRatioResol = 1;
 		int nAgents = 500;
-		//TODO ここでネットワーク生成
-		//TODO 小西流の、エージェントの外に置いて、使用時に参照できる共有ネットワークマップを生成するクラスを実装（StaticNetworkにインターフェースも作る）
+		// ここでネットワーク生成
+		StaticNetwork cnnNtwk = new StaticCNNNetwork(nAgents);
+		cnnNtwk.dumpList(outDir);
 		for (int k = 0; k < mRatioResol; k++) {
 			//double mRatio = k * 0.10;
 			double mRatio = 0.50;
@@ -51,7 +55,7 @@ public final class SilentMajority {
 				double sRatio = j * 0.10;
 				for (int i = 0; i < nIter; i++) {
 					//SimulationTask rn = new SimulationTask(String.valueOf(date.getTime()), "condition" + j + "-" + i, 500, sRatio, mRatio);
-					SimulationTask rn = new SimulationTask("condition" + j + "-" + i, nAgents, sRatio, mRatio);
+					SimulationTask rn = new SimulationTask("condition" + j + "-" + i, nAgents, sRatio, mRatio, cnnNtwk);
 						//コンストラクト時に時刻を与えないと、"recent"以下に結果が上書き出力される。
 					_E.execute(rn);
 					_E.SimExecLogger.info("Submitted: " + rn.getInstanceName());

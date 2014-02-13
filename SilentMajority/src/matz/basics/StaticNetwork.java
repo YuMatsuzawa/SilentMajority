@@ -1,6 +1,8 @@
 package matz.basics;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 外部から参照可能な静的ネットワークマップを生成し，保持するクラス．<br>
@@ -15,34 +17,109 @@ import java.util.ArrayList;
  */
 public abstract class StaticNetwork {
 
-	static int FOLLOWING_INDEX = 0, FOLLOWED_INDEX = 1;
+	protected static int FOLLOWING_INDEX = 0, FOLLOWED_INDEX = 1;
 	
-	private ArrayList<Integer> networkList[][] = null;
-		// 総称型の配列なので扱いに注意する．意味論的に使いやすいのでこうしているが，本来あまりやらないほうがいいらしい
+	/**
+	 * 静的ネットワークを保持するArrayListの配列。<br>
+	 * 総称型の配列なので扱いに注意する．意味論的に使いやすいのでこうしているが，本来あまりやらないほうがいいらしい<br>
+	 */
+	protected static List<Integer> networkList[][] = null;
+	protected static boolean DIRECTED = true, UNDIRECTED = false; 
+	protected static boolean orientation = UNDIRECTED;
+	private static int nAgents;
 	
 	public abstract void build();
 	
 	/**
-	 * エージェント数を与えるコンストラクタ.エージェント数を与えないコンストラクタはない.
+	 * エージェント数と指向性を与えるコンストラクタ.エージェント数を与えないコンストラクタはない.<br>
+	 * 
 	 * @param nAgents
+	 * @param orientation - 有向ならtrue,無向ならfalse
 	 */
 	@SuppressWarnings("unchecked")
-	public StaticNetwork(int nAgents) {
+	public StaticNetwork(int nAgents, boolean orientation) {
+		this.setnAgents(nAgents);
+		this.setOrientation(orientation);
 		networkList = new ArrayList[nAgents][2];
 		for (int i = 0; i < nAgents; i++) {
 			for (int j = 0; j < 2; j++) networkList[i][j] = new ArrayList<Integer>();
 		}
 	}
 	
+	/**
+	 * エージェント数のみ与えて無向グラフを作るコンストラクタ。
+	 * @param nAgents
+	 */
+	public StaticNetwork(int nAgents) {
+		this(nAgents, UNDIRECTED);
+	}
+	
 	// TODO ネットワークデータを取得できる場合，それを元にコンストラクトできるような実装
 	
+	/**
+	 * エージェント数を取得する。
+	 * @return nAgents
+	 */
+	public int getnAgents() {
+		return nAgents;
+	}
+
+	/**
+	 * エージェント数を指定する。
+	 * @param nAgents セットする nAgents
+	 */
+	public void setnAgents(int nAgents) {
+		StaticNetwork.nAgents = nAgents;
+	}
+
+	/**
+	 * ネットワークの指向性を取得。
+	 * @return orientation
+	 */
+	public boolean getOrientation() {
+		return orientation;
+	}
+
+	/**
+	 * ネットワークの指向性を指定
+	 * @param orientation セットする orientation
+	 */
+	public void setOrientation(boolean orientation) {
+		StaticNetwork.orientation = orientation;
+	}
+
+	/**
+	 * subjectの被参照リストにobjectを追加。
+	 * @param subject
+	 * @param object
+	 */
+	public void appendFollowedListOf(int subject, int object) {
+		networkList[subject][FOLLOWED_INDEX].add(object);
+	}
+	/**
+	 * subjectの参照リストにobjectを追加。
+	 * @param subject
+	 * @param object
+	 */
+	public void appendFollowingListOf(int subject, int object) {
+		networkList[subject][FOLLOWING_INDEX].add(object);
+	}
+	/**
+	 * 無向グラフで、subjectの両方向のリストにobjectを追加。
+	 * @param subject
+	 * @param object
+	 */
+	public void appendUndirectedListOf(int subject, int object) {
+		this.appendFollowedListOf(subject, object);
+		this.appendFollowingListOf(subject, object);
+	}
 	/**
 	 * 有向グラフにおける被参照リストを返す.
 	 * @param index
 	 * @return
 	 */
-	public ArrayList<Integer> getFollowedListOf(int index) {
-		return this.networkList[index][FOLLOWED_INDEX];
+	public List<Integer> getFollowedListOf(int index) {
+		return networkList[index][FOLLOWED_INDEX];
 	}
 	
 	/**
@@ -50,8 +127,8 @@ public abstract class StaticNetwork {
 	 * @param index
 	 * @return
 	 */
-	public ArrayList<Integer> getFollowingListOf(int index) {
-		return this.networkList[index][FOLLOWING_INDEX];
+	public List<Integer> getFollowingListOf(int index) {
+		return networkList[index][FOLLOWING_INDEX];
 	}
 	
 	/**
@@ -59,7 +136,7 @@ public abstract class StaticNetwork {
 	 * @param index
 	 * @return
 	 */
-	public ArrayList<Integer> getUndirectedListOf(int index) {
+	public List<Integer> getUndirectedListOf(int index) {
 		return this.getFollowedListOf(index);
 	}
 	
@@ -69,7 +146,7 @@ public abstract class StaticNetwork {
 	 * @return
 	 */
 	public int getnFollowedOf(int index) {
-		return this.networkList[index][FOLLOWED_INDEX].size();
+		return networkList[index][FOLLOWED_INDEX].size();
 	}
 	
 	/**
@@ -78,7 +155,7 @@ public abstract class StaticNetwork {
 	 * @return
 	 */
 	public int getnFollowingOf(int index) {
-		return this.networkList[index][FOLLOWING_INDEX].size();
+		return networkList[index][FOLLOWING_INDEX].size();
 	}
 	
 	/**
@@ -88,5 +165,23 @@ public abstract class StaticNetwork {
 	 */
 	public int getDegreeOf(int index) {
 		return this.getnFollowedOf(index);
+	}
+
+	public void dumpList(File outDir) {
+		//ネットワークのチェック
+		if (!outDir.isDirectory()) outDir.mkdirs();
+		try {
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
+			for (int i = 0; i < this.getnAgents(); i++) {
+				bw.write(i + "(" + this.getnFollowedOf(i) + ")\t:\t");
+				for (Object neighbor : this.getUndirectedListOf(i)) {
+					bw.write((Integer)neighbor + ",");
+				}
+				bw.newLine();
+			}
+			bw.close();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
