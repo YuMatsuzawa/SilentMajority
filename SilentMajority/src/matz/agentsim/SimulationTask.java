@@ -59,17 +59,12 @@ public class SimulationTask implements Runnable {
 			this.muzzleAgents();
 			
 			//ネットワークのチェック
-			File outDir = new File("results/" + this.getTimeStamp() + "/"+ "n="+this.getnAgents()+"s="+this.getSilentAgentsRatio()+"m="+this.getModelReferenceRatio());
+			File outDir = new File("results/" + this.getTimeStamp() + "/" + 
+					"n=" + String.format("%d", this.getnAgents()) +
+					"s=" + String.format("%.1f", this.getSilentAgentsRatio()) +
+					"m=" + String.format("%.1f", this.getModelReferenceRatio()));
 			if (!outDir.isDirectory()) outDir.mkdirs();
-			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
-			for (InfoAgent iAgent : this.infoAgentsArray) {
-				bw.write(iAgent.getAgentIndex() + "(" + iAgent.getnFollowed() + ")\t:\t");
-				for (Object neighbor : iAgent.getUndirectedList()) {
-					bw.write((Integer)neighbor + ",");
-				}
-				bw.newLine();
-			}
-			bw.close();
+			//this.dumpNetworkList(outDir);
 			
 			//情報伝播を試行する
 			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.getnAgents();
@@ -89,7 +84,7 @@ public class SimulationTask implements Runnable {
 					if(agent.isSilent()) sumRecord[SILENT_INDEX][opinion]++;
 					else sumRecord[VOCAL_INDEX][opinion]++;
 				}
-				//意見比率の書き込み。
+				//意見比率の記録。
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 4; j++) rbw.write(sumRecord[i][j] + ",");
 					rbw.write(" ,");
@@ -104,7 +99,7 @@ public class SimulationTask implements Runnable {
 				 * 
 				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
-					boolean isUpdated = (roll < this.getModelReferenceRatio())? //モデル選択比を閾値として確率選択している。
+					boolean isUpdated = (roll < this.getModelReferenceRatio())? //モデル選択比＝IC選択率を閾値として確率選択している。
 							agent.IndependentCascade(infoAgentsArray)
 							: agent.LinearThreashold(infoAgentsArray);
 					if (isUpdated) {
@@ -155,6 +150,7 @@ public class SimulationTask implements Runnable {
 		}
 	}
 
+
 	/**情報エージェント配列を初期化する．この処理はrun()内で呼ばれるべきである（子スレッド内で処理されるべきである）．
 	 * @param nAgents
 	 */
@@ -195,7 +191,14 @@ public class SimulationTask implements Runnable {
 	private double silentPDF(int degree) {
 		// TODO サイレントになる確率の分布を実装
 		double probability = 0.0;
-		if (degree < 10) {
+		int flag = 1; //スイッチ
+		if (flag == 0) {
+			if (degree < 10) {
+				probability = this.getSilentAgentsRatio();
+			} else {
+				probability = 0.0;
+			}
+		} else if(flag == 1) {
 			probability = this.getSilentAgentsRatio();
 		}
 		return probability;
@@ -278,10 +281,6 @@ public class SimulationTask implements Runnable {
 			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．
 		}
 	}
-
-
-
-
 
 
 	public String getTimeStamp() {
@@ -415,13 +414,32 @@ public class SimulationTask implements Runnable {
 		return this.DataDir;
 	}
 
-	/**入力データを格納してあるディレクトリパスを指定。デフォルト値は<current>/data
+	/**入力データを格納してあるディレクトリパスを指定。デフォルト値は(current)/data
 	 * @param dataDir セットする dataDir
 	 */
 	public void setDataDir(String dataDir) {
 		this.DataDir = dataDir;
 	}
 	
+	/**
+	 * outDir以下に生成したネットワークの隣接リストをdatテキストで出力する。
+	 * @param outDir
+	 */
+	public void dumpNetworkList(File outDir) {
+		try {
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
+			for (InfoAgent iAgent : this.infoAgentsArray) {
+				bw.write(iAgent.getAgentIndex() + "(" + iAgent.getnFollowed() + ")\t:\t");
+				for (Object neighbor : iAgent.getUndirectedList()) {
+					bw.write((Integer)neighbor + ",");
+				}
+				bw.newLine();
+			}
+			bw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	
 	/**並列タスク処理のテスト用のメソッド．<br>

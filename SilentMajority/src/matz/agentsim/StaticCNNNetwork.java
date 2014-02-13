@@ -10,23 +10,30 @@ public class StaticCNNNetwork extends StaticNetwork {
 	private static final double P_NN_DEFAULT = 0.666667;
 	private List<Integer[]> potentialLinks = new ArrayList<Integer[]>();
 	private Random localRNG = new Random();
-	private int includedAgents;
+	private int includedAgents = 0;
 
 	@Override
 	public void build() {
 		//とりあえず無向グラフ
 		if (this.getOrientation() == UNDIRECTED) {
 			//ネットワークの種を作る
-			this.appendUndirectedListOf(0, 2);
+/*			this.appendUndirectedListOf(0, 2);
 			this.appendUndirectedListOf(1, 2);
 			this.appendUndirectedListOf(2, 0);
 			this.appendUndirectedListOf(2, 1);
 			Integer[] firstPLink = {0, 1};
-			this.potentialLinks.add(firstPLink);
+			this.potentialLinks.add(firstPLink);*/
+			this.constructLink(0, 2);
+			this.constructLink(1, 2);
 			this.includedAgents = 3;
 			
 			//指定された数のエージェントからなるネットワークが出来るまでイテレート
 			while(this.includedAgents < this.getnAgents()) {
+				if (this.getUndirectedListOf(0).lastIndexOf(2) > 0) {
+					//XXX stupid constructor which had called build() twice caused unintentional behavior thus this folk had to be made to debug
+					List<Integer> tmpList = this.getUndirectedListOf(0);
+					System.out.println("debug!!!"+tmpList.toString());
+				}
 				double roll = this.localRNG.nextDouble();
 				if (roll < this.p_nn) {
 					this.connectPotential();
@@ -54,7 +61,7 @@ public class StaticCNNNetwork extends StaticNetwork {
 		Integer[] pLink = this.potentialLinks.get(roll);
 		this.potentialLinks.remove(roll);
 			//rollでランダムなポテンシャルリンクを選び出し
-		this.constructLink(pLink[0], pLink[2]);
+		this.constructLink(pLink[0], pLink[1]);
 			//それをエッジに変換
 		
 	}
@@ -109,8 +116,10 @@ public class StaticCNNNetwork extends StaticNetwork {
 	}
 
 	/**
-	 * エージェント数、確率パラメータ、指向性を与えるコンストラクタ。
-	 * @param nAgents
+	 * 基本コンストラクタ。
+	 * @param nAgents -エージェント数
+	 * @param p_nn -ポテンシャルリンク接続の選択率
+	 * @param orientation -指向性
 	 */
 	public StaticCNNNetwork(int nAgents, double p_nn, boolean orientation) {
 		super(nAgents);
@@ -120,11 +129,10 @@ public class StaticCNNNetwork extends StaticNetwork {
 	}
 	
 	/**
-	 * エージェント数のみ与えて無向グラフを作るコンストラクタ。
+	 * エージェント数を与えて無向グラフを作るコンストラクタ。
 	 * @param nAgents
 	 */
 	public StaticCNNNetwork(int nAgents) {
 		this(nAgents, P_NN_DEFAULT, UNDIRECTED);
-		this.build();
 	}
 }
