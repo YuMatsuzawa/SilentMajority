@@ -314,6 +314,5 @@ public class InfoAgent {
 	 */
 	public void setInfluence(double influence) {
 		this.influence = influence;
-	}
-	
+	}	
 }

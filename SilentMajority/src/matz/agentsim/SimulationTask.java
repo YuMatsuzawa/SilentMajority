@@ -2,6 +2,7 @@ package matz.agentsim;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.*;
 
 import matz.basics.ShortLogFormatter;
@@ -28,6 +29,7 @@ public class SimulationTask implements Runnable {
 			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_INDEX = 3;
 	private String timeStamp;
 	private StaticNetwork refNetwork = null;
+	private CountDownLatch endGate = null;
 	@SuppressWarnings("unused")
 	private static boolean DIRECTED = true;
 	@SuppressWarnings("unused")
@@ -55,21 +57,24 @@ public class SimulationTask implements Runnable {
 				CNNNetworkBuilder ntwk = new CNNNetworkBuilder();
 				this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
 			}
+			
+			//
+			
 			//ネットワーク確定後、次数に依存する確率分布に従い、エージェントをサイレントにする。
 			this.muzzleAgents();
 			
-			//ネットワークのチェック
 			File outDir = new File("results/" + this.getTimeStamp() + "/" + 
 					"n=" + String.format("%d", this.getnAgents()) +
 					"s=" + String.format("%.1f", this.getSilentAgentsRatio()) +
 					"m=" + String.format("%.1f", this.getModelReferenceRatio()));
 			if (!outDir.isDirectory()) outDir.mkdirs();
+			
+			//ネットワークのチェック
 			//this.dumpNetworkList(outDir);
 			
 			//情報伝播を試行する
 			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.getnAgents();
 			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, this.getInstanceName()+".csv"))));
-			//Integer[][][][] records = new Integer[MAX_ITER][2][3][4];
 			ArrayList<Integer[][][]> records = new ArrayList<Integer[][][]>();
 			//TODO 何かサイレント率に依存しそうな統計指標を探し、同条件での複数回試行を前提とした解析を準備する
 			while(iStable < 10 && cStep < MAX_ITER) {
@@ -131,6 +136,20 @@ public class SimulationTask implements Runnable {
 
 				cStep++;
 			}
+			
+			//集計データの計算
+			double totalPNRatio = (double)records.get(cStep)[SUM_INDEX][TOTAL_INDEX][POS_INDEX] / (double)records.get(cStep)[SUM_INDEX][TOTAL_INDEX][NEG_INDEX];
+			double silentPNRatio = (double)records.get(cStep)[SUM_INDEX][SILENT_INDEX][POS_INDEX] / (double)records.get(cStep)[SUM_INDEX][SILENT_INDEX][NEG_INDEX];
+			double vocalPNRatio = (double)records.get(cStep)[SUM_INDEX][VOCAL_INDEX][POS_INDEX] / (double)records.get(cStep)[SUM_INDEX][VOCAL_INDEX][NEG_INDEX];
+
+			double VTDivergence = (vocalPNRatio > totalPNRatio)? vocalPNRatio / totalPNRatio : totalPNRatio / vocalPNRatio;
+			double STDivergence = (silentPNRatio > totalPNRatio)? silentPNRatio / totalPNRatio : totalPNRatio / silentPNRatio;
+			//double silentDivergence = silentPNRatio / totalPNRatio;
+			
+			//集計データの記録(読み込みやすくするために最終行にまとめて書く)
+			rbw.newLine();
+			rbw.write(VTDivergence + "," + STDivergence);
+			
 			rbw.close();
 			try {
 				AreaChartGenerator acg = new AreaChartGenerator(records);
@@ -141,6 +160,7 @@ public class SimulationTask implements Runnable {
 				this.logStackTrace(e);
 			}
 			
+			this.endGate.countDown(); //カウントダウン
 			this.TaskLogger.info("Done: " + this.getInstanceName());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -233,8 +253,8 @@ public class SimulationTask implements Runnable {
 	 * 
 	 * @param instanceName - 名前
 	 */
-	public SimulationTask(Object instanceName) {
-		this("recent", instanceName, NAGENTS_DEFAUT, Math.random(),Math.random(), null);
+	public SimulationTask(Object instanceName, CountDownLatch endGate) {
+		this("recent", instanceName, NAGENTS_DEFAUT, Math.random(),Math.random(), null, endGate);
 	}
 	
 	/**
@@ -244,8 +264,8 @@ public class SimulationTask implements Runnable {
 	 * @param silentAgentsRatio
 	 * @param modelReferenceRatio
 	 */
-	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio) {
-		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, null);
+	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, CountDownLatch endGate) {
+		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, null, endGate);
 	}
 	
 	/**
@@ -256,8 +276,8 @@ public class SimulationTask implements Runnable {
 	 * @param modelReferenceRatio
 	 * @param ntwk
 	 */
-	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, StaticNetwork ntwk) {
-		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, ntwk);
+	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, StaticNetwork ntwk, CountDownLatch endGate) {
+		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, ntwk, endGate);
 	}
 	/**基本コンストラクタ。
 	 * 
@@ -268,7 +288,13 @@ public class SimulationTask implements Runnable {
 	 * @param modelReferenceRatio - モデル選択比
 	 * @param ntwk - ネットワークインスタンス
 	 */
-	public SimulationTask(String timeStamp, Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, StaticNetwork ntwk) {
+	public SimulationTask(String timeStamp,
+						Object instanceName,
+						int nAgents,
+						double silentAgentsRatio,
+						double modelReferenceRatio,
+						StaticNetwork ntwk,
+						CountDownLatch endGate) {
 		try {
 			this.setTimeStamp(timeStamp);
 			this.setInstanceName(instanceName);
@@ -276,6 +302,7 @@ public class SimulationTask implements Runnable {
 			this.setSilentAgentsRatio(silentAgentsRatio);
 			this.setModelReferenceRatio(modelReferenceRatio);
 			this.refNetwork  = (ntwk == null)? null : ntwk;
+			this.endGate  = endGate;
 			//initTaskLogger();
 		} catch (Exception e) {
 			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．
