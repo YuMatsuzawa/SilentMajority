@@ -138,9 +138,9 @@ public class SimulationTask implements Runnable {
 			}
 			
 			//集計データの計算
-			double totalPNRatio = (double)records.get(cStep)[SUM_INDEX][TOTAL_INDEX][POS_INDEX] / (double)records.get(cStep)[SUM_INDEX][TOTAL_INDEX][NEG_INDEX];
-			double silentPNRatio = (double)records.get(cStep)[SUM_INDEX][SILENT_INDEX][POS_INDEX] / (double)records.get(cStep)[SUM_INDEX][SILENT_INDEX][NEG_INDEX];
-			double vocalPNRatio = (double)records.get(cStep)[SUM_INDEX][VOCAL_INDEX][POS_INDEX] / (double)records.get(cStep)[SUM_INDEX][VOCAL_INDEX][NEG_INDEX];
+			double totalPNRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][POS_INDEX] / (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][NEG_INDEX];
+			double silentPNRatio = (double)records.get(cStep-1)[SUM_INDEX][SILENT_INDEX][POS_INDEX] / (double)records.get(cStep-1)[SUM_INDEX][SILENT_INDEX][NEG_INDEX];
+			double vocalPNRatio = (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][POS_INDEX] / (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][NEG_INDEX];
 
 			double VTDivergence = (vocalPNRatio > totalPNRatio)? vocalPNRatio / totalPNRatio : totalPNRatio / vocalPNRatio;
 			double STDivergence = (silentPNRatio > totalPNRatio)? silentPNRatio / totalPNRatio : totalPNRatio / silentPNRatio;

@@ -81,7 +81,6 @@ public final class SilentMajority {
 			 */
 			double[][] VTDivergence = new double[sRatioResol][mRatioResol];
 			double[][] STDivergence = new double[sRatioResol][mRatioResol];
-			
 
 			for (int k = 1; k <= sRatioResol; k++) {
 				double sRatio = k * 0.10;
@@ -101,13 +100,22 @@ public final class SilentMajority {
 					Arrays.sort(resultFiles);
 					for (File resultFile : resultFiles) {
 						BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(resultFile)));
-						String lastline;
-						while(br.readLine() != null) {
-							lastline = br.readLine();
-						}
-
+						String lastline = new String();
+						while(br.readLine() != null) lastline = br.readLine(); //ÅIsŽæ“¾
+						String[] twoValues = lastline.split(",");
+						double VTDiv = Double.parseDouble(twoValues[0]), STDiv = Double.parseDouble(twoValues[1]);
+						VTDivergence[k-1][j] += VTDiv / nIter;
+						STDivergence[k-1][j] += STDiv / nIter;
+						br.close();
 					}
 				}
+				
+				//Contouro—Í
+				double[][][] divergence = {VTDivergence, STDivergence};
+				String[] titles = {"VTDiv", "STDiv"};
+				ContourGenerator cg = new ContourGenerator(titles, divergence);
+				cg.generateGraph(dateDir, "contour.png");
+				
 			}
 			
 			_E.SimExecLogger.info("Summarizing done.");
