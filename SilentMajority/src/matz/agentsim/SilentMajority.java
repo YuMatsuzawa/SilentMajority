@@ -48,7 +48,7 @@ public final class SilentMajority {
 		//if (!outDir.isDirectory()) outDir.mkdirs();
 		if (!dateDir.isDirectory()) dateDir.mkdirs();
 		
-		int nIter = 2, sRatioResol = 9, mRatioResol = 11;
+		int nIter = 10, sRatioResol = 9, mRatioResol = 11;
 		CountDownLatch endGate = new CountDownLatch(sRatioResol * mRatioResol * nIter); //全シミュレーションが終了するまでをカウントするCountDownLatch
 		int nAgents = 500;
 		// ここでネットワーク生成
@@ -79,8 +79,10 @@ public final class SilentMajority {
 			 * 結果集計操作
 			 * 
 			 */
-			double[][] VTDivergence = new double[sRatioResol][mRatioResol];
-			double[][] STDivergence = new double[sRatioResol][mRatioResol];
+			final int X_INDEX = 0, Y_INDEX = 1, Z_INDEX = 2;
+			double[][] VTDivergence = new double[3][sRatioResol*mRatioResol];
+			double[][] STDivergence = new double[3][sRatioResol*mRatioResol];
+			double[][] totalNullRatio = new double[3][sRatioResol*mRatioResol];
 
 			for (int k = 1; k <= sRatioResol; k++) {
 				double sRatio = k * 0.10;
@@ -97,33 +99,50 @@ public final class SilentMajority {
 							return ret;
 						}
 					});
+					VTDivergence[X_INDEX][(k-1) * mRatioResol + j] = sRatio;
+					VTDivergence[Y_INDEX][(k-1) * mRatioResol + j] = mRatio;
+					STDivergence[X_INDEX][(k-1) * mRatioResol + j] = sRatio;
+					STDivergence[Y_INDEX][(k-1) * mRatioResol + j] = mRatio;
+					totalNullRatio[X_INDEX][(k-1) * mRatioResol + j] = sRatio;
+					totalNullRatio[Y_INDEX][(k-1) * mRatioResol + j] = mRatio;
+					
 					Arrays.sort(resultFiles);
 					for (File resultFile : resultFiles) {
 						BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(resultFile)));
-						String lastline = new String();
-						while(br.readLine() != null) lastline = br.readLine(); //最終行取得
-						String[] twoValues = lastline.split(",");
-						double VTDiv = Double.parseDouble(twoValues[0]), STDiv = Double.parseDouble(twoValues[1]);
-						VTDivergence[k-1][j] += VTDiv / nIter;
-						STDivergence[k-1][j] += STDiv / nIter;
+						String line = new String(), lastLine = new String();
+						while((line = br.readLine()) != null) lastLine = line; //最終行取得
+						String[] values = lastLine.split(",");
+						double nullRatio = Double.parseDouble(values[0]), VTDiv = Double.parseDouble(values[1]), STDiv = Double.parseDouble(values[2]);
+						totalNullRatio[Z_INDEX][(k-1) * mRatioResol + j] += nullRatio / nIter;
+						VTDivergence[Z_INDEX][(k-1) * mRatioResol + j] += (Double.isInfinite(VTDiv))? Double.NaN : VTDiv / nIter;
+						STDivergence[Z_INDEX][(k-1) * mRatioResol + j] += (Double.isInfinite(STDiv))? Double.NaN : STDiv / nIter;
 						br.close();
 					}
 				}
-				
-				//Contour出力
-				double[][][] divergence = {VTDivergence, STDivergence};
-				String[] titles = {"VTDiv", "STDiv"};
-				ContourGenerator cg = new ContourGenerator(titles, divergence);
-				cg.generateGraph(dateDir, "contour.png");
-				
 			}
+
+			//csv出力
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(dateDir, "TotalNullRatio.csv"))));
+			for (int k = 0; k <= sRatioResol; k++){
+				for (int j = -1; j < mRatioResol; j++) {
+					if (k == 0) {
+						if (j == -1) continue;
+						else bw.write("," + j*0.1);
+					} else {
+						if (j == -1) bw.write(String.format("%.1f",k*0.1));
+						else bw.write("," + totalNullRatio[Z_INDEX][(k-1) * mRatioResol + j]);
+					}
+				}
+				bw.newLine();
+			}
+			bw.close();
+			
+			//Contour出力
+			ContourGenerator cg = new ContourGenerator("TotalNullRatio", totalNullRatio);
+			cg.generateGraph(dateDir, "contour.png");
 			
 			_E.SimExecLogger.info("Summarizing done.");
-		} catch(InterruptedException e) {
-			_E.logStackTrace(e);
-		} catch (FileNotFoundException e) {
-			_E.logStackTrace(e);
-		} catch (IOException e) {
+		} catch(Exception e) {
 			_E.logStackTrace(e);
 		}
 		

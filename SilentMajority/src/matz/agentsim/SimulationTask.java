@@ -23,7 +23,7 @@ public class SimulationTask implements Runnable {
 	private final int NULL_PATTERN = 0;
 	private final int MIX_PATTERN = 1;
 	private final int SPARSE_PATTERN = 2;
-	private int MAX_ITER = 30;
+	private int MAX_ITER = 40;
 	public final int SUM_INDEX = 0, UPDATE_INDEX = 1,
 			TOTAL_INDEX = 0, SILENT_INDEX = 1, VOCAL_INDEX = 2,
 			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_INDEX = 3;
@@ -34,7 +34,7 @@ public class SimulationTask implements Runnable {
 	private static boolean DIRECTED = true;
 	@SuppressWarnings("unused")
 	private static boolean UNDIRECTED = false;
-	private static final double CONVERGENCE_CONDITION = 0.05;
+	private static final double CONVERGENCE_CONDITION = 0.01;
 	
 	@Override
 	public void run() {
@@ -138,17 +138,26 @@ public class SimulationTask implements Runnable {
 			}
 			
 			//集計データの計算
-			double totalPNRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][POS_INDEX] / (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][NEG_INDEX];
-			double silentPNRatio = (double)records.get(cStep-1)[SUM_INDEX][SILENT_INDEX][POS_INDEX] / (double)records.get(cStep-1)[SUM_INDEX][SILENT_INDEX][NEG_INDEX];
-			double vocalPNRatio = (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][POS_INDEX] / (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][NEG_INDEX];
+			double totalPosRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][POS_INDEX] / (double)this.getnAgents();
+			double totalNegRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][NEG_INDEX] / (double)this.getnAgents();
+			double totalNeuRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][NEU_INDEX] / (double)this.getnAgents();
+			double totalNullRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][NULL_INDEX] / (double)this.getnAgents();
+			double silentPosRatio = (double)records.get(cStep-1)[SUM_INDEX][SILENT_INDEX][POS_INDEX] / (double)this.getnAgents();
+			double silentNegRatio = (double)records.get(cStep-1)[SUM_INDEX][SILENT_INDEX][NEG_INDEX] / (double)this.getnAgents();
+			double silentNeuRatio = (double)records.get(cStep-1)[SUM_INDEX][SILENT_INDEX][NEU_INDEX] / (double)this.getnAgents();
+			double silentNullRatio = (double)records.get(cStep-1)[SUM_INDEX][SILENT_INDEX][NULL_INDEX] / (double)this.getnAgents();
+			double vocalPosRatio = (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][POS_INDEX] / (double)this.getnAgents();
+			double vocalNegRatio = (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][NEG_INDEX] / (double)this.getnAgents();
+			double vocalNeuRatio = (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][NEU_INDEX] / (double)this.getnAgents();
+			double vocalNullRatio = (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][NULL_INDEX] / (double)this.getnAgents();
 
-			double VTDivergence = (vocalPNRatio > totalPNRatio)? vocalPNRatio / totalPNRatio : totalPNRatio / vocalPNRatio;
-			double STDivergence = (silentPNRatio > totalPNRatio)? silentPNRatio / totalPNRatio : totalPNRatio / silentPNRatio;
+			double VTDivergence = (vocalPosRatio > totalPosRatio)? vocalPosRatio / totalPosRatio : totalPosRatio / vocalPosRatio;
+			double STDivergence = (silentPosRatio > totalPosRatio)? silentPosRatio / totalPosRatio : totalPosRatio / silentPosRatio;
 			//double silentDivergence = silentPNRatio / totalPNRatio;
 			
 			//集計データの記録(読み込みやすくするために最終行にまとめて書く)
 			rbw.newLine();
-			rbw.write(VTDivergence + "," + STDivergence);
+			rbw.write(totalNullRatio + "," + VTDivergence + "," + STDivergence);
 			
 			rbw.close();
 			try {
