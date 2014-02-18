@@ -48,20 +48,20 @@ public final class SilentMajority {
 		//if (!outDir.isDirectory()) outDir.mkdirs();
 		if (!dateDir.isDirectory()) dateDir.mkdirs();
 		
-		int nIter = 10, sRatioResol = 9, mRatioResol = 11;
+		int nIter = 5, sRatioResol = 9, mRatioResol = 11;
 		CountDownLatch endGate = new CountDownLatch(sRatioResol * mRatioResol * nIter); //全シミュレーションが終了するまでをカウントするCountDownLatch
-		int nAgents = 500;
+		int nAgents = 1000;
 		// ここでネットワーク生成
 		StaticNetwork cnnNtwk = new StaticCNNNetwork(nAgents);
 		//cnnNtwk.dumpList(outDir);
-		cnnNtwk.dumpList(dateDir);
+		cnnNtwk.dumpNetwork(dateDir);
 		for (int k = 1; k <= sRatioResol; k++) {
 			double sRatio = k * 0.10;
 			for (int j = 0; j < mRatioResol; j++) {
 				double mRatio = j * 0.10;
 				//double mRatio = 0.50;
 				for (int i = 0; i < nIter; i++) {
-					SimulationTask rn = new SimulationTask(String.valueOf(date.getTime()), "condition" + k + "-" + j + "_" + i , 500, sRatio, mRatio, cnnNtwk, endGate);
+					SimulationTask rn = new SimulationTask(String.valueOf(date.getTime()), "condition" + k + "-" + j + "_" + i , nAgents, sRatio, mRatio, cnnNtwk, endGate);
 					//SimulationTask rn = new SimulationTask("condition" + k + "-" + j + "_" + i, nAgents, sRatio, mRatio, cnnNtwk, endGate);
 						//コンストラクト時に時刻を与えないと、"recent"以下に結果が上書き出力される。
 					_E.execute(rn);
@@ -99,6 +99,8 @@ public final class SilentMajority {
 							return ret;
 						}
 					});
+					if (resultFiles == null || resultFiles.length == 0) break;
+					
 					VTDivergence[X_INDEX][(k-1) * mRatioResol + j] = sRatio;
 					VTDivergence[Y_INDEX][(k-1) * mRatioResol + j] = mRatio;
 					STDivergence[X_INDEX][(k-1) * mRatioResol + j] = sRatio;
@@ -144,6 +146,8 @@ public final class SilentMajority {
 			_E.SimExecLogger.info("Summarizing done.");
 		} catch(Exception e) {
 			_E.logStackTrace(e);
+		} finally {
+			_E.closeLogFileHandler();
 		}
 		
 	}

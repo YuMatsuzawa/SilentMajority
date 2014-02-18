@@ -14,12 +14,14 @@ public class ShortLogFormatter extends Formatter {
 	public String format(LogRecord record) {
 		StringBuffer message = new StringBuffer(131);
 		DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
+		Throwable thrown = record.getThrown();
 		
 		message.append(df.format(record.getMillis()))
 		.append("> [")
 		.append(record.getLevel())
 		.append("] ")
 		.append(record.getMessage())
+		.append((thrown != null)? " | " + thrown.getClass().getName() : "")
 		.append("\t(")
 		.append(record.getSourceClassName())
 		.append("#")
@@ -28,7 +30,6 @@ public class ShortLogFormatter extends Formatter {
 		.append(record.getThreadID())
 		.append(")\n");
 		
-		Throwable thrown = null;
 		if ((thrown = record.getThrown()) != null) {
 			for (StackTraceElement ste : thrown.getStackTrace()) {
 				message.append("\t\t\t")

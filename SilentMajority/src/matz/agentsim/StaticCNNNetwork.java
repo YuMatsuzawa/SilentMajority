@@ -1,7 +1,10 @@
 package matz.agentsim;
 
+import java.io.*;
 import java.util.*;
+import java.util.Map.Entry;
 
+import matz.basics.ScatterPlotGenerator;
 import matz.basics.StaticNetwork;
 
 public class StaticCNNNetwork extends StaticNetwork {
@@ -17,23 +20,12 @@ public class StaticCNNNetwork extends StaticNetwork {
 		//とりあえず無向グラフ
 		if (this.getOrientation() == UNDIRECTED) {
 			//ネットワークの種を作る
-/*			this.appendUndirectedListOf(0, 2);
-			this.appendUndirectedListOf(1, 2);
-			this.appendUndirectedListOf(2, 0);
-			this.appendUndirectedListOf(2, 1);
-			Integer[] firstPLink = {0, 1};
-			this.potentialLinks.add(firstPLink);*/
 			this.constructLink(0, 2);
 			this.constructLink(1, 2);
 			this.includedAgents = 3;
 			
 			//指定された数のエージェントからなるネットワークが出来るまでイテレート
 			while(this.includedAgents < this.getnAgents()) {
-				if (this.getUndirectedListOf(0).lastIndexOf(2) > 0) {
-					//XXX stupid constructor which had called build() twice caused unintentional behavior thus this folk had to be made to debug
-					List<Integer> tmpList = this.getUndirectedListOf(0);
-					System.out.println("debug!!!"+tmpList.toString());
-				}
 				double roll = this.localRNG.nextDouble();
 				if (roll < this.p_nn) {
 					this.connectPotential();
@@ -42,11 +34,14 @@ public class StaticCNNNetwork extends StaticNetwork {
 				}
 			}
 			
-			//チェックのために、全エージェントの隣接リストをソートする。
+			//チェックのために、全エージェントの隣接リストをソートする。コメントアウトしてしまってもいい。
 			for (List<Integer>[] agentLists : networkList) {
 				Collections.sort(agentLists[FOLLOWED_INDEX]);
 				Collections.sort(agentLists[FOLLOWING_INDEX]);
 			}
+			
+			//ネットワークの統計的性質をチェックする。
+			this.countDegreeFreq(); //次数の頻度分布
 		}
 	}
 
@@ -77,7 +72,7 @@ public class StaticCNNNetwork extends StaticNetwork {
 
 	/**
 	 * subjectとobjectの間にリンクを張り、生じるポテンシャルリンクを登録する。<br>
-	 * 二重登録が内容細かくチェックする<br>
+	 * 二重登録がないように細かくチェックする<br>
 	 * 互いを互いのリストに漏れ無く登録するので、引数を逆にしてこのメソッドを2回呼ぶ必要はない
 	 * @param subject
 	 * @param object
@@ -112,6 +107,37 @@ public class StaticCNNNetwork extends StaticNetwork {
 				}
 				if (isNew) this.potentialLinks.add(pLink); //一方向だけ登録。
 			}
+		}
+	}
+	
+	@Override
+	public void dumpNetwork(File outDir) {
+		//ネットワークのチェック
+		if (!outDir.isDirectory()) outDir.mkdirs();
+		try {
+			//隣接リスト吐き出し
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
+			for (int i = 0; i < this.getnAgents(); i++) {
+				bw.write(i + "(" + this.getnFollowedOf(i) + ")\t:\t");
+				for (Object neighbor : this.getUndirectedListOf(i)) {
+					bw.write((Integer)neighbor + ",");
+				}
+				bw.newLine();
+			}
+			bw.close();
+			
+			//頻度分布吐き出し
+			BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwkDegreeFreq.csv"))));
+			for (Entry<Integer,Integer> entry : this.nFollowedFreqMap.entrySet()) {
+				bw2.write(entry.getKey() + "," + entry.getValue());
+				bw2.newLine();
+			}
+			bw2.close();
+			ScatterPlotGenerator spg = new ScatterPlotGenerator("CNN,u="+this.p_nn+",N="+this.getnAgents(),this.nFollowedFreqMap);
+			spg.generateGraph(outDir, "ntwkDegreeFreq.png");
+
+		} catch(IOException e) {
+			e.printStackTrace();
 		}
 	}
 

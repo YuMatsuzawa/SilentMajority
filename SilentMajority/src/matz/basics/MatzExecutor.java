@@ -99,7 +99,6 @@ public class MatzExecutor {
 	public void safeShutdown() {
 		this.SimExecServ.shutdown();
 		this.SimExecLogger.info(this.getClass().getName() + " going to be terminated after all submitted tasks done.");
-		this.closeLogFileHandler();
 	}
 	/**ログファイル名を取得．
 	 * @return
@@ -148,7 +147,7 @@ public class MatzExecutor {
 	 * この処理はlckファイルを掃除するために必要．
 	 * 
 	 */
-	private void closeLogFileHandler() {
+	public void closeLogFileHandler() {
 		for (Handler handler : this.SimExecLogger.getHandlers()) {
 			handler.flush();
 			handler.close();

@@ -2,6 +2,7 @@ package matz.agentsim;
 
 import java.io.*;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.*;
 
@@ -23,6 +24,8 @@ public class SimulationTask implements Runnable {
 	private final int NULL_PATTERN = 0;
 	private final int MIX_PATTERN = 1;
 	private final int SPARSE_PATTERN = 2;
+	private int HUB_DRIVEN_PATTERN = 3;
+	private int LEAF_DRIVEN_PATTERN = 4;
 	private int MAX_ITER = 40;
 	public final int SUM_INDEX = 0, UPDATE_INDEX = 1,
 			TOTAL_INDEX = 0, SILENT_INDEX = 1, VOCAL_INDEX = 2,
@@ -46,9 +49,7 @@ public class SimulationTask implements Runnable {
 		
 		this.TaskLogger.info("Start: "+this.getInstanceName());
 		try { // main procedure calling bracket
-			
-			//this.WordCount(new File(this.getDataDir(),"zarathustra.txt")); //test procedure
-			
+						
 			//エージェント集合の配列を初期化する．
 			//refNetworkフィールドは、静的ネットワークが与えられているならそのインスタンスが、与えられていないならnullが入っている。
 			this.initInfoAgentsArray(this.getnAgents(), this.refNetwork);
@@ -57,11 +58,11 @@ public class SimulationTask implements Runnable {
 				CNNNetworkBuilder ntwk = new CNNNetworkBuilder();
 				this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
 			}
-			
-			//
-			
 			//ネットワーク確定後、次数に依存する確率分布に従い、エージェントをサイレントにする。
 			this.muzzleAgents();
+			
+			//意見分布をここで初期化する。
+			this.initOpinions(this.HUB_DRIVEN_PATTERN);
 			
 			File outDir = new File("results/" + this.getTimeStamp() + "/" + 
 					"n=" + String.format("%d", this.getnAgents()) +
@@ -180,30 +181,27 @@ public class SimulationTask implements Runnable {
 	}
 
 
-	/**情報エージェント配列を初期化する．この処理はrun()内で呼ばれるべきである（子スレッド内で処理されるべきである）．
+	/**
+	 * 情報エージェント配列を初期化する．この処理はrun()内で呼ばれるべきである（子スレッド内で処理されるべきである）．<br>
 	 * @param nAgents
 	 */
 	private void initInfoAgentsArray(int nAgents, StaticNetwork ntwk) {
 		this.infoAgentsArray= new InfoAgent[nAgents];
 		for (int index = 0; index < nAgents; index++) {
-			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(this.SPARSE_PATTERN), ntwk);
-			if (this.localRNG.nextDouble() < this.getSilentAgentsRatio()) this.infoAgentsArray[index].muzzle();
-				//初期状態では単純にランダムで指定割合のエージェントをサイレントにしておく。
+			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(this.NULL_PATTERN), ntwk);
+				//InfoAgentのインスタンス化の際、コンストラクタの種類によって、サイレント／ヴォーカルや初期意見も指定できる。
+				//しかし、いろいろやった結果として初期化時には適当に与えておき、ネットワークの構造から定まるエージェントの性格に依存してのちにS/Vや意見を別に初期化することにした。
+				//よって基本的にはすべてヴォーカルかつNULL_PATTERNで初期化する。
 		}
 		
 	}
 	
-	/**次数に依存する確率分布に従い、エージェントをサイレントにする。<br>
+	/**
+	 * 次数に依存する確率分布+乱数に従い、エージェントをサイレントにする。<br>
 	 * 無向グラフならgetDegree()で次数を取れる。getnFollowed()でも取ってくる数値は同じだが。<br>
 	 * 有向グラフなら多くの参照を集めるエージェントがハブと考えられるので、getnFollowed()を使う。
 	 */
-	@SuppressWarnings("unused")
-	private void muzzleAgents() {
-		int sumDegree = 0;
-		for (InfoAgent agent : this.infoAgentsArray) {
-			sumDegree += agent.getnFollowed();
-		}
-		
+	private void muzzleAgents() {		
 		for (InfoAgent agent : this.infoAgentsArray) {
 			int degree = agent.getnFollowed();
 			double roll = this.localRNG.nextDouble();
@@ -214,31 +212,100 @@ public class SimulationTask implements Runnable {
 	/**
 	 * 次数に依存するサイレント性の確率分布関数。<br>
 	 * 引数は離散値の次数なのでProbability Distribution Function(PDF)。Probability Mass Function(PMF)とも言える。<br>
+	 * パラメータのサイレント率が上がると、次数の低い方から高い確率でサイレント化していくような確率を与える関数になっている。<br>
+	 * サイレント率が0.9なら、次数順位で下位90%以内に属するエージェントは高確率で(ほとんど確定で)サイレント化する。<br>
+	 * <br>
+	 * 具体的なルーチンは以下：<br>
+	 * 昇順ソートされている頻度分布TreeMapを取得して、低い次数から(Mapの最初のEntryから)その次数の頻度を足していく。<br>
+	 * 和がサイレント数の目標値(総エージェント数*サイレント率パラメータ)を上回った次数をcutoff次数とする。<br>
+	 * 次数がcutoff以下のエージェントは候補となる。このようなエージェントに与えられるサイレント化確率pSilentは(目標サイレント数)/(サイレント候補数)である。<br>
+	 * 例えば、サイレント率が0.1、総エージェント数1000人なら目標サイレント数は100人であるが、<br>
+	 * 仮に次数1のエージェントがちょうど100人いるようなネットワークであれば、pSilent=1.0となる。<br>
+	 * 次数1のエージェントが300人いるなら、pSilent=0.3333となる。<br>
+	 * このように与えたpSilentに従ってサイレント化を行うと、全体に対するサイレント率はちょうどパラメータで与えた割合に合致する。
 	 * @param degree 次数
 	 * @return
 	 */
 	private double silentPDF(int degree) {
-		// TODO サイレントになる確率の分布を実装
-		double probability = 0.0;
-		int flag = 1; //スイッチ
-		if (flag == 0) {
-			if (degree < 10) {
-				probability = this.getSilentAgentsRatio();
-			} else {
-				probability = 0.0;
-			}
-		} else if(flag == 1) {
-			probability = this.getSilentAgentsRatio();
+		double pSilent = 0.0;
+		double nSilent = this.getnAgents() * this.getSilentAgentsRatio();
+		int cutoffDegree = 0;
+		int nSilentCandidate = 0;
+		for(Entry<Integer,Integer> entry : this.refNetwork.getDegreeFreq().entrySet()) {
+			cutoffDegree = entry.getKey();
+			nSilentCandidate += entry.getValue();
+			if (nSilentCandidate >= nSilent) break;
 		}
-		return probability;
+		
+		if (degree <= cutoffDegree) pSilent = nSilent / nSilentCandidate;
+		
+		return pSilent;
 	}
 
-	//TODO 情報の出所が次数の高いユーザの場合、低いユーザの場合、という初期状態の傾向の違いが考えられるので、それを盛り込む。
+	/**
+	 * ネットワークとサイレント／ヴォーカルを指定した後に呼んで、意見を初期化する。<br>
+	 * エージェントの初期化時の意見はすべて上書きされる。<br>
+	 * initOpinion()で有効なパターン以外に、次数の高いユーザを発生源とするHUB_DRIVEN_PATTERNと、次数の低いユーザを発生源とするLEAF_DRIVEN_PATTERNがある。
+	 * 
+	 */
+	private void initOpinions(int pattern) {
+		int leafCutoff = 0, hubCutoff = this.getnAgents();
+		int leafCandidate = 0, hubCandidate = this.getnAgents();
+		double boundary = 0.5;
+		double nLeafInitiator = this.getnAgents() * boundary;
+		double nHubInitiator = this.getnAgents() * boundary;
+		for (Entry<Integer,Integer> entry : this.refNetwork.getDegreeFreq().entrySet()) {
+			if (leafCandidate < nLeafInitiator) {
+				leafCutoff = entry.getKey();
+				leafCandidate += entry.getValue();
+			}
+			if (hubCandidate >= nHubInitiator) {
+				int tmpCandidate = hubCandidate - entry.getValue();
+				if (tmpCandidate >= nHubInitiator) {
+					hubCutoff = entry.getKey();
+					hubCandidate = tmpCandidate;
+				}
+			}
+		}
+		double pLeafInitiator = nLeafInitiator / leafCandidate, pHubInitiator = nHubInitiator / hubCandidate;
+		
+		for (InfoAgent agent : this.infoAgentsArray) {
+			Integer opinion = null;
+			if (pattern == this.NULL_PATTERN) {
+				opinion = null;
+			} else if (pattern == this.MIX_PATTERN) {
+				double roll = this.localRNG.nextDouble();
+				if (roll < 0.25) opinion = this.localRNG.nextInt(3);
+			} else if (pattern == this.SPARSE_PATTERN) {
+				opinion = null;
+				double roll = this.localRNG.nextDouble();
+				if (roll < 0.1) opinion = this.localRNG.nextInt(3);
+			} else if (pattern == this.HUB_DRIVEN_PATTERN) {
+				if (agent.getDegree() >= hubCutoff) {
+					double roll = this.localRNG.nextDouble();
+					if (roll < pHubInitiator) {
+						double innerRoll = this.localRNG.nextDouble();
+						if (innerRoll < 0.1 / boundary) opinion = this.localRNG.nextInt(3);
+					}
+				}
+			} else if (pattern == this.LEAF_DRIVEN_PATTERN) {
+				if (agent.getDegree() <= leafCutoff) {
+					double roll = this.localRNG.nextDouble();
+					if (roll < pLeafInitiator) {
+						double innerRoll = this.localRNG.nextDouble();
+						if (innerRoll < 0.1 / boundary) opinion = this.localRNG.nextInt(3);
+					}
+				}
+			}
+			agent.setOpinion(opinion);
+		}
+	}
+	
 	/**
 	 * 意見の初期値を与える．patternによって挙動が変わる．<br>
 	 * ・NULL_PATTERN（=0）の場合：全てnullにする．nullは意見未決定状態．<br>
-	 * ・MIX_PATTERN（=1)の場合：0,1,2のいずれかにする．<br>
-	 * ・SPARSE_PATTERN(=2)の場合：90%はNULL，10%はランダムで0,1,2のいずれかにする。
+	 * ・MIX_PATTERN（=1)の場合：null,0,1,2のいずれかにする．<br>
+	 * ・SPARSE_PATTERN(=2)の場合：90%はnull，10%はランダムで0,1,2のいずれかにする。
 	 * @param pattern
 	 * @return
 	 */
@@ -247,13 +314,12 @@ public class SimulationTask implements Runnable {
 		if (pattern == this.NULL_PATTERN) {
 			opinion = null;
 		} else if (pattern == this.MIX_PATTERN) {
-			opinion = this.localRNG.nextInt(3);
+			double roll = this.localRNG.nextDouble();
+			if (roll < 0.25) opinion = this.localRNG.nextInt(3);
 		} else if (pattern == this.SPARSE_PATTERN) {
 			opinion = null;
 			double roll = this.localRNG.nextDouble();
-			if (roll < 0.1) {
-				opinion = this.localRNG.nextInt(3);
-			}
+			if (roll < 0.1) opinion = this.localRNG.nextInt(3);
 		}
 		return opinion;
 	}

@@ -1,13 +1,15 @@
 package matz.basics;
 
-import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * 外部から参照可能な静的ネットワークマップを生成し，保持するクラス．<br>
  * エージェント数をintで与えてコンストラクトする．<br>
- * ネットワークマップを生成するbuild()メソッドを実装する．<br>
+ * ネットワークマップを生成するbuild()メソッドと、<br>
+ * ネットワークの各種データをファイル・画像等に書き出すdumpNetwork()を実装する．<br>
  * ネットワークマップはArrayListの配列で管理する．<br>
  * ArrayListの配列から以下のgetterで値やリストを取得できる．<br>
  * getUndirectedListOf(int),getFollowedListOf(int),getFollowingListOf(int),<br>
@@ -18,17 +20,21 @@ import java.util.List;
 public abstract class StaticNetwork {
 
 	protected static int FOLLOWING_INDEX = 0, FOLLOWED_INDEX = 1;
+	protected static boolean DIRECTED = true, UNDIRECTED = false; 
 	
 	/**
 	 * 静的ネットワークを保持するArrayListの配列。<br>
 	 * 総称型の配列なので扱いに注意する．意味論的に使いやすいのでこうしているが，本来あまりやらないほうがいいらしい<br>
 	 */
-	protected static List<Integer> networkList[][] = null;
-	protected static boolean DIRECTED = true, UNDIRECTED = false; 
-	protected static boolean orientation = UNDIRECTED;
-	private static int nAgents;
+	protected List<Integer> networkList[][] = null;
+	protected boolean orientation = UNDIRECTED;
+	private int nAgents;
+
+	protected TreeMap<Integer, Integer> nFollowedFreqMap = new TreeMap<Integer,Integer>(); //TreeMapはKeyを昇順に順序付けするので、
+	protected TreeMap<Integer, Integer> nFollowingFreqMap = new TreeMap<Integer,Integer>();
 	
 	public abstract void build();
+	public abstract void dumpNetwork(File outDir);
 	
 	/**
 	 * エージェント数と指向性を与えるコンストラクタ.エージェント数を与えないコンストラクタはない.<br>
@@ -69,7 +75,7 @@ public abstract class StaticNetwork {
 	 * @param nAgents セットする nAgents
 	 */
 	public void setnAgents(int nAgents) {
-		StaticNetwork.nAgents = nAgents;
+		this.nAgents = nAgents;
 	}
 
 	/**
@@ -85,7 +91,7 @@ public abstract class StaticNetwork {
 	 * @param orientation セットする orientation
 	 */
 	public void setOrientation(boolean orientation) {
-		StaticNetwork.orientation = orientation;
+		this.orientation = orientation;
 	}
 
 	/**
@@ -166,22 +172,42 @@ public abstract class StaticNetwork {
 	public int getDegreeOf(int index) {
 		return this.getnFollowedOf(index);
 	}
-
-	public void dumpList(File outDir) {
-		//ネットワークのチェック
-		if (!outDir.isDirectory()) outDir.mkdirs();
-		try {
-			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
-			for (int i = 0; i < this.getnAgents(); i++) {
-				bw.write(i + "(" + this.getnFollowedOf(i) + ")\t:\t");
-				for (Object neighbor : this.getUndirectedListOf(i)) {
-					bw.write((Integer)neighbor + ",");
-				}
-				bw.newLine();
-			}
-			bw.close();
-		} catch(IOException e) {
-			e.printStackTrace();
+	
+	public void countDegreeFreq() {
+		for (int i = 0; i < this.getnAgents(); i++) {
+			int nFollowed = this.getnFollowedOf(i), nFollowing = this.getnFollowingOf(i);
+			if (nFollowedFreqMap.containsKey(nFollowed)) {
+				int val = nFollowedFreqMap.get(nFollowed);
+				nFollowedFreqMap.put(nFollowed, ++val);
+			} else nFollowedFreqMap.put(nFollowed, 1);
+			if (nFollowingFreqMap.containsKey(nFollowing)) {
+				int val = nFollowingFreqMap.get(nFollowing);
+				nFollowingFreqMap.put(nFollowing, ++val);
+			} else nFollowingFreqMap.put(nFollowing, 1);
 		}
 	}
+	public TreeMap<Integer,Integer> getnFollowedFreq() {
+		return this.nFollowedFreqMap;
+	}
+	
+	public TreeMap<Integer,Integer> getnFollowingFreq() {
+		return this.nFollowingFreqMap;
+	}
+	
+	public TreeMap<Integer,Integer> getDegreeFreq() {
+		return this.getnFollowedFreq();
+	}
+	
+	public int getnFollowedFreqOf(int index) {
+		return this.nFollowedFreqMap.get(this.getnFollowedOf(index));
+	}
+	
+	public int getnFollowingFreqOf(int index) {
+		return this.nFollowingFreqMap.get(this.getnFollowingOf(index));
+	}
+	
+	public int getDegreeFreqOf(int index) {
+		return this.getnFollowedFreqOf(index);
+	}
+
 }

@@ -1,5 +1,6 @@
 package matz.agentsim;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -85,6 +86,7 @@ public class LineChartGenerator implements ChartGenerator {
 		combinedPlot.setFixedLegendItems(lic);
 		
 		this.lineChart = new JFreeChart("# of Opinion Updates", combinedPlot);
+		this.lineChart.setBackgroundPaint(Color.WHITE);
 	}
 
 	@Override
