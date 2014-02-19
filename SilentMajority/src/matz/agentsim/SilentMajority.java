@@ -52,7 +52,7 @@ public final class SilentMajority {
 		//if (!outDir.isDirectory()) outDir.mkdirs();
 		if (!dateDir.isDirectory()) dateDir.mkdirs();
 		
-		int pattern = LEAF_DRIVEN_PATTERN;
+		int pattern = HUB_DRIVEN_PATTERN;
 		int nIter = 10, sRatioResol = 9, mRatioResol = 11;
 		CountDownLatch endGate = new CountDownLatch(sRatioResol * mRatioResol * nIter); //全シミュレーションが終了するまでをカウントするCountDownLatch
 		int nAgents = 1000;
