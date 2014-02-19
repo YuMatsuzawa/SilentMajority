@@ -37,19 +37,14 @@ public class InfoAgent {
 			Integer neighborOp = infoAgentsArray[(Integer) neighbor].getOpinion();
 			double neighborInfluence = infoAgentsArray[(Integer) neighbor].getInfluence();
 				//サイレントエージェントのinfluenceは-1と返ってくる。
-			try {
-				if (preOp == null || preOp == 0) {
-					if (neighborInfluence > topInfluence && neighborOp > 0) { //ここで、相手がサイレントなら不適
-						tmpOp = neighborOp;
-						topInfluence = neighborInfluence;
-					} else {
-						continue;
-					}
+			//if (preOp == null || preOp == 0) { //自分が態度未決定であるときしかICの影響を受けない，という条件（なぜかついていた）
+				if (neighborInfluence > topInfluence && neighborOp != null && neighborOp > 0) { //ここで、相手がサイレントなら不適
+					tmpOp = neighborOp;
+					topInfluence = neighborInfluence;
+				} else {
+					continue;
 				}
-			} catch(Exception e) {
-				//このExecptionが、サイレントエージェントを参照した時のものである（getOpinionがNullを返してくるのでneighborOpとpreOpの比較時に例外）
-				continue;
-			}
+			//}
 		}
 		this.setTmpOpinion(tmpOp);
 		if (this.getTmpOpinion() != preOp) return true;
@@ -66,17 +61,26 @@ public class InfoAgent {
 		
 		int sum = 0;
 		Integer[] opinions = {0,0,0};
+		int NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2;
 		for (Object neighbor : this.getUndirectedList()) {
 			Integer neighborOp = infoAgentsArray[(Integer) neighbor].getOpinion(); 
-			if (neighborOp == null) continue;
+			if (neighborOp == null) continue; //未定義の人・サイレントな人は勘定しない．
 			
 			sum++;
 			opinions[neighborOp]++;
 		}
 		if (sum == 0) return false;
-		for (int opIndex = 0; opIndex < 3; opIndex++) {
+/*		for (int opIndex = 0; opIndex < 3; opIndex++) { //単純に，null以外の意見の比率を調べ，閾値を超えているものに付和雷同する
 			if (opinions[opIndex] / sum > this.threshold) tmpOp = opIndex;
-		}
+		}*/
+		
+		/*
+		 * こちらは，1or2の意見がどちらも多数派を勝ち得ていなければ，中立派が多数派であってもなくても中立の立場を取る，というモデル．
+		 */
+		if (opinions[POS_INDEX] / sum > this.threshold) tmpOp = POS_INDEX;
+		else if (opinions[NEG_INDEX] / sum > this.threshold) tmpOp = NEG_INDEX;
+		else tmpOp = NEU_INDEX;
+		
 		this.setTmpOpinion(tmpOp);
 		if (this.getTmpOpinion() != preOp) return true;
 		return false;

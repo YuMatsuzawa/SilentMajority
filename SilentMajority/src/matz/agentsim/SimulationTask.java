@@ -9,6 +9,10 @@ import java.util.logging.*;
 import matz.basics.ShortLogFormatter;
 import matz.basics.StaticNetwork;
 
+/**
+ * @author Matsuzawa
+ *
+ */
 public class SimulationTask implements Runnable {
 
 	private String InstanceName;
@@ -21,18 +25,17 @@ public class SimulationTask implements Runnable {
 	private String DataDir = "data";
 	private InfoAgent[] infoAgentsArray;
 	private Random localRNG = new Random();
-	private final int NULL_PATTERN = 0;
-	private final int MIX_PATTERN = 1;
-	private final int SPARSE_PATTERN = 2;
-	private int HUB_DRIVEN_PATTERN = 3;
-	private int LEAF_DRIVEN_PATTERN = 4;
+	private static final int NULL_PATTERN = 0, MIX_PATTERN = 1, SPARSE_PATTERN = 2,
+			HUB_DRIVEN_PATTERN = 3, LEAF_DRIVEN_PATTERN = 4;
+	private static final String[] PATTERN_NAME = {"NULL","MIX","SPARSE","HUB_DRIVEN","LEAF_DRIVEN"};
 	private int MAX_ITER = 40;
-	public final int SUM_INDEX = 0, UPDATE_INDEX = 1,
+	public static final int SUM_INDEX = 0, UPDATE_INDEX = 1,
 			TOTAL_INDEX = 0, SILENT_INDEX = 1, VOCAL_INDEX = 2,
 			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_INDEX = 3;
 	private String timeStamp;
 	private StaticNetwork refNetwork = null;
 	private CountDownLatch endGate = null;
+	private int initPattern;
 	@SuppressWarnings("unused")
 	private static boolean DIRECTED = true;
 	@SuppressWarnings("unused")
@@ -62,9 +65,10 @@ public class SimulationTask implements Runnable {
 			this.muzzleAgents();
 			
 			//意見分布をここで初期化する。
-			this.initOpinions(this.HUB_DRIVEN_PATTERN);
+			this.initOpinions(this.initPattern);
 			
 			File outDir = new File("results/" + this.getTimeStamp() + "/" + 
+					PATTERN_NAME[this.initPattern] +
 					"n=" + String.format("%d", this.getnAgents()) +
 					"s=" + String.format("%.1f", this.getSilentAgentsRatio()) +
 					"m=" + String.format("%.1f", this.getModelReferenceRatio()));
@@ -72,6 +76,9 @@ public class SimulationTask implements Runnable {
 			
 			//ネットワークのチェック
 			//this.dumpNetworkList(outDir);
+			NetworkVisualizer nv = new NetworkVisualizer(this.infoAgentsArray);
+			//初期状態の確認
+			nv.generateGraph(outDir, this.getInstanceName()+".initial.png");
 			
 			//情報伝播を試行する
 			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.getnAgents();
@@ -138,6 +145,9 @@ public class SimulationTask implements Runnable {
 				cStep++;
 			}
 			
+			//最終状態の確認．
+			nv.generateGraph(outDir, this.getInstanceName()+".final.png");
+			
 			//集計データの計算
 			double totalPosRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][POS_INDEX] / (double)this.getnAgents();
 			double totalNegRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][NEG_INDEX] / (double)this.getnAgents();
@@ -188,7 +198,7 @@ public class SimulationTask implements Runnable {
 	private void initInfoAgentsArray(int nAgents, StaticNetwork ntwk) {
 		this.infoAgentsArray= new InfoAgent[nAgents];
 		for (int index = 0; index < nAgents; index++) {
-			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(this.NULL_PATTERN), ntwk);
+			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(NULL_PATTERN), ntwk);
 				//InfoAgentのインスタンス化の際、コンストラクタの種類によって、サイレント／ヴォーカルや初期意見も指定できる。
 				//しかし、いろいろやった結果として初期化時には適当に与えておき、ネットワークの構造から定まるエージェントの性格に依存してのちにS/Vや意見を別に初期化することにした。
 				//よって基本的にはすべてヴォーカルかつNULL_PATTERNで初期化する。
@@ -271,16 +281,16 @@ public class SimulationTask implements Runnable {
 		
 		for (InfoAgent agent : this.infoAgentsArray) {
 			Integer opinion = null;
-			if (pattern == this.NULL_PATTERN) {
+			if (pattern == NULL_PATTERN) {
 				opinion = null;
-			} else if (pattern == this.MIX_PATTERN) {
+			} else if (pattern == MIX_PATTERN) {
 				double roll = this.localRNG.nextDouble();
 				if (roll > 0.25) opinion = this.localRNG.nextInt(3);
-			} else if (pattern == this.SPARSE_PATTERN) {
+			} else if (pattern == SPARSE_PATTERN) {
 				opinion = null;
 				double roll = this.localRNG.nextDouble();
 				if (roll < 0.1) opinion = this.localRNG.nextInt(3);
-			} else if (pattern == this.HUB_DRIVEN_PATTERN) {
+			} else if (pattern == HUB_DRIVEN_PATTERN) {
 				if (agent.getDegree() >= hubCutoff) {
 					double roll = this.localRNG.nextDouble();
 					if (roll < pHubInitiator) {
@@ -288,7 +298,7 @@ public class SimulationTask implements Runnable {
 						if (innerRoll < 0.1 / boundary) opinion = this.localRNG.nextInt(3);
 					}
 				}
-			} else if (pattern == this.LEAF_DRIVEN_PATTERN) {
+			} else if (pattern == LEAF_DRIVEN_PATTERN) {
 				if (agent.getDegree() <= leafCutoff) {
 					double roll = this.localRNG.nextDouble();
 					if (roll < pLeafInitiator) {
@@ -311,12 +321,12 @@ public class SimulationTask implements Runnable {
 	 */
 	private Integer initOpinion(int pattern) {
 		Integer opinion = null;
-		if (pattern == this.NULL_PATTERN) {
+		if (pattern == NULL_PATTERN) {
 			opinion = null;
-		} else if (pattern == this.MIX_PATTERN) {
+		} else if (pattern == MIX_PATTERN) {
 			double roll = this.localRNG.nextDouble();
 			if (roll > 0.25) opinion = this.localRNG.nextInt(3);
-		} else if (pattern == this.SPARSE_PATTERN) {
+		} else if (pattern == SPARSE_PATTERN) {
 			opinion = null;
 			double roll = this.localRNG.nextDouble();
 			if (roll < 0.1) opinion = this.localRNG.nextInt(3);
@@ -324,12 +334,12 @@ public class SimulationTask implements Runnable {
 		return opinion;
 	}
 
-	/**名前以外何も与えず、ランダムなパラメータで初期化するコンストラクタ。
-	 * 
+	/**
+	 * 名前以外何も与えず、ランダムなパラメータで初期化するコンストラクタ。
 	 * @param instanceName - 名前
 	 */
 	public SimulationTask(Object instanceName, CountDownLatch endGate) {
-		this("recent", instanceName, NAGENTS_DEFAUT, Math.random(),Math.random(), null, endGate);
+		this("recent", instanceName, NAGENTS_DEFAUT, Math.random(),Math.random(), SPARSE_PATTERN, null, endGate);
 	}
 	
 	/**
@@ -339,8 +349,8 @@ public class SimulationTask implements Runnable {
 	 * @param silentAgentsRatio
 	 * @param modelReferenceRatio
 	 */
-	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, CountDownLatch endGate) {
-		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, null, endGate);
+	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, int pattern, CountDownLatch endGate) {
+		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, pattern, null, endGate);
 	}
 	
 	/**
@@ -351,8 +361,8 @@ public class SimulationTask implements Runnable {
 	 * @param modelReferenceRatio
 	 * @param ntwk
 	 */
-	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, StaticNetwork ntwk, CountDownLatch endGate) {
-		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, ntwk, endGate);
+	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, int pattern, StaticNetwork ntwk, CountDownLatch endGate) {
+		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, pattern, ntwk, endGate);
 	}
 	/**基本コンストラクタ。
 	 * 
@@ -368,6 +378,7 @@ public class SimulationTask implements Runnable {
 						int nAgents,
 						double silentAgentsRatio,
 						double modelReferenceRatio,
+						int pattern,
 						StaticNetwork ntwk,
 						CountDownLatch endGate) {
 		try {
@@ -376,6 +387,7 @@ public class SimulationTask implements Runnable {
 			this.setnAgents(nAgents);
 			this.setSilentAgentsRatio(silentAgentsRatio);
 			this.setModelReferenceRatio(modelReferenceRatio);
+			this.setInitPattern(pattern);
 			this.refNetwork  = (ntwk == null)? null : ntwk;
 			this.endGate  = endGate;
 			//initTaskLogger();
@@ -447,6 +459,22 @@ public class SimulationTask implements Runnable {
 	 */
 	public void setModelReferenceRatio(double modelReferenceRatio) {
 		this.ModelReferenceRatio = modelReferenceRatio;
+	}
+	
+	/**
+	 * 初期化の方式を取得．
+	 * @return
+	 */
+	public int getInitPattern() {
+		return this.initPattern;
+	}
+	
+	/**
+	 * 初期化の方式を設定．
+	 * @param pattern
+	 */
+	public void setInitPattern(int pattern) {
+		this.initPattern = pattern;
 	}
 
 	/**Taskごとのログファイル名を取得。

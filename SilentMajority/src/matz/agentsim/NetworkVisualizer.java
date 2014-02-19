@@ -1,9 +1,6 @@
 package matz.agentsim;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Paint;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -16,7 +13,6 @@ import javax.imageio.ImageIO;
 import org.apache.commons.collections15.Transformer;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import edu.uci.ics.jung.visualization.VisualizationImageServer;
@@ -40,7 +36,7 @@ public class NetworkVisualizer {
 	private Graph<InfoAgent,Edge> graph = new UndirectedSparseGraph<InfoAgent, Edge>();
 	private InfoAgent[] infoAgentArray = null;
 	private Dimension figureSize = null;
-	private Layout<InfoAgent,Edge> layout = null;
+	private FRLayout<InfoAgent,Edge> layout = null;
 	private VisualizationImageServer<InfoAgent,Edge> vis = null;
 	
 	public NetworkVisualizer(InfoAgent[] infoAgentArray) {
@@ -79,12 +75,12 @@ public class NetworkVisualizer {
 			//ノードの色をノードの属性依存で変えるためのTransformer
 			@Override
 			public Paint transform(InfoAgent arg0) {
-				Paint retColor = Color.GRAY;
+				Paint retColor = Color.YELLOW;
 				Integer opinion = arg0.forceGetOpinion();
-				if (opinion == NULL_OPINION) retColor = Color.gray;
-				else if (opinion == NEU_OPINION) retColor = Color.white;
-				else if (opinion == POS_OPINION) retColor = Color.red;
-				else if (opinion == NEG_OPINION) retColor = Color.blue;
+				if (opinion == NULL_OPINION) retColor = Color.YELLOW;
+				else if (opinion == NEU_OPINION) retColor = Color.RED;
+				else if (opinion == POS_OPINION) retColor = Color.BLUE;
+				else if (opinion == NEG_OPINION) retColor = Color.GREEN;
 				return retColor;
 			}
 		};
@@ -95,7 +91,7 @@ public class NetworkVisualizer {
 			public Shape transform(InfoAgent arg0) {
 				int degree = arg0.getDegree();
 				boolean isSilent = arg0.isSilent();
-				double size = 2 + 2 * (degree / 100);				
+				double size = 5 + 5 * (degree / 10);				
 				Shape retShape = (isSilent)?
 						new Rectangle2D.Double(-size/2, -size/2, size, size) :
 						new Ellipse2D.Double(-size/2, -size/2, size, size);
@@ -103,7 +99,9 @@ public class NetworkVisualizer {
 			}
 		};
 
-		this.layout = new FRLayout<InfoAgent,Edge>(this.graph, this.figureSize);
+		//this.layout = new CircleLayout<InfoAgent,Edge>(this.graph);
+		this.layout = new FRLayout<InfoAgent,Edge>(this.graph);
+		this.layout.setMaxIterations(10);
 		this.vis = new VisualizationImageServer<InfoAgent, NetworkVisualizer.Edge>(this.layout, this.figureSize);
 		this.vis.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<InfoAgent, Edge>());
 		this.vis.getRenderContext().setVertexFillPaintTransformer(nodeFillColor);
@@ -112,7 +110,8 @@ public class NetworkVisualizer {
 		
 	}
 
-	public void generateGraph(File outDir, String outFile) throws IOException {
+	public void generateGraph(File outDir, String outFile) throws IOException, InterruptedException {
+		while(!this.layout.done()) Thread.sleep(1000);
 		BufferedImage bi = (BufferedImage) this.vis.getImage(
 				new Point2D.Double(layout.getSize().getWidth() / 2, layout.getSize().getHeight() / 2),
 				this.figureSize);

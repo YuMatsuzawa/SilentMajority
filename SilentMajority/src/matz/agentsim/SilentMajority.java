@@ -20,6 +20,10 @@ import matz.basics.StaticNetwork;
  *
  */
 public final class SilentMajority {
+	@SuppressWarnings("unused")
+	private static final int NULL_PATTERN = 0, MIX_PATTERN = 1, SPARSE_PATTERN = 2,
+			HUB_DRIVEN_PATTERN = 3, LEAF_DRIVEN_PATTERN = 4;
+	private static final String[] PATTERN_NAME = {"NULL","MIX","SPARSE","HUB_DRIVEN","LEAF_DRIVEN"};
 	
 	public static final void main(String[] args) {
 		MatzExecutor _E = null;
@@ -48,7 +52,8 @@ public final class SilentMajority {
 		//if (!outDir.isDirectory()) outDir.mkdirs();
 		if (!dateDir.isDirectory()) dateDir.mkdirs();
 		
-		int nIter = 5, sRatioResol = 9, mRatioResol = 11;
+		int pattern = LEAF_DRIVEN_PATTERN;
+		int nIter = 10, sRatioResol = 9, mRatioResol = 11;
 		CountDownLatch endGate = new CountDownLatch(sRatioResol * mRatioResol * nIter); //全シミュレーションが終了するまでをカウントするCountDownLatch
 		int nAgents = 1000;
 		// ここでネットワーク生成
@@ -61,8 +66,9 @@ public final class SilentMajority {
 				double mRatio = j * 0.10;
 				//double mRatio = 0.50;
 				for (int i = 0; i < nIter; i++) {
-					SimulationTask rn = new SimulationTask(String.valueOf(date.getTime()), "condition" + k + "-" + j + "_" + i , nAgents, sRatio, mRatio, cnnNtwk, endGate);
-					//SimulationTask rn = new SimulationTask("condition" + k + "-" + j + "_" + i, nAgents, sRatio, mRatio, cnnNtwk, endGate);
+					SimulationTask rn = new SimulationTask(String.valueOf(date.getTime()),
+							"condition" + k + "-" + j + "_" + i , nAgents, sRatio, mRatio, pattern, cnnNtwk, endGate);
+					//SimulationTask rn = new SimulationTask("condition" + k + "-" + j + "_" + i, nAgents, sRatio, mRatio, pattern, cnnNtwk, endGate);
 						//コンストラクト時に時刻を与えないと、"recent"以下に結果が上書き出力される。
 					_E.execute(rn);
 					_E.SimExecLogger.info("Submitted: " + rn.getInstanceName());
@@ -89,6 +95,7 @@ public final class SilentMajority {
 				for (int j = 0; j < mRatioResol; j++) {
 					double mRatio = j * 0.10;
 					File resultDir = new File(dateDir, 
+							PATTERN_NAME[pattern] +
 							"n=" + String.format("%d", nAgents) +
 							"s=" + String.format("%.1f", sRatio) +
 							"m=" + String.format("%.1f", mRatio));
