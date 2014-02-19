@@ -275,7 +275,7 @@ public class SimulationTask implements Runnable {
 				opinion = null;
 			} else if (pattern == this.MIX_PATTERN) {
 				double roll = this.localRNG.nextDouble();
-				if (roll < 0.25) opinion = this.localRNG.nextInt(3);
+				if (roll > 0.25) opinion = this.localRNG.nextInt(3);
 			} else if (pattern == this.SPARSE_PATTERN) {
 				opinion = null;
 				double roll = this.localRNG.nextDouble();
@@ -315,7 +315,7 @@ public class SimulationTask implements Runnable {
 			opinion = null;
 		} else if (pattern == this.MIX_PATTERN) {
 			double roll = this.localRNG.nextDouble();
-			if (roll < 0.25) opinion = this.localRNG.nextInt(3);
+			if (roll > 0.25) opinion = this.localRNG.nextInt(3);
 		} else if (pattern == this.SPARSE_PATTERN) {
 			opinion = null;
 			double roll = this.localRNG.nextDouble();
