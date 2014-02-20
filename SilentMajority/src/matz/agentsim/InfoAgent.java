@@ -145,7 +145,7 @@ public class InfoAgent {
 		}
 		if (sumOfVocal == 0) return false;
 		if (sumOfVocalizedSameOpinion / sumOfVocal > this.threshold &&
-				sumOfVocalizedSameOpinion / sumOfVocal < reliefRatio) tmpSilent = false; //黙ってしまうほど少なくもないが，安心できるほど多くもないときにヴォーカルになる
+				sumOfVocalizedSameOpinion / this.getDegree() < reliefRatio) tmpSilent = false; //黙ってしまうほど少なくもないが，安心できるほど多くもないときにヴォーカルになる
 		else tmpSilent = true;
 		
 		this.tmpSilent = tmpSilent;

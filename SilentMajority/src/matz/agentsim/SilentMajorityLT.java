@@ -47,7 +47,7 @@ public class SilentMajorityLT {
 		String simName = SilentMajorityLT.class.getSimpleName()+date.getTime();
 		File outDir = new File("results",simName);
 		if (!outDir.isDirectory()) outDir.mkdirs();
-		double totalPosRatio = 0.1, initSilentRatio = 0.9;
+		double totalPosRatio = 0.2, initSilentRatio = 0.9;
 //		controlPitch = 0.05;
 //		controlResol = 19;
 		CountDownLatch endGate = new CountDownLatch(controlResol * nIter); //全シミュレーションが終了するまでをカウントするCountDownLatch
@@ -80,9 +80,8 @@ public class SilentMajorityLT {
 			 * 
 			 */
 			double[][] vocalOpinions = new double[controlResol][2];
-			
-			for (int j = 1; j <= controlResol; j++) {
-				double controlVar = j * controlPitch;
+			int index = 0;
+			for (double controlVar = lowerBound; controlVar < lowerBound + controlPitch*controlResol; controlVar += controlPitch) {
 				File resultDir = new File("results/"+simName,
 						"n="+String.format("%d",nAgents) +
 						"pos="+String.format("%.2f",totalPosRatio) +
@@ -103,18 +102,19 @@ public class SilentMajorityLT {
 					while((line = br.readLine()) != null) lastLine = line; //最終行取得
 					String[] values = lastLine.split(",");
 					double[] dValues = {Double.parseDouble(values[1]),Double.parseDouble(values[2])};
-					vocalOpinions[j-1][0] += dValues[0] / nIter;
-					vocalOpinions[j-1][1] += dValues[1] / nIter;
+					vocalOpinions[index][0] += dValues[0] / nIter;
+					vocalOpinions[index][1] += dValues[1] / nIter;
 					br.close();
 				}
+				index++;
 			}
 			
 			//csv出力
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "PosNegRatio" + date.getTime() + ".csv"))));
 			bw.write("control,pos,neg");
 			bw.newLine();
-			for (int j = 1; j <= controlResol; j++){
-				bw.write(j*controlPitch + "," + (int)vocalOpinions[j-1][0] +"," + (int)vocalOpinions[j-1][1]);
+			for (int j = 0; j < controlResol; j++){
+				bw.write(lowerBound + j*controlPitch + "," + (int)vocalOpinions[j][0] +"," + (int)vocalOpinions[j][1]);
 				bw.newLine();
 			}
 			bw.close();

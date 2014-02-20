@@ -77,8 +77,8 @@ public class SimulationTaskLT extends SimulationTask {
 				 * 
 				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
-					agent.linearThreasholdMuzzling(infoAgentsArray);
-					//agent.linearThresholdMuzzlingWithRelief(infoAgentsArray, this.controlVar);
+					//agent.linearThreasholdMuzzling(infoAgentsArray);
+					agent.linearThresholdMuzzlingWithRelief(infoAgentsArray, this.controlVar);
 				}
 				
 				for (InfoAgent agent : this.infoAgentsArray) agent.applyMuzzling(); //’†ŠÔó‘Ô‚ğ–{“K—p
