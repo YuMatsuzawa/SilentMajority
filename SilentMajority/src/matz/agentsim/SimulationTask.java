@@ -21,20 +21,20 @@ public class SimulationTask implements Runnable {
 	private double SilentAgentsRatio;
 	private double ModelReferenceRatio;
 	private String TaskLogFileName;
-	private Logger TaskLogger = null;
+	protected Logger TaskLogger = null;
 	private String DataDir = "data";
-	private InfoAgent[] infoAgentsArray;
-	private Random localRNG = new Random();
+	protected InfoAgent[] infoAgentsArray;
+	protected Random localRNG = new Random();
 	private static final int NULL_PATTERN = 0, MIX_PATTERN = 1, SPARSE_PATTERN = 2,
 			HUB_DRIVEN_PATTERN = 3, LEAF_DRIVEN_PATTERN = 4;
 	private static final String[] PATTERN_NAME = {"NULL","MIX","SPARSE","HUB_DRIVEN","LEAF_DRIVEN"};
 	private int MAX_ITER = 40;
-	public static final int SUM_INDEX = 0, UPDATE_INDEX = 1,
+	private static final int SUM_INDEX = 0, UPDATE_INDEX = 1,
 			TOTAL_INDEX = 0, SILENT_INDEX = 1, VOCAL_INDEX = 2,
 			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_INDEX = 3;
 	private String timeStamp;
-	private StaticNetwork refNetwork = null;
-	private CountDownLatch endGate = null;
+	protected StaticNetwork refNetwork = null;
+	protected CountDownLatch endGate = null;
 	private int initPattern;
 	@SuppressWarnings("unused")
 	private static boolean DIRECTED = true;
@@ -195,7 +195,7 @@ public class SimulationTask implements Runnable {
 	 * 情報エージェント配列を初期化する．この処理はrun()内で呼ばれるべきである（子スレッド内で処理されるべきである）．<br>
 	 * @param nAgents
 	 */
-	private void initInfoAgentsArray(int nAgents, StaticNetwork ntwk) {
+	protected void initInfoAgentsArray(int nAgents, StaticNetwork ntwk) {
 		this.infoAgentsArray= new InfoAgent[nAgents];
 		for (int index = 0; index < nAgents; index++) {
 			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(NULL_PATTERN), ntwk);
@@ -352,6 +352,20 @@ public class SimulationTask implements Runnable {
 	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, int pattern, CountDownLatch endGate) {
 		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, pattern, null, endGate);
 	}
+
+	/**
+	 * 派生シミュレーション用のスーパーコンストラクタ．パラメータと初期化パターンは使わないのでランダムに与える．
+	 * @param simName
+	 * @param instanceName
+	 * @param nAgents
+	 * @param cnnNtwk
+	 * @param endGate
+	 */
+	public SimulationTask(String simName, String instanceName, int nAgents,
+			StaticNetwork ntwk, CountDownLatch endGate) {
+		this(simName, instanceName, nAgents, Math.random(), Math.random(), NULL_PATTERN, ntwk, endGate);
+	}
+
 	
 	/**
 	 * タイムスタンプを与えずに初期化するコンストラクタ。静的ネットワークを与える。結果は"recent"以下に出力される。
@@ -395,7 +409,6 @@ public class SimulationTask implements Runnable {
 			e.printStackTrace(); //TaskLoggerをコンストラクタで初期化しないのでデフォルト出力を使用する．
 		}
 	}
-
 
 	public String getTimeStamp() {
 		return this.timeStamp;
@@ -494,7 +507,7 @@ public class SimulationTask implements Runnable {
 	 * Runnableタスクのログは（数百以上に及ぶことのある）タスクごとではなく，（たかだかプロセッサ数*コア数に収まる）実行スレッドごとに取得したい．<br>
 	 * そのために，initTaskLoggerはThread.currendThread（）を使用するので，Runnableオブジェクトのrun()メソッド内で実行されなければならない．
 	 */
-	private void initTaskLogger() {
+	protected void initTaskLogger() {
 		this.TaskLogger = Logger.getLogger(this.getClass().getName()+"."+Thread.currentThread().getName()); //pseudo-constructor
 		this.setTaskLogFileName();		
 		//for (Handler handler : TaskLogger.getHandlers()) TaskLogger.removeHandler(handler); //remove default handlers
@@ -523,7 +536,7 @@ public class SimulationTask implements Runnable {
 	 * この処理はlckファイルを掃除するために必要．
 	 * 
 	 */
-	private void closeLogFileHandler() {
+	protected void closeLogFileHandler() {
 		for (Handler handler : this.TaskLogger.getHandlers()) {
 			handler.flush();
 			handler.close();

@@ -12,13 +12,14 @@ public class InfoAgent {
 	private ArrayList<Integer> followingList;
 	private ArrayList<Integer> followedList;
 	private boolean isSilent = false;
+	private boolean tmpSilent = isSilent;
 	private Integer tmpOpinion;
 	/**抽象的な意見（情報）を表す状態変数．<br>
 	 * プリミティブintではなくラッパ型のIntegerにしておき，nullを使えるようにする．
 	 */
 	private Integer opinion;
 	private double influence = Math.random();
-	private double threshold = 0.5;
+	private double threshold = Math.random(); //ランダムにする
 	private StaticNetwork refNetwork = null;
 	private boolean isNetworkStatic = false;
 	
@@ -83,6 +84,40 @@ public class InfoAgent {
 		
 		this.setTmpOpinion(tmpOp);
 		if (this.getTmpOpinion() != preOp) return true;
+		return false;
+	}
+
+	/**
+	 * 派生シミュレーションのためのメソッド．<br>
+	 * LTモデルに基づき，隣接周囲の多数派に反応して，サイレント化したり，ヴォーカル化したりする．<br>
+	 * ルール:自分と同じ意見が，<br>
+	 * 1.自分の閾値を超える多数派ならヴォーカルになる<br>
+	 * 2.自分の閾値を下回る少数派ならサイレントになる<br>
+	 * 閾値はランダムに分布しているので，自分と同じ意見がたとえ少数派でもサイレントにならなかったり，<br>
+	 * 逆に相当多数派でもヴォーカルにならなかったりするエージェントも発生するところがポイント．<br>
+	 * @param infoAgentsArray
+	 * @return 変化すればtrue
+	 */
+	public boolean LTmuzzling(InfoAgent[] infoAgentsArray) {
+		boolean preSilent = this.isSilent();
+		boolean tmpSilent = this.isSilent();
+		
+		int sumOfVocal = 0, sumOfVocalizedSameOpinion = 0;
+		for (int neighborIndex : this.getUndirectedList()) {
+			Integer neighborOp = infoAgentsArray[neighborIndex].getOpinion();
+			if (neighborOp == null) continue; //サイレントは無視
+			else {
+				sumOfVocal++; //nullでないならヴォーカル
+				if (neighborOp == this.forceGetOpinion()) sumOfVocalizedSameOpinion++;
+					//自分の真の意見と同じ意見の人を数える
+			}
+		}
+		if (sumOfVocal == 0) return false;
+		if (sumOfVocalizedSameOpinion / sumOfVocal > this.threshold) tmpSilent = false;
+		else tmpSilent = true;
+		
+		this.tmpSilent = tmpSilent;
+		if (this.tmpSilent != preSilent) return true;
 		return false;
 	}
 	
@@ -305,6 +340,15 @@ public class InfoAgent {
 	}
 
 	/**
+	 * 派生シミュレーションのためのメソッド．<br>
+	 * LTmuzzlingで決定したmuzzlingの中間状態を本適用する．
+	 */
+	public void applyMuzzling() {
+		if (this.tmpSilent) this.muzzle();
+		else this.unmuzzle();
+	}
+	
+	/**
 	 * 影響力を取得する。サイレントなら-1を返す。この-1という数字はイテレータ側で影響力最大のエージェントを探す際の比較に引っかからないために指定されている。
 	 * @return influence
 	 */
@@ -318,5 +362,5 @@ public class InfoAgent {
 	 */
 	public void setInfluence(double influence) {
 		this.influence = influence;
-	}	
+	}
 }
