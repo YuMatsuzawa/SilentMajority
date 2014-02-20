@@ -19,7 +19,8 @@ public class InfoAgent {
 	 */
 	private Integer opinion;
 	private double influence = Math.random();
-	private double threshold = Math.random(); //ランダムにする
+	//private double threshold = Math.random(); //ランダムにする
+	private double threshold = 0.1; //reliefつきmuzzlingで少数派閾値の場合
 	private StaticNetwork refNetwork = null;
 	private boolean isNetworkStatic = false;
 	
@@ -28,7 +29,7 @@ public class InfoAgent {
 	 * 隣接リストにいる人を順に参照していき、ヴォーカルな人の中で最も影響力の高い人から影響される。
 	 * @return 変化があったらtrue
 	 */
-	public boolean IndependentCascade(InfoAgent[] infoAgentsArray) {
+	public boolean independentCascade(InfoAgent[] infoAgentsArray) {
 		if (!(this.getOpinion() == null || this.getOpinion() == 0)) return false;
 
 		Integer preOp = this.forceGetOpinion();
@@ -56,7 +57,7 @@ public class InfoAgent {
 	 * @param infoAgentsArray
 	 * @return
 	 */
-	public boolean LinearThreashold(InfoAgent[] infoAgentsArray) {
+	public boolean ｌinearThreashold(InfoAgent[] infoAgentsArray) {
 		Integer preOp = this.forceGetOpinion();
 		Integer tmpOp = this.forceGetOpinion();
 		
@@ -98,7 +99,7 @@ public class InfoAgent {
 	 * @param infoAgentsArray
 	 * @return 変化すればtrue
 	 */
-	public boolean LTmuzzling(InfoAgent[] infoAgentsArray) {
+	public boolean linearThreasholdMuzzling(InfoAgent[] infoAgentsArray) {
 		boolean preSilent = this.isSilent();
 		boolean tmpSilent = this.isSilent();
 		
@@ -114,6 +115,37 @@ public class InfoAgent {
 		}
 		if (sumOfVocal == 0) return false;
 		if (sumOfVocalizedSameOpinion / sumOfVocal > this.threshold) tmpSilent = false;
+		else tmpSilent = true;
+		
+		this.tmpSilent = tmpSilent;
+		if (this.tmpSilent != preSilent) return true;
+		return false;
+	}
+
+	/**
+	 * 安堵Reliefあるいは他人任せSlackを導入した{@link InfoAgent#linearThreasholdMuzzling(InfoAgent[])}からの派生シミュレーション<br>
+	 * 自分の意見が極めて少数派である場合サイレントになり，<br>
+	 * ある程度市民権を得るとヴォーカルになり，<br>
+	 * 更に長じて安心出来るだけの多数派が回りにいると感じるとまたサイレントになる．
+	 * @param infoAgentsArray
+	 */
+	public boolean linearThresholdMuzzlingWithRelief(InfoAgent[] infoAgentsArray, double reliefRatio) {
+		boolean preSilent = this.isSilent();
+		boolean tmpSilent = this.isSilent();
+		
+		int sumOfVocal = 0, sumOfVocalizedSameOpinion = 0;
+		for (int neighborIndex : this.getUndirectedList()) {
+			Integer neighborOp = infoAgentsArray[neighborIndex].getOpinion();
+			if (neighborOp == null) continue; //サイレントは無視
+			else {
+				sumOfVocal++; //nullでないならヴォーカル
+				if (neighborOp == this.forceGetOpinion()) sumOfVocalizedSameOpinion++;
+					//自分の真の意見と同じ意見の人を数える
+			}
+		}
+		if (sumOfVocal == 0) return false;
+		if (sumOfVocalizedSameOpinion / sumOfVocal > this.threshold &&
+				sumOfVocalizedSameOpinion / sumOfVocal < reliefRatio) tmpSilent = false; //黙ってしまうほど少なくもないが，安心できるほど多くもないときにヴォーカルになる
 		else tmpSilent = true;
 		
 		this.tmpSilent = tmpSilent;

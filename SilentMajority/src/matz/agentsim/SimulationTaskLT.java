@@ -32,10 +32,12 @@ public class SimulationTaskLT extends SimulationTask {
 			}
 			
 			//意見分布を初期化
-			this.initOpinions();
+			//this.initOpinions();
+			this.simpleInitOpinions();
 			
 			//一定割合をヴォーカルにして情報伝播の起点にする（muzzleAgentsに相当）
 			this.simpleInitPropagation();
+			//this.biasedPropagation();
 			
 			File outDir = new File("results/"+this.getTimeStamp(),
 					"n="+String.format("%d",this.getnAgents()) +
@@ -75,7 +77,8 @@ public class SimulationTaskLT extends SimulationTask {
 				 * 
 				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
-					agent.LTmuzzling(infoAgentsArray);
+					agent.linearThreasholdMuzzling(infoAgentsArray);
+					//agent.linearThresholdMuzzlingWithRelief(infoAgentsArray, this.controlVar);
 				}
 				
 				for (InfoAgent agent : this.infoAgentsArray) agent.applyMuzzling(); //中間状態を本適用
@@ -105,7 +108,7 @@ public class SimulationTaskLT extends SimulationTask {
 	 * totalPosRatio=initHubPosRatioなら，初期POSを持っているのはハブエージェントのみで，残るエージェントはNEGになる．
 	 * 
 	 */
-	private void initOpinions() {
+	public void rankedInitOpinions() {
 		//POSで始まるハブの境界値となる次数を探す
 		int hubCutoff = this.getnAgents();
 		int posHubCandidate = this.getnAgents();
@@ -153,7 +156,7 @@ public class SimulationTaskLT extends SimulationTask {
 	 * 全体のinitSilentRatioだけSilentにし，残りはVocalにする．<br>
 	 * 一般にinitSilentRatioは高い値であり，当初Vocalである人は少ない<br>
 	 */
-	private void simpleInitPropagation() {
+	public void simpleInitPropagation() {
 		for (InfoAgent agent : this.infoAgentsArray){
 			double roll = this.localRNG.nextDouble();
 			if (roll < this.initSilentRatio) agent.muzzle();
