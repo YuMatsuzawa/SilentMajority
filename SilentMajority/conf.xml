@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Configuration</comment>
+<entry key="initSilentRatio">0.9</entry>
+<entry key="controlResol">20</entry>
+<entry key="totalPosRatio">0.4</entry>
+<entry key="simType">0</entry>
+<entry key="nIter">10</entry>
+<entry key="lowerBound">0.01</entry>
+<entry key="nCore">8</entry>
+<entry key="controlPitch">0.01</entry>
+</properties>

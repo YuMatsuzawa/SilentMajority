@@ -2,6 +2,7 @@ package matz.agentsim;
 
 import java.io.*;
 import java.util.Date;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 import matz.basics.MatzExecutor;
@@ -13,16 +14,74 @@ public class SilentMajorityLT {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		@SuppressWarnings("unused")
+		final int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2;
+		final String[] SIM_TYPE_NAME = {"BiasedOpinionByRank", "BiasedVocalization", "RelievingAgents"};
+		
 		MatzExecutor _E = null;
-		final int NCORE_INDEX = 0, CTRL_PITCH_INDEX = 1, CTRL_RESOL_INDEX = 2, LOWER_BOUND_INDEX = 3, NITER_INDEX = 4;
-		int nIter = 10, controlResol;
+		int nIter = 10, simType = 0;
+		int controlResol;
+		double totalPosRatio = 0.2, initSilentRatio = 0.9;
 		double controlPitch, lowerBound;
 		
-		//引数はコア数,コントロール変数の粒度・解像度・下限値，シミュレーション回数．Corei7以上ならコア数8を指定していい．Corei5,i3,Core2 Quadなら4，Core2 Duoなら2.
+		/*
+		 * Configファイルでパラメータ管理する．
+		 */
+		Properties conf = new Properties();
 		try {
+			conf.loadFromXML(new FileInputStream(args[0]));
+		} catch(FileNotFoundException e) {
+			System.err.println("First argument must be proper path to configuration XML.");
+			System.exit(-1);
+		} catch(IOException e) {
+			System.err.println("Cannot read "+args[0]);
+			System.exit(-1);
+		} catch(Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+
+		try {
+			_E = new MatzExecutor(Integer.parseInt(conf.getProperty("nCore")));
+		} catch (Exception e) {
+			_E = new MatzExecutor();
+		}
+		try {
+			nIter = Integer.parseInt(conf.getProperty("nIter"));
+		} catch (Exception e) {
+			//do nothing
+		}
+		try {
+			simType = Integer.parseInt(conf.getProperty("simType"));
+			controlResol = Integer.parseInt(conf.getProperty("controlResol"));
+			controlPitch = Double.parseDouble(conf.getProperty("controlPitch"));
+			lowerBound = Double.parseDouble(conf.getProperty("lowerBound"));
+			totalPosRatio = Double.parseDouble(conf.getProperty("totalPosRatio"));
+			initSilentRatio = Double.parseDouble(conf.getProperty("initSilentRatio"));
+		} catch (Exception e) {
+			_E.logStackTrace(e);
+			_E.safeShutdown();
+			_E.closeLogFileHandler();
+			return;
+		}
+		
+		if (simType == TYPE_RANKED) {
+			if (lowerBound + controlPitch*controlResol > totalPosRatio) {
+				_E.SimExecLogger.severe("ControlVar out of bound.");
+				_E.safeShutdown();
+				_E.closeLogFileHandler();
+				return;
+			}
+		}
+		
+/*		try {
 			_E = new MatzExecutor(Integer.parseInt(args[NCORE_INDEX]));
 		} catch (Exception e) { _E = new MatzExecutor(); }
-		
+	
+		try {
+			Properties conf = new Properties();
+			conf.load
+		}
 		try {
 			controlPitch = Double.parseDouble(args[CTRL_PITCH_INDEX]);
 			controlResol = Integer.parseInt(args[CTRL_RESOL_INDEX]);
@@ -34,6 +93,14 @@ public class SilentMajorityLT {
 			return;
 		}
 		try {
+			simType = Integer.parseInt(args[SIM_TYPE_INDEX]);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			//do nothing
+		}catch (Exception e) {
+			_E.logStackTrace(e);
+		}
+		
+		try {
 			nIter = Integer.parseInt(args[NITER_INDEX]);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			//do nothing
@@ -41,13 +108,28 @@ public class SilentMajorityLT {
 			_E.logStackTrace(e);
 		}
 		
+		Properties conf = new Properties();
+		conf.setProperty("nCore", args[0]);
+		conf.setProperty("simType", String.valueOf(simType));
+		conf.setProperty("controlPitch", String.valueOf(controlPitch));
+		conf.setProperty("controlResol", String.valueOf(controlResol));
+		conf.setProperty("lowerBound", String.valueOf(lowerBound));
+		conf.setProperty("totalPosRatio", String.valueOf(totalPosRatio));
+		conf.setProperty("initSilentRatio", String.valueOf(initSilentRatio));
+		conf.setProperty("nIter", String.valueOf(nIter));
+		
+		try {
+			conf.storeToXML(new FileOutputStream("conf.xml"), "Configuration");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}*/
+		
 		_E.SimExecLogger.info("Starting "+ _E.getClass().getName() +". NumThreads = " + _E.getNumThreads());
 
 		Date date = new Date();
-		String simName = SilentMajorityLT.class.getSimpleName()+date.getTime();
+		String simName = SIM_TYPE_NAME[simType] + date.getTime();
 		File outDir = new File("results",simName);
 		if (!outDir.isDirectory()) outDir.mkdirs();
-		double totalPosRatio = 0.2, initSilentRatio = 0.9;
 //		controlPitch = 0.05;
 //		controlResol = 19;
 		CountDownLatch endGate = new CountDownLatch(controlResol * nIter); //全シミュレーションが終了するまでをカウントするCountDownLatch
@@ -62,6 +144,7 @@ public class SilentMajorityLT {
 				SimulationTaskLT rn = new SimulationTaskLT(simName, 
 						"n="+String.format("%d",nAgents) +
 						"pos="+String.format("%.2f",totalPosRatio) +
+						"sil="+String.format("%.2f",initSilentRatio) +
 						"ctrl="+String.format("%.2f",controlVar) +
 						"_" + iter,
 						nAgents, totalPosRatio, controlVar, initSilentRatio, cnnNtwk, endGate);
@@ -85,6 +168,7 @@ public class SilentMajorityLT {
 				File resultDir = new File("results/"+simName,
 						"n="+String.format("%d",nAgents) +
 						"pos="+String.format("%.2f",totalPosRatio) +
+						"sil="+String.format("%.2f",initSilentRatio) +
 						"ctrl="+String.format("%.2f",controlVar)
 						);
 				File[] resultFiles = resultDir.listFiles(new FilenameFilter() {

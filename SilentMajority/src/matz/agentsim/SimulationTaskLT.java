@@ -14,7 +14,10 @@ public class SimulationTaskLT extends SimulationTask {
 	private double controlVar;
 	private double totalPosRatio;
 	private double initSilentRatio;
+	private int simType;
 	private static int NUM_OPINION = 2, POS_OPINION = 0, NEG_OPINION = 1;
+	static final int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2;
+	static final String[] SIM_TYPE_NAME = {"BiasedOpinionByRank", "BiasedVocalization", "RelievingAgents"};
 	
 	@Override
 	public void run() {
@@ -32,16 +35,17 @@ public class SimulationTaskLT extends SimulationTask {
 			}
 			
 			//意見分布を初期化
-			//this.initOpinions();
-			this.simpleInitOpinions();
+			if (simType == TYPE_RANKED) this.rankedInitOpinions();
+			else this.simpleInitOpinions();
 			
 			//一定割合をヴォーカルにして情報伝播の起点にする（muzzleAgentsに相当）
-			this.simpleInitPropagation();
-			//this.biasedPropagation();
+			if (simType == TYPE_BIASED) this.biasedPropagation();
+			else this.simpleInitPropagation();
 			
 			File outDir = new File("results/"+this.getTimeStamp(),
 					"n="+String.format("%d",this.getnAgents()) +
 					"pos="+String.format("%.2f", this.totalPosRatio) +
+					"sil="+String.format("%.2f", this.initSilentRatio) +
 					"ctrl="+String.format("%.2f", this.controlVar)
 					);
 			if (!outDir.isDirectory()) outDir.mkdirs();
@@ -77,8 +81,9 @@ public class SimulationTaskLT extends SimulationTask {
 				 * 
 				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
-					//agent.linearThreasholdMuzzling(infoAgentsArray);
-					agent.linearThresholdMuzzlingWithRelief(infoAgentsArray, this.controlVar);
+					if (this.simType == TYPE_RELIEF) agent.linearThresholdMuzzlingWithRelief(infoAgentsArray, this.controlVar);
+					else agent.linearThreasholdMuzzling(infoAgentsArray);
+					
 				}
 				
 				for (InfoAgent agent : this.infoAgentsArray) agent.applyMuzzling(); //中間状態を本適用
@@ -202,5 +207,8 @@ public class SimulationTaskLT extends SimulationTask {
 		this.totalPosRatio = totalPosRatio;
 		this.controlVar = controlVar;
 		this.initSilentRatio = initSilentRatio;
+		for(int simTypeIndex = 0; simTypeIndex < SIM_TYPE_NAME.length; simTypeIndex++) {
+			if (simName.startsWith(SIM_TYPE_NAME[simTypeIndex])) this.simType = simTypeIndex;
+		} 
 	}
 }

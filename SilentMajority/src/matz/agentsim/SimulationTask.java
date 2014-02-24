@@ -29,6 +29,7 @@ public class SimulationTask implements Runnable {
 			HUB_DRIVEN_PATTERN = 3, LEAF_DRIVEN_PATTERN = 4;
 	private static final String[] PATTERN_NAME = {"NULL","MIX","SPARSE","HUB_DRIVEN","LEAF_DRIVEN"};
 	private int MAX_ITER = 40;
+	@SuppressWarnings("unused")
 	private static final int SUM_INDEX = 0, UPDATE_INDEX = 1,
 			TOTAL_INDEX = 0, SILENT_INDEX = 1, VOCAL_INDEX = 2,
 			NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2, NULL_INDEX = 3;
@@ -42,6 +43,7 @@ public class SimulationTask implements Runnable {
 	private static boolean UNDIRECTED = false;
 	private static final double CONVERGENCE_CONDITION = 0.01;
 	
+	@SuppressWarnings("unused")
 	@Override
 	public void run() {
 		this.initTaskLogger();
@@ -161,7 +163,7 @@ public class SimulationTask implements Runnable {
 			double vocalNegRatio = (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][NEG_INDEX] / (double)this.getnAgents();
 			double vocalNeuRatio = (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][NEU_INDEX] / (double)this.getnAgents();
 			double vocalNullRatio = (double)records.get(cStep-1)[SUM_INDEX][VOCAL_INDEX][NULL_INDEX] / (double)this.getnAgents();
-
+			
 			double VTDivergence = (vocalPosRatio > totalPosRatio)? vocalPosRatio / totalPosRatio : totalPosRatio / vocalPosRatio;
 			double STDivergence = (silentPosRatio > totalPosRatio)? silentPosRatio / totalPosRatio : totalPosRatio / silentPosRatio;
 			//double silentDivergence = silentPNRatio / totalPNRatio;
