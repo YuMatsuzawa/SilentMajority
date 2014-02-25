@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import matz.basics.network.StaticCNNNetwork;
+import matz.basics.network.StaticNetwork;
 
 import org.apache.commons.collections15.Transformer;
 
@@ -33,7 +34,7 @@ public class GraphGen {
 	public static void main(String[] args) {
 		//テストネットワークの生成
 		int nAgents = 1000;
-		StaticCNNNetwork ntwk = new StaticCNNNetwork(nAgents);
+		StaticNetwork ntwk = new StaticCNNNetwork(nAgents);
 		
 		//グラフの作成
 		Graph<Integer,String> graph = new UndirectedSparseGraph<Integer,String>();

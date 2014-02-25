@@ -1,30 +1,23 @@
 package matz.basics.network;
 
-import java.io.File;
-
 
 public class StaticBANetwork extends StaticNetwork {
-
-	public StaticBANetwork(int nAgents, boolean orientation) {
-		super(nAgents, orientation);
-		// TODO 自動生成されたコンストラクター・スタブ
-	}
-
-	public StaticBANetwork(int nAgents) {
-		super(nAgents);
-		// TODO 自動生成されたコンストラクター・スタブ
-	}
-
+	
 	@Override
 	public void build() {
-		// TODO 自動生成されたメソッド・スタブ
-
+		
 	}
-
-	@Override
-	public void dumpNetwork(File outDir) {
-		// TODO 自動生成されたメソッド・スタブ
-
+	
+	public StaticBANetwork(int nAgents, boolean orientation, Double degree) {
+		super("WS", nAgents, orientation, degree);
+		this.build();
 	}
-
+	
+	public StaticBANetwork(int nAgents, Double degree) {
+		this(nAgents, UNDIRECTED, degree);
+	}
+	
+	public StaticBANetwork(int nAgents) {
+		this(nAgents, null);
+	}
 }

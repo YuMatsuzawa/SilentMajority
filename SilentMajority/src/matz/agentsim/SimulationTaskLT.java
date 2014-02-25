@@ -115,31 +115,38 @@ public class SimulationTaskLT extends SimulationTask {
 	 */
 	public void rankedInitOpinions() {
 		//POSで始まるハブの境界値となる次数を探す
-		int hubCutoff = this.getnAgents();
-		int posHubCandidate = this.getnAgents();
-		double posHubInitiator = this.getnAgents() * this.controlVar;
+		int hubCutoff = this.refNetwork.getDegreeFreq().firstKey();
+		double nPosCandidate = this.getnAgents();
+		double nPosInitiator = this.getnAgents() * this.controlVar;
+		double nPos = 0.0;
 		for (Entry<Integer,Integer> entry : this.refNetwork.getDegreeFreq().entrySet()) {
-			if (posHubCandidate >= posHubInitiator) {
-				int tmpCandidate = posHubCandidate - entry.getValue();
-				if (tmpCandidate >= posHubInitiator) {
+			if (nPosCandidate >= nPosInitiator) {
+				double tmpCandidate = nPosCandidate - entry.getValue();
+				if (tmpCandidate >= nPosInitiator) {
 					hubCutoff = entry.getKey();
-					posHubCandidate = tmpCandidate;
-				} else break;
+					nPosCandidate = tmpCandidate;
+				} else {
+					nPos = tmpCandidate;
+					break;
+				}
 			}
 		}
-		double pPosHubInitiator = posHubInitiator / posHubCandidate,
-				pPosLeafInitiator = (this.totalPosRatio - this.controlVar) / (1.0 - this.controlVar);
-		
-		//境界値より上ならPOS，それ以外なら全体のPOS割合を満たすだけPOS，残りはNEG
+		double pPosCutoff = (nPosInitiator - nPos) / this.refNetwork.getDegreeFreq().get(hubCutoff),
+//				pPosLeafInitiator = (this.totalPosRatio - this.controlVar) / (1.0 - this.controlVar);
+				pPosLeaf = (this.getnAgents() * this.totalPosRatio - nPosInitiator)/ (this.getnAgents() - nPosCandidate);
+		//FIXME 綺麗に高次数の方からPosで埋めていける方式をもうちょい詰める．現状だとREGネットワーク（全ての次数が一致）で問題がある．
+		//次数が境界値より上ならPOS，境界値なら指定数を満たすだけPOS，それ以外なら全体のPOS割合を満たすだけPOS，残りはNEG
 		for (InfoAgent agent : this.infoAgentsArray) {
 			Integer opinion = null;
-			if (agent.getDegree() >= hubCutoff) {
+			if (agent.getDegree() > hubCutoff) {
+				opinion = POS_OPINION;
+			} else if (agent.getDegree() == hubCutoff) {
 				double roll = this.localRNG.nextDouble();
-				if (roll < pPosHubInitiator) opinion = POS_OPINION;
+				if (roll < pPosCutoff) opinion = POS_OPINION;
 				else opinion = NEG_OPINION;
 			} else {
 				double roll = this.localRNG.nextDouble();
-				if (roll < pPosLeafInitiator) opinion = POS_OPINION;
+				if (roll < pPosLeaf) opinion = POS_OPINION;
 				else opinion = NEG_OPINION;
 			}
 			agent.setOpinion(opinion);

@@ -1,9 +1,10 @@
 package matz.basics.network;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
+
+import matz.basics.ScatterPlotGenerator;
 
 /**
  * 外部から参照可能な静的ネットワークマップを生成し，保持するクラス．<br>
@@ -20,35 +21,43 @@ import java.util.TreeMap;
 public abstract class StaticNetwork {
 
 	protected static int FOLLOWING_INDEX = 0, FOLLOWED_INDEX = 1;
-	protected static boolean DIRECTED = true, UNDIRECTED = false; 
+	protected static boolean DIRECTED = true, UNDIRECTED = false;
+	protected static Double DEGREE_DEFAULT = 6.0;
 	
 	/**
 	 * 静的ネットワークを保持するArrayListの配列。<br>
 	 * 総称型の配列なので扱いに注意する．意味論的に使いやすいのでこうしているが，本来あまりやらないほうがいいらしい<br>
 	 */
-	protected List<Integer> networkList[][] = null;
+	protected List<Integer>[][] networkList = null;
+	private String ntwkName;
 	protected boolean orientation = UNDIRECTED;
-	private int nAgents;
+	protected int nAgents;
+	private double givenDegree;
+	protected boolean degreeGiven = false;
 
 	protected TreeMap<Integer, Integer> nFollowedFreqMap = new TreeMap<Integer,Integer>(); //TreeMapはKeyを昇順に順序付けするので、
 	protected TreeMap<Integer, Integer> nFollowingFreqMap = new TreeMap<Integer,Integer>();
 	
 	public abstract void build();
-	public abstract void dumpNetwork(File outDir);
-	
 	/**
-	 * エージェント数と指向性を与えるコンストラクタ.エージェント数を与えないコンストラクタはない.<br>
+	 * 基本コンストラクタ.エージェント数を与えないコンストラクタは作らない.<br>
 	 * 
 	 * @param nAgents
 	 * @param orientation - 有向ならtrue,無向ならfalse
 	 */
 	@SuppressWarnings("unchecked")
-	public StaticNetwork(int nAgents, boolean orientation) {
+	public StaticNetwork(String ntwkName, int nAgents, boolean orientation, Double degree) {
+		this.setNtwkName(ntwkName);
 		this.setnAgents(nAgents);
 		this.setOrientation(orientation);
-		networkList = new ArrayList[nAgents][2];
+		this.networkList = new ArrayList[nAgents][2];
 		for (int i = 0; i < nAgents; i++) {
-			for (int j = 0; j < 2; j++) networkList[i][j] = new ArrayList<Integer>();
+			for (int j = 0; j < 2; j++) this.networkList[i][j] = new ArrayList<Integer>();
+		}
+		if (degree == null) this.degreeGiven = false;
+		else {
+			this.degreeGiven = true;
+			this.setGivenDegree(degree);
 		}
 	}
 	
@@ -56,18 +65,30 @@ public abstract class StaticNetwork {
 	 * エージェント数のみ与えて無向グラフを作るコンストラクタ。
 	 * @param nAgents
 	 */
-	public StaticNetwork(int nAgents) {
-		this(nAgents, UNDIRECTED);
+	public StaticNetwork(String ntwkName, int nAgents) {
+		this(ntwkName, nAgents, UNDIRECTED, null);
 	}
 	
 	// TODO ネットワークデータを取得できる場合，それを元にコンストラクトできるような実装
 	
 	/**
+	 * @return ntwkName
+	 */
+	public String getNtwkName() {
+		return ntwkName;
+	}
+	/**
+	 * @param ntwkName セットする ntwkName
+	 */
+	public void setNtwkName(String ntwkName) {
+		this.ntwkName = ntwkName;
+	}
+	/**
 	 * エージェント数を取得する。
 	 * @return nAgents
 	 */
 	public int getnAgents() {
-		return nAgents;
+		return this.nAgents;
 	}
 
 	/**
@@ -83,7 +104,7 @@ public abstract class StaticNetwork {
 	 * @return orientation
 	 */
 	public boolean getOrientation() {
-		return orientation;
+		return this.orientation;
 	}
 
 	/**
@@ -95,12 +116,24 @@ public abstract class StaticNetwork {
 	}
 
 	/**
+	 * @return givenDegree
+	 */
+	public double getGivenDegree() {
+		return givenDegree;
+	}
+	/**
+	 * @param givenDegree セットする givenDegree
+	 */
+	public void setGivenDegree(Double givenDegree) {
+		this.givenDegree = givenDegree;
+	}
+	/**
 	 * subjectの被参照リストにobjectを追加。
 	 * @param subject
 	 * @param object
 	 */
 	public void appendFollowedListOf(int subject, int object) {
-		networkList[subject][FOLLOWED_INDEX].add(object);
+		this.networkList[subject][FOLLOWED_INDEX].add(object);
 	}
 	/**
 	 * subjectの参照リストにobjectを追加。
@@ -108,7 +141,7 @@ public abstract class StaticNetwork {
 	 * @param object
 	 */
 	public void appendFollowingListOf(int subject, int object) {
-		networkList[subject][FOLLOWING_INDEX].add(object);
+		this.networkList[subject][FOLLOWING_INDEX].add(object);
 	}
 	/**
 	 * 無向グラフで、subjectの両方向のリストにobjectを追加。
@@ -125,7 +158,7 @@ public abstract class StaticNetwork {
 	 * @return
 	 */
 	public List<Integer> getFollowedListOf(int index) {
-		return networkList[index][FOLLOWED_INDEX];
+		return this.networkList[index][FOLLOWED_INDEX];
 	}
 	
 	/**
@@ -134,7 +167,7 @@ public abstract class StaticNetwork {
 	 * @return
 	 */
 	public List<Integer> getFollowingListOf(int index) {
-		return networkList[index][FOLLOWING_INDEX];
+		return this.networkList[index][FOLLOWING_INDEX];
 	}
 	
 	/**
@@ -152,7 +185,7 @@ public abstract class StaticNetwork {
 	 * @return
 	 */
 	public int getnFollowedOf(int index) {
-		return networkList[index][FOLLOWED_INDEX].size();
+		return this.networkList[index][FOLLOWED_INDEX].size();
 	}
 	
 	/**
@@ -161,7 +194,7 @@ public abstract class StaticNetwork {
 	 * @return
 	 */
 	public int getnFollowingOf(int index) {
-		return networkList[index][FOLLOWING_INDEX].size();
+		return this.networkList[index][FOLLOWING_INDEX].size();
 	}
 	
 	/**
@@ -176,16 +209,25 @@ public abstract class StaticNetwork {
 	public void countDegreeFreq() {
 		for (int i = 0; i < this.getnAgents(); i++) {
 			int nFollowed = this.getnFollowedOf(i), nFollowing = this.getnFollowingOf(i);
-			if (nFollowedFreqMap.containsKey(nFollowed)) {
-				int val = nFollowedFreqMap.get(nFollowed);
-				nFollowedFreqMap.put(nFollowed, ++val);
-			} else nFollowedFreqMap.put(nFollowed, 1);
-			if (nFollowingFreqMap.containsKey(nFollowing)) {
-				int val = nFollowingFreqMap.get(nFollowing);
-				nFollowingFreqMap.put(nFollowing, ++val);
-			} else nFollowingFreqMap.put(nFollowing, 1);
+			if (this.nFollowedFreqMap.containsKey(nFollowed)) {
+				int val = this.nFollowedFreqMap.get(nFollowed);
+				this.nFollowedFreqMap.put(nFollowed, ++val);
+			} else this.nFollowedFreqMap.put(nFollowed, 1);
+			if (this.nFollowingFreqMap.containsKey(nFollowing)) {
+				int val = this.nFollowingFreqMap.get(nFollowing);
+				this.nFollowingFreqMap.put(nFollowing, ++val);
+			} else this.nFollowingFreqMap.put(nFollowing, 1);
 		}
 	}
+	
+	public double getAvgDegree() {
+		double avgDegree = 0.0;
+		for (Entry<Integer,Integer> entry : this.getnFollowedFreq().entrySet()) {
+			avgDegree += (double)entry.getKey() * (double)entry.getValue() / (double)this.getnAgents();
+		}
+		return avgDegree;
+	}
+	
 	public TreeMap<Integer,Integer> getnFollowedFreq() {
 		return this.nFollowedFreqMap;
 	}
@@ -208,6 +250,51 @@ public abstract class StaticNetwork {
 	
 	public int getDegreeFreqOf(int index) {
 		return this.getnFollowedFreqOf(index);
+	}
+	
+	/**
+	 * チェックのためにネットワークの情報をファイルや画像に出力する．
+	 * @param outDir
+	 */
+	public void dumpNetwork(File outDir) {
+		if (!outDir.isDirectory()) outDir.mkdirs();
+		
+		//全エージェントの隣接リストをソートする。コメントアウトしてしまってもいい。
+		for (List<Integer>[] agentLists : networkList) {
+			Collections.sort(agentLists[FOLLOWED_INDEX]);
+			Collections.sort(agentLists[FOLLOWING_INDEX]);
+		}
+		//ネットワークの統計的性質をチェックする。
+		this.countDegreeFreq(); //次数の頻度分布
+		
+		try {
+			//隣接リスト吐き出し
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
+			for (int i = 0; i < this.getnAgents(); i++) {
+				bw.write(i + "(" + this.getnFollowedOf(i) + ")\t:\t");
+				for (Object neighbor : this.getUndirectedListOf(i)) {
+					bw.write((Integer)neighbor + ",");
+				}
+				bw.newLine();
+			}
+			bw.close();
+			
+			//頻度分布吐き出し
+			BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwkDegreeFreq.csv"))));
+			for (Entry<Integer,Integer> entry : this.nFollowedFreqMap.entrySet()) {
+				bw2.write(entry.getKey() + "," + entry.getValue());
+				bw2.newLine();
+			}
+			bw2.close();
+			ScatterPlotGenerator spg = new ScatterPlotGenerator(
+					this.getNtwkName() + 
+					",N=" + this.getnAgents() + 
+					",Avg_D=" + String.format("%.2f", this.getAvgDegree()) ,this.nFollowedFreqMap);
+			spg.generateGraph(outDir, "ntwkDegreeFreq.png");
+	
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

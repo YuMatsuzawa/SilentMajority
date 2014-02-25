@@ -12,8 +12,8 @@ public class SilentMajorityLT {
 
 	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2;
 	static String[] SIM_TYPE_NAME = {"BiasedOpinionByRank", "BiasedVocalization", "RelievingAgents"};
-	static String[] NTWK_NAME = {"CNN","WS","BA","RND","REG"};
 	static int CNN_INDEX = 0, WS_INDEX = 1, BA_INDEX = 2, RND_INDEX = 3, REG_INDEX = 4;
+	static String[] NTWK_NAME = {"CNN","WS","BA","RND","REG"};
 
 	/**
 	 * @param args
@@ -91,11 +91,11 @@ public class SilentMajorityLT {
 				
 		// ここでネットワーク生成
 		StaticNetwork ntwk = null;
-		if (ntwkType == NTWK_NAME[CNN_INDEX]) ntwk = new StaticCNNNetwork(nAgents);
-		else if (ntwkType == NTWK_NAME[WS_INDEX]) ntwk = new StaticWSNetwork(nAgents);
-		else if (ntwkType == NTWK_NAME[BA_INDEX]) ntwk = new StaticBANetwork(nAgents);
-		else if (ntwkType == NTWK_NAME[RND_INDEX]) ntwk = new StaticRNDNetwork(nAgents);
-		else if (ntwkType == NTWK_NAME[REG_INDEX]) ntwk = new StaticREGNetwork(nAgents);
+		if (ntwkType.equals(NTWK_NAME[CNN_INDEX])) ntwk = new StaticCNNNetwork(nAgents);
+		else if (ntwkType.equals(NTWK_NAME[WS_INDEX])) ntwk = new StaticWSNetwork(nAgents);
+		else if (ntwkType.equals(NTWK_NAME[BA_INDEX])) ntwk = new StaticBANetwork(nAgents);
+		else if (ntwkType.equals(NTWK_NAME[RND_INDEX])) ntwk = new StaticRNDNetwork(nAgents);
+		else if (ntwkType.equals(NTWK_NAME[REG_INDEX])) ntwk = new StaticREGNetwork(nAgents);
 		
 		String simName = SIM_TYPE_NAME[simType] + "_" + ntwkType + date.getTime();
 		File outDir = new File("results",simName);
