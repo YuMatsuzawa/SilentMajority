@@ -1,11 +1,10 @@
-package matz.agentsim;
+package matz.basics.network;
 
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
 import matz.basics.ScatterPlotGenerator;
-import matz.basics.StaticNetwork;
 
 public class StaticCNNNetwork extends StaticNetwork {
 	

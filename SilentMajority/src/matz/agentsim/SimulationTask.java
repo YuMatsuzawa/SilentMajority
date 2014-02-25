@@ -7,7 +7,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.logging.*;
 
 import matz.basics.ShortLogFormatter;
-import matz.basics.StaticNetwork;
+import matz.basics.network.StaticNetwork;
 
 /**
  * @author Matsuzawa

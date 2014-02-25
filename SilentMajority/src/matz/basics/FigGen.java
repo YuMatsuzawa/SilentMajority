@@ -1,4 +1,4 @@
-package matz.agentsim;
+package matz.basics;
 
 import java.io.File;
 import java.io.IOException;

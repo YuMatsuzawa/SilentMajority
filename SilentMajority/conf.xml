@@ -10,4 +10,5 @@
 <entry key="lowerBound">0.02</entry>
 <entry key="nCore">8</entry>
 <entry key="controlPitch">0.02</entry>
+<entry key="nAgents">1000</entry>
 </properties>

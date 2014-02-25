@@ -6,7 +6,8 @@ import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 import matz.basics.MatzExecutor;
-import matz.basics.StaticNetwork;
+import matz.basics.network.StaticCNNNetwork;
+import matz.basics.network.StaticNetwork;
 
 /**
  * 情報伝播ネットワークにおけるサイレント・ユーザの影響を分析するシミュレーション。<br>

@@ -1,4 +1,4 @@
-package matz.basics;
+package matz.basics.network;
 
 import matz.agentsim.InfoAgent;
 

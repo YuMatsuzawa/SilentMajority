@@ -1,4 +1,4 @@
-package matz.basics;
+package matz.basics.network;
 
 import java.io.File;
 import java.util.ArrayList;

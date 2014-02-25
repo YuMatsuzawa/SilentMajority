@@ -1,4 +1,4 @@
-package matz.agentsim;
+package matz.basics;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+
+import matz.basics.network.StaticCNNNetwork;
 
 import org.apache.commons.collections15.Transformer;
 

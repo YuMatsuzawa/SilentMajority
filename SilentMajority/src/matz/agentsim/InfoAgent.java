@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import matz.basics.StaticNetwork;
+import matz.basics.network.StaticNetwork;
 
 public class InfoAgent {
 	

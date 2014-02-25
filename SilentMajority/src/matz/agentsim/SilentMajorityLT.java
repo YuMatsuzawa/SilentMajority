@@ -6,23 +6,26 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 import matz.basics.MatzExecutor;
-import matz.basics.StaticNetwork;
+import matz.basics.network.*;
 
 public class SilentMajorityLT {
+
+	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2;
+	static String[] SIM_TYPE_NAME = {"BiasedOpinionByRank", "BiasedVocalization", "RelievingAgents"};
+	static String[] NTWK_NAME = {"CNN","WS","BA","RND","REG"};
+	static int CNN_INDEX = 0, WS_INDEX = 1, BA_INDEX = 2, RND_INDEX = 3, REG_INDEX = 4;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		@SuppressWarnings("unused")
-		final int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2;
-		final String[] SIM_TYPE_NAME = {"BiasedOpinionByRank", "BiasedVocalization", "RelievingAgents"};
 		
 		MatzExecutor _E = null;
-		int nIter = 10, simType = 0;
+		int nIter = 10, simType = 0, nAgents = 1000;
 		int controlResol;
 		double totalPosRatio = 0.2, initSilentRatio = 0.9;
 		double controlPitch, lowerBound;
+		String ntwkType = NTWK_NAME[CNN_INDEX];
 		
 		/*
 		 * Configファイルでパラメータ管理する．
@@ -52,7 +55,13 @@ public class SilentMajorityLT {
 			//do nothing
 		}
 		try {
+			nAgents = Integer.parseInt(conf.getProperty("nAgents"));
+		} catch (Exception e) {
+			//do nothing
+		}
+		try {
 			simType = Integer.parseInt(conf.getProperty("simType"));
+			ntwkType = conf.getProperty("ntwkType");
 			controlResol = Integer.parseInt(conf.getProperty("controlResol"));
 			controlPitch = Double.parseDouble(conf.getProperty("controlPitch"));
 			lowerBound = Double.parseDouble(conf.getProperty("lowerBound"));
@@ -74,72 +83,26 @@ public class SilentMajorityLT {
 			}
 		}
 		
-/*		try {
-			_E = new MatzExecutor(Integer.parseInt(args[NCORE_INDEX]));
-		} catch (Exception e) { _E = new MatzExecutor(); }
-	
-		try {
-			Properties conf = new Properties();
-			conf.load
-		}
-		try {
-			controlPitch = Double.parseDouble(args[CTRL_PITCH_INDEX]);
-			controlResol = Integer.parseInt(args[CTRL_RESOL_INDEX]);
-			lowerBound = Double.parseDouble(args[LOWER_BOUND_INDEX]);
-		} catch (Exception e) { 
-			_E.SimExecLogger.severe("Specify information of control variables.");
-			_E.safeShutdown();
-			_E.closeLogFileHandler();
-			return;
-		}
-		try {
-			simType = Integer.parseInt(args[SIM_TYPE_INDEX]);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}catch (Exception e) {
-			_E.logStackTrace(e);
-		}
-		
-		try {
-			nIter = Integer.parseInt(args[NITER_INDEX]);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		} catch (Exception e) {
-			_E.logStackTrace(e);
-		}
-		
-		Properties conf = new Properties();
-		conf.setProperty("nCore", args[0]);
-		conf.setProperty("simType", String.valueOf(simType));
-		conf.setProperty("controlPitch", String.valueOf(controlPitch));
-		conf.setProperty("controlResol", String.valueOf(controlResol));
-		conf.setProperty("lowerBound", String.valueOf(lowerBound));
-		conf.setProperty("totalPosRatio", String.valueOf(totalPosRatio));
-		conf.setProperty("initSilentRatio", String.valueOf(initSilentRatio));
-		conf.setProperty("nIter", String.valueOf(nIter));
-		
-		try {
-			conf.storeToXML(new FileOutputStream("conf.xml"), "Configuration");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
-		
 		_E.SimExecLogger.info("Starting "+ _E.getClass().getName() +". NumThreads = " + _E.getNumThreads());
 
 		Date date = new Date();
-		String simName = SIM_TYPE_NAME[simType] + date.getTime();
+		
+		CountDownLatch endGate = new CountDownLatch(controlResol * nIter); //全シミュレーションが終了するまでをカウントするCountDownLatch
+				
+		// ここでネットワーク生成
+		StaticNetwork ntwk = null;
+		if (ntwkType == NTWK_NAME[CNN_INDEX]) ntwk = new StaticCNNNetwork(nAgents);
+		else if (ntwkType == NTWK_NAME[WS_INDEX]) ntwk = new StaticWSNetwork(nAgents);
+		else if (ntwkType == NTWK_NAME[BA_INDEX]) ntwk = new StaticBANetwork(nAgents);
+		else if (ntwkType == NTWK_NAME[RND_INDEX]) ntwk = new StaticRNDNetwork(nAgents);
+		else if (ntwkType == NTWK_NAME[REG_INDEX]) ntwk = new StaticREGNetwork(nAgents);
+		
+		String simName = SIM_TYPE_NAME[simType] + "_" + ntwkType + date.getTime();
 		File outDir = new File("results",simName);
 		if (!outDir.isDirectory()) outDir.mkdirs();
-//		controlPitch = 0.05;
-//		controlResol = 19;
-		CountDownLatch endGate = new CountDownLatch(controlResol * nIter); //全シミュレーションが終了するまでをカウントするCountDownLatch
-		int nAgents = 1000;
-		// ここでネットワーク生成
-		StaticNetwork cnnNtwk = new StaticCNNNetwork(nAgents);
-		cnnNtwk.dumpNetwork(outDir);
+		ntwk.dumpNetwork(outDir);
 		
 		for (double controlVar = lowerBound; controlVar < lowerBound + controlPitch*controlResol; controlVar += controlPitch) {
-			//double controlVar = j * controlPitch;
 			for (int iter = 0; iter < nIter; iter++) {
 				SimulationTaskLT rn = new SimulationTaskLT(simName, 
 						"n="+String.format("%d",nAgents) +
@@ -147,7 +110,7 @@ public class SilentMajorityLT {
 						"sil="+String.format("%.2f",initSilentRatio) +
 						"ctrl="+String.format("%.2f",controlVar) +
 						"_" + iter,
-						nAgents, totalPosRatio, controlVar, initSilentRatio, cnnNtwk, endGate);
+						nAgents, totalPosRatio, controlVar, initSilentRatio, ntwk, endGate);
 				_E.execute(rn);
 				_E.SimExecLogger.info("Submitted: " + rn.getInstanceName());
 			}

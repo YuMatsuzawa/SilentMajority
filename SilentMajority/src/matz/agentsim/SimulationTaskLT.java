@@ -7,7 +7,7 @@ import java.io.OutputStreamWriter;
 import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
-import matz.basics.StaticNetwork;
+import matz.basics.network.StaticNetwork;
 
 public class SimulationTaskLT extends SimulationTask {
 	
