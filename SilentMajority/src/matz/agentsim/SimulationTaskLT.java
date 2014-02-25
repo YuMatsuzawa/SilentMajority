@@ -59,21 +59,42 @@ public class SimulationTaskLT extends SimulationTask {
 			int maxStep = 100;
 			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream(new File(outDir, this.getTimeStamp() + "." + this.getInstanceName()+".csv"))));
-			Integer[][] vocalRecords = new Integer[maxStep][NUM_OPINION];
-			for (int i = 0; i < maxStep; i++) for(int j = 0; j < NUM_OPINION; j++) vocalRecords[i][j] = 0;
+			Integer[][] vocalRecords = new Integer[maxStep][NUM_OPINION], 
+					totalRecords = new Integer[maxStep][NUM_OPINION], 
+					silentRecords = new Integer[maxStep][NUM_OPINION];
+			for (int i = 0; i < maxStep; i++) for(int j = 0; j < NUM_OPINION; j++) {
+				vocalRecords[i][j] = 0;
+				silentRecords[i][j] = 0;
+				totalRecords[i][j] = 0;
+			}
 			rbw.write("timestep,pos,neg");
 			rbw.newLine();
 			for (int step = 0; step < maxStep; step++) {
 				for (InfoAgent agent : this.infoAgentsArray) {
-					Integer opinion = agent.getOpinion(); //記録するのはヴォーカルの中での比率なので，forceGetしない
+					//Integer opinion = agent.getOpinion(); //記録するのはヴォーカルの中での比率なので，forceGetしない
+					Integer opinion = agent.forceGetOpinion(); //debugのために全部記録したいのでforceGetする
 					if (opinion == null) continue;
-					else if (opinion == POS_OPINION) vocalRecords[step][POS_OPINION]++;
-					else if (opinion == NEG_OPINION) vocalRecords[step][NEG_OPINION]++;
+					else if (opinion == POS_OPINION) {
+						//vocalRecords[step][POS_OPINION]++;
+						totalRecords[step][POS_OPINION]++;
+						if (agent.isSilent()) silentRecords[step][POS_OPINION]++;
+						else vocalRecords[step][POS_OPINION]++;
+					}
+					else if (opinion == NEG_OPINION) {
+						//vocalRecords[step][NEG_OPINION]++;
+						totalRecords[step][NEG_OPINION]++;
+						if (agent.isSilent()) silentRecords[step][NEG_OPINION]++;
+						else vocalRecords[step][NEG_OPINION]++;
+					}
 				}
 				rbw.write(String.valueOf(step));
-				for (int op = 0; op < NUM_OPINION; op++) {
-					rbw.write(","+vocalRecords[step][op]);
-				}
+				for (int op = 0; op < NUM_OPINION; op++) rbw.write(","+vocalRecords[step][op]);
+				//debugのために全部記録
+				rbw.write(",");
+				for (int op = 0; op < NUM_OPINION; op++) rbw.write(","+totalRecords[step][op]);
+				rbw.write(",");
+				for (int op = 0; op < NUM_OPINION; op++) rbw.write(","+silentRecords[step][op]);
+				//debugここまで
 				rbw.newLine();
 				
 				/*
@@ -115,35 +136,35 @@ public class SimulationTaskLT extends SimulationTask {
 	 */
 	public void rankedInitOpinions() {
 		//POSで始まるハブの境界値となる次数を探す
-		int hubCutoff = this.refNetwork.getDegreeFreq().firstKey();
+		int hubCutoff = this.refNetwork.getDegreeFreq().firstKey() - 1;
 		double nPosCandidate = this.getnAgents();
 		double nPosInitiator = this.getnAgents() * this.controlVar;
 		double nPos = 0.0;
 		for (Entry<Integer,Integer> entry : this.refNetwork.getDegreeFreq().entrySet()) {
-			if (nPosCandidate >= nPosInitiator) {
-				double tmpCandidate = nPosCandidate - entry.getValue();
-				if (tmpCandidate >= nPosInitiator) {
-					hubCutoff = entry.getKey();
-					nPosCandidate = tmpCandidate;
-				} else {
-					nPos = tmpCandidate;
-					break;
-				}
+			hubCutoff = entry.getKey();
+			double tmpCandidate = nPosCandidate - (double)entry.getValue();
+			if (tmpCandidate > nPosInitiator) {
+				nPosCandidate = tmpCandidate;
+			} else {
+				nPos = tmpCandidate;
+				break;
 			}
+			
+		/*	double tmpCandidate = nPosCandidate - (double)entry.getValue();
+			if (tmpCandidate >= nPosInitiator) {
+				hubCutoff = entry.getKey();
+				nPosCandidate = tmpCandidate;
+			} else {
+				nPos = tmpCandidate;
+				break;
+			}*/
 		}
-		double pPosCutoff = (nPosInitiator - nPos) / this.refNetwork.getDegreeFreq().get(hubCutoff),
-//				pPosLeafInitiator = (this.totalPosRatio - this.controlVar) / (1.0 - this.controlVar);
-				pPosLeaf = (this.getnAgents() * this.totalPosRatio - nPosInitiator)/ (this.getnAgents() - nPosCandidate);
-		//FIXME 綺麗に高次数の方からPosで埋めていける方式をもうちょい詰める．現状だとREGネットワーク（全ての次数が一致）で問題がある．
-		//次数が境界値より上ならPOS，境界値なら指定数を満たすだけPOS，それ以外なら全体のPOS割合を満たすだけPOS，残りはNEG
+		double pPosLeaf = ((double)this.getnAgents() * this.totalPosRatio - nPos) / ((double)this.getnAgents() - nPos);
+		//次数が境界値より上ならPOS，それ以外なら全体のPOS割合を満たすだけPOS，残りはNEG
 		for (InfoAgent agent : this.infoAgentsArray) {
 			Integer opinion = null;
 			if (agent.getDegree() > hubCutoff) {
 				opinion = POS_OPINION;
-			} else if (agent.getDegree() == hubCutoff) {
-				double roll = this.localRNG.nextDouble();
-				if (roll < pPosCutoff) opinion = POS_OPINION;
-				else opinion = NEG_OPINION;
 			} else {
 				double roll = this.localRNG.nextDouble();
 				if (roll < pPosLeaf) opinion = POS_OPINION;

@@ -3,7 +3,6 @@ package matz.basics.network;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 
 public class StaticCNNNetwork extends StaticNetwork {
@@ -12,7 +11,6 @@ public class StaticCNNNetwork extends StaticNetwork {
 	//private static final double P_NN_DEFAULT = 0.666667;
 	private static final double P_NN_DEFAULT = 0.65;
 	private List<Integer[]> potentialLinks = new ArrayList<Integer[]>();
-	private Random localRNG = new Random();
 	private int includedAgents = 0;
 
 	@Override
@@ -69,8 +67,8 @@ public class StaticCNNNetwork extends StaticNetwork {
 	 * @param object
 	 */
 	private void constructLink(int subject, int object) {
-		this.appendUndirectedListOf(subject, object);
-		this.appendUndirectedListOf(object, subject);
+		this.appendToUndirectedListOf(subject, object);
+		this.appendToUndirectedListOf(object, subject);
 		this.safeAppendPotentialLink(subject, object);
 		this.safeAppendPotentialLink(object, subject);
 	}

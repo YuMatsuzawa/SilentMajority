@@ -25,6 +25,7 @@ public class SilentMajorityLT {
 		int controlResol;
 		double totalPosRatio = 0.2, initSilentRatio = 0.9;
 		double controlPitch, lowerBound;
+		Double pRewire = null;
 		String ntwkType = NTWK_NAME[CNN_INDEX];
 		
 		/*
@@ -73,9 +74,14 @@ public class SilentMajorityLT {
 			_E.closeLogFileHandler();
 			return;
 		}
+		try {
+			pRewire = Double.parseDouble(conf.getProperty("pRewire"));
+		} catch (Exception e) {
+			//do nothing
+		}
 		
 		if (simType == TYPE_RANKED) {
-			if (lowerBound + controlPitch*controlResol > totalPosRatio) {
+			if (lowerBound + controlPitch*(controlResol - 1) > totalPosRatio) {
 				_E.SimExecLogger.severe("ControlVar out of bound.");
 				_E.safeShutdown();
 				_E.closeLogFileHandler();
@@ -92,7 +98,10 @@ public class SilentMajorityLT {
 		// ここでネットワーク生成
 		StaticNetwork ntwk = null;
 		if (ntwkType.equals(NTWK_NAME[CNN_INDEX])) ntwk = new StaticCNNNetwork(nAgents);
-		else if (ntwkType.equals(NTWK_NAME[WS_INDEX])) ntwk = new StaticWSNetwork(nAgents);
+		else if (ntwkType.equals(NTWK_NAME[WS_INDEX])) {
+			if (pRewire == null) ntwk = new StaticWSNetwork(nAgents);
+			else ntwk = new StaticWSNetwork(nAgents, pRewire);
+		}
 		else if (ntwkType.equals(NTWK_NAME[BA_INDEX])) ntwk = new StaticBANetwork(nAgents);
 		else if (ntwkType.equals(NTWK_NAME[RND_INDEX])) ntwk = new StaticRNDNetwork(nAgents);
 		else if (ntwkType.equals(NTWK_NAME[REG_INDEX])) ntwk = new StaticREGNetwork(nAgents);
@@ -149,8 +158,8 @@ public class SilentMajorityLT {
 					while((line = br.readLine()) != null) lastLine = line; //最終行取得
 					String[] values = lastLine.split(",");
 					double[] dValues = {Double.parseDouble(values[1]),Double.parseDouble(values[2])};
-					vocalOpinions[index][0] += dValues[0] / nIter;
-					vocalOpinions[index][1] += dValues[1] / nIter;
+					vocalOpinions[index][0] += dValues[0] / nIter; //重み付き加算=>平均
+					vocalOpinions[index][1] += dValues[1] / nIter; //重み付き加算=>平均
 					br.close();
 				}
 				index++;

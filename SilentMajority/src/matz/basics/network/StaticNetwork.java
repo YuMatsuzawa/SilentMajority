@@ -29,14 +29,16 @@ public abstract class StaticNetwork {
 	 * 総称型の配列なので扱いに注意する．意味論的に使いやすいのでこうしているが，本来あまりやらないほうがいいらしい<br>
 	 */
 	protected List<Integer>[][] networkList = null;
-	private String ntwkName;
+	protected String ntwkName;
 	protected boolean orientation = UNDIRECTED;
 	protected int nAgents;
-	private double givenDegree;
+	protected double givenDegree;
 	protected boolean degreeGiven = false;
 
 	protected TreeMap<Integer, Integer> nFollowedFreqMap = new TreeMap<Integer,Integer>(); //TreeMapはKeyを昇順に順序付けするので、
 	protected TreeMap<Integer, Integer> nFollowingFreqMap = new TreeMap<Integer,Integer>();
+	
+	protected Random localRNG = new Random();
 	
 	public abstract void build();
 	/**
@@ -126,13 +128,14 @@ public abstract class StaticNetwork {
 	 */
 	public void setGivenDegree(Double givenDegree) {
 		this.givenDegree = givenDegree;
-	}
+	}	
+	
 	/**
 	 * subjectの被参照リストにobjectを追加。
 	 * @param subject
 	 * @param object
 	 */
-	public void appendFollowedListOf(int subject, int object) {
+	public void appendToFollowedListOf(int subject, int object) {
 		this.networkList[subject][FOLLOWED_INDEX].add(object);
 	}
 	/**
@@ -140,7 +143,7 @@ public abstract class StaticNetwork {
 	 * @param subject
 	 * @param object
 	 */
-	public void appendFollowingListOf(int subject, int object) {
+	public void appendToFollowingListOf(int subject, int object) {
 		this.networkList[subject][FOLLOWING_INDEX].add(object);
 	}
 	/**
@@ -148,9 +151,34 @@ public abstract class StaticNetwork {
 	 * @param subject
 	 * @param object
 	 */
-	public void appendUndirectedListOf(int subject, int object) {
-		this.appendFollowedListOf(subject, object);
-		this.appendFollowingListOf(subject, object);
+	public void appendToUndirectedListOf(int subject, int object) {
+		this.appendToFollowedListOf(subject, object);
+		this.appendToFollowingListOf(subject, object);
+	}
+	/**
+	 * subjectの被参照リストからobjectを除去。
+	 * @param subject
+	 * @param object
+	 */
+	public void removeFromFollowedListOf(int subject, Integer object) { //remove(Object) and remove(int) must be differentiated
+		this.networkList[subject][FOLLOWED_INDEX].remove(object);
+	}
+	/**
+	 * subjectの参照リストからobjectを除去。
+	 * @param subject
+	 * @param object
+	 */
+	public void removeFromFollowingListOf(int subject, Integer object) { //remove(Object) and remove(int) must be differentiated
+		this.networkList[subject][FOLLOWING_INDEX].remove(object);
+	}
+	/**
+	 * 無向グラフで、subjectの両方向のリストからobjectを除去。
+	 * @param subject
+	 * @param object
+	 */
+	public void removeFromUndirectedListOf(int subject, Integer object) { //remove(Object) and remove(int) must be differentiated
+		this.removeFromFollowedListOf(subject, object);
+		this.removeFromFollowingListOf(subject, object);
 	}
 	/**
 	 * 有向グラフにおける被参照リストを返す.
