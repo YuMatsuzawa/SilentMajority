@@ -10,8 +10,9 @@ import matz.basics.network.*;
 
 public class SilentMajorityLT {
 
-	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2;
-	static String[] SIM_TYPE_NAME = {"BiasedOpinionByRank", "BiasedVocalization", "RelievingAgents"};
+	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2, TYPE_THRES = 3, TYPE_THRES2 = 4;
+	static String[] SIM_TYPE_NAME = {"HighD", "BiasedV", "Relief", "CtrlTH", "SepTH"};
+	
 	static int CNN_INDEX = 0, WS_INDEX = 1, BA_INDEX = 2, RND_INDEX = 3, REG_INDEX = 4;
 	static String[] NTWK_NAME = {"CNN","WS","BA","RND","REG"};
 
@@ -25,7 +26,7 @@ public class SilentMajorityLT {
 		int controlResol;
 		double totalPosRatio = 0.2, initSilentRatio = 0.9;
 		double controlPitch, lowerBound;
-		Double pRewire = null;
+		Double pRewire = null, degree = null;
 		String ntwkType = NTWK_NAME[CNN_INDEX];
 		
 		/*
@@ -79,9 +80,21 @@ public class SilentMajorityLT {
 		} catch (Exception e) {
 			//do nothing
 		}
+		try {
+			degree = Double.parseDouble(conf.getProperty("degree"));
+		} catch (Exception e) {
+			//do nothing
+		}
 		
 		if (simType == TYPE_RANKED) {
 			if (lowerBound + controlPitch*(controlResol - 1) > totalPosRatio) {
+				_E.SimExecLogger.severe("ControlVar out of bound.");
+				_E.safeShutdown();
+				_E.closeLogFileHandler();
+				return;
+			}
+		} else if (simType == TYPE_THRES) {
+			if (lowerBound + controlPitch*(controlResol - 1) > 1.0) {
 				_E.SimExecLogger.severe("ControlVar out of bound.");
 				_E.safeShutdown();
 				_E.closeLogFileHandler();
@@ -97,14 +110,14 @@ public class SilentMajorityLT {
 				
 		// ここでネットワーク生成
 		StaticNetwork ntwk = null;
-		if (ntwkType.equals(NTWK_NAME[CNN_INDEX])) ntwk = new StaticCNNNetwork(nAgents);
+		if (ntwkType.equals(NTWK_NAME[CNN_INDEX])) ntwk = new StaticCNNNetwork(nAgents, degree);
 		else if (ntwkType.equals(NTWK_NAME[WS_INDEX])) {
-			if (pRewire == null) ntwk = new StaticWSNetwork(nAgents);
-			else ntwk = new StaticWSNetwork(nAgents, pRewire);
+			if (pRewire == null) ntwk = new StaticWSNetwork(nAgents, degree);
+			else ntwk = new StaticWSNetwork(nAgents, degree, pRewire);
 		}
-		else if (ntwkType.equals(NTWK_NAME[BA_INDEX])) ntwk = new StaticBANetwork(nAgents);
-		else if (ntwkType.equals(NTWK_NAME[RND_INDEX])) ntwk = new StaticRNDNetwork(nAgents);
-		else if (ntwkType.equals(NTWK_NAME[REG_INDEX])) ntwk = new StaticREGNetwork(nAgents);
+		else if (ntwkType.equals(NTWK_NAME[BA_INDEX])) ntwk = new StaticBANetwork(nAgents, degree);
+		else if (ntwkType.equals(NTWK_NAME[RND_INDEX])) ntwk = new StaticRNDNetwork(nAgents, degree);
+		else if (ntwkType.equals(NTWK_NAME[REG_INDEX])) ntwk = new StaticREGNetwork(nAgents, degree);
 		
 		String simName = SIM_TYPE_NAME[simType] + "_" + ntwkType + date.getTime();
 		File outDir = new File("results",simName);
@@ -173,6 +186,10 @@ public class SilentMajorityLT {
 				bw.write(lowerBound + j*controlPitch + "," + (int)vocalOpinions[j][0] +"," + (int)vocalOpinions[j][1]);
 				bw.newLine();
 			}
+			bw.newLine();
+			bw.write("totalPos,initSilent");
+			bw.newLine();
+			bw.write(totalPosRatio+","+initSilentRatio);
 			bw.close();
 			
 			_E.SimExecLogger.info("Summarizing done.");

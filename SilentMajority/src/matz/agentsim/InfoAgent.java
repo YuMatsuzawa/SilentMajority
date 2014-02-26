@@ -19,8 +19,8 @@ public class InfoAgent {
 	 */
 	private Integer opinion;
 	private double influence = Math.random();
-	//private double threshold = Math.random(); //ランダムにする
-	private double threshold = 0.1; //reliefつきmuzzlingで少数派閾値の場合
+	private double threshold = Math.random(); //ランダムにする
+	private double bendThreshold = 0.1; //reliefつきmuzzlingで少数派閾値の場合
 	private StaticNetwork refNetwork = null;
 	private boolean isNetworkStatic = false;
 	
@@ -79,8 +79,8 @@ public class InfoAgent {
 		/*
 		 * こちらは，1or2の意見がどちらも多数派を勝ち得ていなければ，中立派が多数派であってもなくても中立の立場を取る，というモデル．
 		 */
-		if (opinions[POS_INDEX] / sum > this.threshold) tmpOp = POS_INDEX;
-		else if (opinions[NEG_INDEX] / sum > this.threshold) tmpOp = NEG_INDEX;
+		if (opinions[POS_INDEX] / sum > this.getThreshold()) tmpOp = POS_INDEX;
+		else if (opinions[NEG_INDEX] / sum > this.getThreshold()) tmpOp = NEG_INDEX;
 		else tmpOp = NEU_INDEX;
 		
 		this.setTmpOpinion(tmpOp);
@@ -95,7 +95,7 @@ public class InfoAgent {
 	 * 1.自分の閾値を超える多数派ならヴォーカルになる<br>
 	 * 2.自分の閾値を下回る少数派ならサイレントになる<br>
 	 * 閾値はランダムに分布しているので，自分と同じ意見がたとえ少数派でもサイレントにならなかったり，<br>
-	 * 逆に相当多数派でもヴォーカルにならなかったりするエージェントも発生するところがポイント．<br>
+	 * 逆に相当多数派でもヴォーカルにならなかったりするエージェントも発生する．<br>
 	 * @param infoAgentsArray
 	 * @return 変化すればtrue
 	 */
@@ -111,10 +111,10 @@ public class InfoAgent {
 				sumOfVocal++; //nullでないならヴォーカル
 				if (neighborOp == this.forceGetOpinion()) sumOfVocalizedSameOpinion++;
 					//自分の真の意見と同じ意見の人を数える
-			}
+			} //FIXME we believe this method has some grave bug
 		}
 		if (sumOfVocal == 0) return false;
-		if (sumOfVocalizedSameOpinion / sumOfVocal > this.threshold) tmpSilent = false;
+		if (sumOfVocalizedSameOpinion / sumOfVocal > this.getThreshold()) tmpSilent = false;
 		else tmpSilent = true;
 		
 		this.tmpSilent = tmpSilent;
@@ -123,7 +123,7 @@ public class InfoAgent {
 	}
 
 	/**
-	 * 安堵Reliefあるいは他人任せSlackを導入した{@link InfoAgent#linearThreasholdMuzzling(InfoAgent[])}からの派生シミュレーション<br>
+	 * 安堵Reliefあるいは他人任せSlackを導入した{@link #linearThreasholdMuzzling(InfoAgent[])}からの派生シミュレーション<br>
 	 * 自分の意見が極めて少数派である場合サイレントになり，<br>
 	 * ある程度市民権を得るとヴォーカルになり，<br>
 	 * 更に長じて安心出来るだけの多数派が回りにいると感じるとまたサイレントになる．
@@ -144,7 +144,7 @@ public class InfoAgent {
 			}
 		}
 		if (sumOfVocal == 0) return false;
-		if (sumOfVocalizedSameOpinion / sumOfVocal > this.threshold &&
+		if (sumOfVocalizedSameOpinion / sumOfVocal > this.bendThreshold &&
 				sumOfVocalizedSameOpinion / this.getDegree() < reliefRatio) tmpSilent = false; //黙ってしまうほど少なくもないが，安心できるほど多くもないときにヴォーカルになる
 		else tmpSilent = true;
 		
@@ -394,5 +394,21 @@ public class InfoAgent {
 	 */
 	public void setInfluence(double influence) {
 		this.influence = influence;
+	}
+
+	/**
+	 * 閾値を取得する．
+	 * @return threshold
+	 */
+	public double getThreshold() {
+		return threshold;
+	}
+
+	/**
+	 * 閾値を指定する．閾値を意見によって変化させるシミュレーションで用いる．
+	 * @param threshold セットする threshold
+	 */
+	public void setThreshold(double threshold) {
+		this.threshold = threshold;
 	}
 }

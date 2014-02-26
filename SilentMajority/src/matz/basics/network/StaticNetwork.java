@@ -32,7 +32,7 @@ public abstract class StaticNetwork {
 	protected boolean orientation = UNDIRECTED;
 	protected int nAgents;
 	protected double givenDegree;
-	protected boolean degreeGiven = false;
+	//protected boolean degreeGiven = false;
 
 	protected TreeMap<Integer, Integer> nFollowedFreqMap = new TreeMap<Integer,Integer>(); //TreeMap‚ÍKey‚ğ¸‡‚É‡˜•t‚¯‚·‚é‚Ì‚ÅA
 	protected TreeMap<Integer, Integer> nFollowingFreqMap = new TreeMap<Integer,Integer>();
@@ -55,9 +55,8 @@ public abstract class StaticNetwork {
 		for (int i = 0; i < nAgents; i++) {
 			for (int j = 0; j < 2; j++) this.networkList[i][j] = new ArrayList<Integer>();
 		}
-		if (degree == null) this.degreeGiven = false;
+		if (degree == null) this.setGivenDegree(DEGREE_DEFAULT);
 		else {
-			this.degreeGiven = true;
 			this.setGivenDegree(degree);
 		}
 	}

@@ -72,6 +72,11 @@ public class StaticREGNetwork extends StaticNetwork {
 		this("REG", nAgents, orientation, degree);
 	}
 	
+	/**
+	 * エージェント数とdegreeを与えるコンストラクタ．
+	 * @param nAgents
+	 * @param degree
+	 */
 	public StaticREGNetwork(int nAgents, Double degree) {
 		this(nAgents, UNDIRECTED, degree);
 	}

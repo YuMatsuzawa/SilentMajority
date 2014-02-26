@@ -50,16 +50,27 @@ public class StaticWSNetwork extends StaticREGNetwork {
 		this.rewire();
 	}
 	
+	/**
+	 * エージェント数，degree，pRewireを与えるコンストラクタ．
+	 * @param nAgents
+	 * @param degree
+	 * @param pRewire
+	 */
 	public StaticWSNetwork(int nAgents, Double degree, double pRewire) {
 		this(nAgents, UNDIRECTED, degree, pRewire);
 	}
 	
-	public StaticWSNetwork(int nAgents, double pRewire) {
-		this(nAgents, DEGREE_DEFAULT, pRewire);
+	/**
+	 * エージェント数とdegreeを与えるコンストラクタ．
+	 * @param nAgents
+	 * @param pRewire
+	 */
+	public StaticWSNetwork(int nAgents, Double degree) {
+		this(nAgents, degree, P_REWIRE_DEFAULT);
 	}
 	
 	public StaticWSNetwork(int nAgents) {
-		this(nAgents, P_REWIRE_DEFAULT);
+		this(nAgents, DEGREE_DEFAULT);
 	}
 
 }

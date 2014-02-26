@@ -16,8 +16,8 @@ public class SimulationTaskLT extends SimulationTask {
 	private double initSilentRatio;
 	private int simType;
 	private static int NUM_OPINION = 2, POS_OPINION = 0, NEG_OPINION = 1;
-	static final int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2;
-	static final String[] SIM_TYPE_NAME = {"BiasedOpinionByRank", "BiasedVocalization", "RelievingAgents"};
+	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2, TYPE_THRES = 3, TYPE_THRES2 = 4;
+	static String[] SIM_TYPE_NAME = {"HighD", "BiasedV", "Relief", "CtrlTH", "SepTH"};
 	
 	@Override
 	public void run() {
@@ -37,6 +37,10 @@ public class SimulationTaskLT extends SimulationTask {
 			//意見分布を初期化
 			if (simType == TYPE_RANKED) this.rankedInitOpinions();
 			else this.simpleInitOpinions();
+			
+			//意見によって閾値の分布を変える
+			if (simType == TYPE_THRES) this.controlThresholds();
+			else if (simType == TYPE_THRES2) this.separateThresholds();
 			
 			//一定割合をヴォーカルにして情報伝播の起点にする（muzzleAgentsに相当）
 			if (simType == TYPE_BIASED) this.biasedPropagation();
@@ -67,7 +71,7 @@ public class SimulationTaskLT extends SimulationTask {
 				silentRecords[i][j] = 0;
 				totalRecords[i][j] = 0;
 			}
-			rbw.write("timestep,pos,neg");
+			rbw.write("timestep,pos,neg,,pos,neg,,pos,neg");
 			rbw.newLine();
 			for (int step = 0; step < maxStep; step++) {
 				for (InfoAgent agent : this.infoAgentsArray) {
@@ -149,15 +153,6 @@ public class SimulationTaskLT extends SimulationTask {
 				nPos = tmpCandidate;
 				break;
 			}
-			
-		/*	double tmpCandidate = nPosCandidate - (double)entry.getValue();
-			if (tmpCandidate >= nPosInitiator) {
-				hubCutoff = entry.getKey();
-				nPosCandidate = tmpCandidate;
-			} else {
-				nPos = tmpCandidate;
-				break;
-			}*/
 		}
 		double pPosLeaf = ((double)this.getnAgents() * this.totalPosRatio - nPos) / ((double)this.getnAgents() - nPos);
 		//次数が境界値より上ならPOS，それ以外なら全体のPOS割合を満たすだけPOS，残りはNEG
@@ -182,6 +177,35 @@ public class SimulationTaskLT extends SimulationTask {
 			double roll = this.localRNG.nextDouble();
 			if (roll < this.totalPosRatio) agent.setOpinion(POS_OPINION);
 			else agent.setOpinion(NEG_OPINION);
+		}
+	}
+
+	/**
+	 * 少数派の閾値を下げる．従って意見初期化後に呼ぶ必要がある．<br>
+	 * 通常の{@link InfoAgent#linearThreasholdMuzzling(InfoAgent[])}では閾値は一様分布に従うランダムで，<br>
+	 * 自分と同じ意見が自分の周囲に閾値を上回って存在していればヴォーカルに，そうでなければサイレントになる．<br>
+	 * その閾値を（平均して）下げることは，ヴォーカルになりやすくなることを意味する．<br>
+	 * たとえば0.0<threshold<0.1の範囲で一様分布であれば，自分の意見が少なくとも周囲で10%以上存在していればヴォーカルになる．<br>
+	 * controlVarは閾値の取りうる範囲の上限値を1.0からどれだけ下げるかで，1.0未満で指定する．
+	 */
+	private void controlThresholds() {
+		for (InfoAgent agent : this.infoAgentsArray) {
+			if (agent.forceGetOpinion() == POS_OPINION) {
+				double thresholdRoll = (1.0 - this.controlVar) * this.localRNG.nextDouble();
+				agent.setThreshold(thresholdRoll);
+			}
+		}
+	}
+	/**
+	 * 少数派の閾値を下げ，多数派の閾値を上げる．
+	 */
+	private void separateThresholds() {
+		for (InfoAgent agent : this.infoAgentsArray) {
+			if (agent.forceGetOpinion() == POS_OPINION) {
+				agent.setThreshold((1.0 - this.controlVar) * this.localRNG.nextDouble());
+			} else {
+				agent.setThreshold((1.0 - this.controlVar) * this.localRNG.nextDouble() + this.controlVar);
+			}
 		}
 	}
 

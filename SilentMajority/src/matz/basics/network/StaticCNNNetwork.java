@@ -143,6 +143,11 @@ public class StaticCNNNetwork extends StaticNetwork {
 		this(nAgents, orientation, P_NN_DEFAULT);
 	}
 	
+	/**
+	 * エージェント数と平均次数を与えるコンストラクタ．無向グラフ．p_nnは平均次数がdegreeに漸近するよう設定される．
+	 * @param nAgents
+	 * @param degree
+	 */
 	public StaticCNNNetwork(int nAgents, Double degree) {
 		this(nAgents, UNDIRECTED, degree);
 	}
@@ -152,6 +157,6 @@ public class StaticCNNNetwork extends StaticNetwork {
 	 * @param nAgents
 	 */
 	public StaticCNNNetwork(int nAgents) {
-		this(nAgents, null);
+		this(nAgents, UNDIRECTED);
 	}
 }

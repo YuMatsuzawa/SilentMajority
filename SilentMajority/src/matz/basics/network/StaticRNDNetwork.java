@@ -50,6 +50,11 @@ public class StaticRNDNetwork extends StaticNetwork {
 		this.build();
 	}
 	
+	/**
+	 * エージェント数とdegreeを与えるコンストラクタ．
+	 * @param nAgents
+	 * @param degree
+	 */
 	public StaticRNDNetwork(int nAgents, Double degree) {
 		this(nAgents, UNDIRECTED, degree);
 	}
