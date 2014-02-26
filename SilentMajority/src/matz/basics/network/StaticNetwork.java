@@ -8,13 +8,12 @@ import matz.basics.ScatterPlotGenerator;
 
 /**
  * 外部から参照可能な静的ネットワークマップを生成し，保持するクラス．<br>
- * エージェント数をintで与えてコンストラクトする．<br>
- * ネットワークマップを生成するbuild()メソッドと、<br>
- * ネットワークの各種データをファイル・画像等に書き出すdumpNetwork()を実装する．<br>
- * ネットワークマップはArrayListの配列で管理する．<br>
- * ArrayListの配列から以下のgetterで値やリストを取得できる．<br>
- * getUndirectedListOf(int),getFollowedListOf(int),getFollowingListOf(int),<br>
- * getDegreeOf(int),getnFollowedOf(int),getnFollowingOf(int)
+ * このクラスは抽象クラスなので、extendして具体的なグラフ生成モデル(WSモデルなど)に基づき、実装する。<br>
+ * コンストラクト時の必須引数はintのエージェント数.一般に引数なしコンストラクタは用意するべきでない。<br>
+ * その他に指向性orientation, 記録用にモデル名ntwkNameも与える。<br>
+ * 次数を指定して生成するモデルのためにdegreeも指定できる。nullを許容させるためにDoubleとしている。<br>
+ * ネットワークマップを生成するbuild()メソッドを実装する必要がある．<br>
+ * ネットワークマップはArrayListの配列で管理する．この方式は総称型の配列となるので扱いに注意を要する。<br>
  * @author Matsuzawa
  *
  */

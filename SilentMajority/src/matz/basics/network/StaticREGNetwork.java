@@ -2,6 +2,13 @@ package matz.basics.network;
 
 import java.util.ArrayList;
 
+/**
+ * 格子ネットワークを生成するクラス。<br>
+ * 自分の周囲の、次数degreeで指定された人数との間にリンクを張る。境界は周期境界である。<br>
+ * degreeが奇数の場合(両側に同数のリンクを貼るという実装の都合上)、最近傍の小さな偶数に丸められる。<br>
+ * @author Yu
+ *
+ */
 public class StaticREGNetwork extends StaticNetwork {
 
 	@Override

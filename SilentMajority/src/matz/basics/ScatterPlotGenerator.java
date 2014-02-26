@@ -11,6 +11,7 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.LogarithmicAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -19,7 +20,7 @@ import org.jfree.data.xy.DefaultXYDataset;
 public class ScatterPlotGenerator implements ChartGenerator {
 	
 	private final int X_INDEX = 0, Y_INDEX = 1;
-	
+	private boolean containsZeroX = false;
 	private JFreeChart scatterPlot = null;
 	
 	public ScatterPlotGenerator(String title, Map<Integer, Integer> freqMap) {
@@ -31,21 +32,32 @@ public class ScatterPlotGenerator implements ChartGenerator {
 		for (Entry<Integer,Integer> entry : freqMap.entrySet()) {
 			data[X_INDEX][index] = entry.getKey();
 			data[Y_INDEX][index] = entry.getValue();
+			if (entry.getKey() <= 0) this.containsZeroX = true;
+			if (entry.getValue() <= 0) {
+			}
 			index++;
 		}
 		dataset.addSeries(title, data);
 
 		NumberTickUnit logUnit = new NumberTickUnit(10);
-		LogarithmicAxis xAxis = new LogarithmicAxis("Degree");
+		NumberAxis xAxis,yAxis;
+		if (this.containsZeroX){
+			xAxis = new NumberAxis("Degree");
+			xAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+			yAxis = new NumberAxis("Frequency");
+			yAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		} else {
+			xAxis = new LogarithmicAxis("Degree");
+			xAxis.setTickUnit(logUnit);
+			((LogarithmicAxis) xAxis).setAutoRangeNextLogFlag(true);
+			yAxis = new LogarithmicAxis("Frequency");
+			yAxis.setTickUnit(logUnit);
+			((LogarithmicAxis) yAxis).setAutoRangeNextLogFlag(true);
+		}
 		xAxis.setUpperMargin(0.0);
 		xAxis.setLowerMargin(0.0);
-		xAxis.setTickUnit(logUnit);
-		xAxis.setAutoRangeNextLogFlag(true);
-		LogarithmicAxis yAxis = new LogarithmicAxis("Frequency");
 		yAxis.setUpperMargin(0.0);
 		yAxis.setLowerMargin(0.0);
-		yAxis.setTickUnit(logUnit);
-		xAxis.setAutoRangeNextLogFlag(true);
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
 		renderer.setBaseLinesVisible(false);
 		//renderer.setSeriesShape(0, new Ellipse2D.Double(-2D, -2D, 4D, 4D));

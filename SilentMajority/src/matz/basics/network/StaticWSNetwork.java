@@ -3,7 +3,13 @@ package matz.basics.network;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Watts-Strogatzモデルに基づき、スモールワールド・高クラスタ性のネットワークを生成するクラス。<br>
+ * {@link StaticREGNetwork}を拡張して、コンストラクト時にまず格子グラフを生成した上で、rewire()で確率による張替えを行う。<br>
+ * 格子グラフを生成するための次数degreeとrewireの確率pRewireをどちらもdoubleで与える必要がある。<br>
+ * @author Yu
+ *
+ */
 public class StaticWSNetwork extends StaticREGNetwork {
 	
 	protected static double P_REWIRE_DEFAULT = 0.1;
