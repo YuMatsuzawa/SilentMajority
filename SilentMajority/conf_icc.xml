@@ -11,7 +11,7 @@
 <entry key="controlPitch">0.02</entry>
 <entry key="controlResol">21</entry>
 <entry key="nAgents">1000</entry>
-<entry key="ntwkType">RND</entry>
+<entry key="ntwkType">REG</entry>
 <entry key="pRewire">0.1</entry>
 <entry key="degree">10</entry>
 </properties>
