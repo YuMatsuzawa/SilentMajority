@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
+import matz.basics.network.NetworkBuilder;
 import matz.basics.network.StaticNetwork;
 
 public class SimulationTaskLT extends SimulationTask {
@@ -30,7 +31,7 @@ public class SimulationTaskLT extends SimulationTask {
 			this.initInfoAgentsArray(this.getnAgents(), this.refNetwork);
 			if (this.refNetwork == null) {
 				//静的ネットワークを使わないなら、シミュレーション個別のネットワークを生成する．
-				CNNNetworkBuilder ntwk = new CNNNetworkBuilder();
+				NetworkBuilder ntwk = new CNNNetworkBuilder();
 				this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
 			}
 			
@@ -74,21 +75,18 @@ public class SimulationTaskLT extends SimulationTask {
 			rbw.write("timestep,pos,neg,,pos,neg,,pos,neg");
 			rbw.newLine();
 			for (int step = 0; step < maxStep; step++) {
+				/*
+				 * 集計
+				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
-					//Integer opinion = agent.getOpinion(); //記録するのはヴォーカルの中での比率なので，forceGetしない
+					//Integer vOpinion = agent.getOpinion(); //記録するのはヴォーカルの中での比率なので，forceGetしない
 					Integer opinion = agent.forceGetOpinion(); //debugのために全部記録したいのでforceGetする
 					if (opinion == null) continue;
-					else if (opinion == POS_OPINION) {
-						//vocalRecords[step][POS_OPINION]++;
-						totalRecords[step][POS_OPINION]++;
-						if (agent.isSilent()) silentRecords[step][POS_OPINION]++;
-						else vocalRecords[step][POS_OPINION]++;
-					}
-					else if (opinion == NEG_OPINION) {
+					else {
 						//vocalRecords[step][NEG_OPINION]++;
-						totalRecords[step][NEG_OPINION]++;
-						if (agent.isSilent()) silentRecords[step][NEG_OPINION]++;
-						else vocalRecords[step][NEG_OPINION]++;
+						totalRecords[step][opinion]++;
+						if (agent.isSilent()) silentRecords[step][opinion]++;
+						else vocalRecords[step][opinion]++;
 					}
 				}
 				rbw.write(String.valueOf(step));
@@ -102,7 +100,7 @@ public class SimulationTaskLT extends SimulationTask {
 				rbw.newLine();
 				
 				/*
-				 * LTモデル相互作用を実行
+				 * LTモデル相互作用
 				 * 
 				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
@@ -190,7 +188,7 @@ public class SimulationTaskLT extends SimulationTask {
 	 */
 	private void controlThresholds() {
 		for (InfoAgent agent : this.infoAgentsArray) {
-			if (agent.forceGetOpinion() == POS_OPINION) {
+			if (agent.forceGetOpinion().equals(POS_OPINION)) {
 				double thresholdRoll = (1.0 - this.controlVar) * this.localRNG.nextDouble();
 				agent.setThreshold(thresholdRoll);
 			}
@@ -201,7 +199,7 @@ public class SimulationTaskLT extends SimulationTask {
 	 */
 	private void separateThresholds() {
 		for (InfoAgent agent : this.infoAgentsArray) {
-			if (agent.forceGetOpinion() == POS_OPINION) {
+			if (agent.forceGetOpinion().equals(POS_OPINION)) {
 				agent.setThreshold((1.0 - this.controlVar) * this.localRNG.nextDouble());
 			} else {
 				agent.setThreshold((1.0 - this.controlVar) * this.localRNG.nextDouble() + this.controlVar);
@@ -229,7 +227,7 @@ public class SimulationTaskLT extends SimulationTask {
 	public void biasedPropagation() {
 		double pVocalBase = 1.0 - this.initSilentRatio;
 		for (InfoAgent agent : this.infoAgentsArray) {
-			if (agent.forceGetOpinion() == POS_OPINION) {
+			if (agent.forceGetOpinion().equals(POS_OPINION)) {
 				double pVocalPos = pVocalBase * this.controlVar / (this.totalPosRatio);
 				double roll = this.localRNG.nextDouble();
 				if (roll < pVocalPos) agent.unmuzzle();

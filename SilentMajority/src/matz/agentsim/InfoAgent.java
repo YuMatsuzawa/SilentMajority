@@ -11,13 +11,13 @@ public class InfoAgent {
 	private int agentIndex;
 	private ArrayList<Integer> followingList;
 	private ArrayList<Integer> followedList;
-	private boolean isSilent = false;
-	private boolean tmpSilent = isSilent;
-	private Integer tmpOpinion;
+	private boolean isSilent;
+	private boolean tmpSilent;
 	/**抽象的な意見（情報）を表す状態変数．<br>
 	 * プリミティブintではなくラッパ型のIntegerにしておき，nullを使えるようにする．
 	 */
 	private Integer opinion;
+	private Integer tmpOpinion;
 	private double influence = Math.random();
 	private double threshold = Math.random(); //ランダムにする
 	private double bendThreshold = 0.1; //reliefつきmuzzlingで少数派閾値の場合
@@ -49,7 +49,7 @@ public class InfoAgent {
 			//}
 		}
 		this.setTmpOpinion(tmpOp);
-		if (this.getTmpOpinion() != preOp) return true;
+		if (!this.getTmpOpinion().equals(preOp)) return true;
 		return false;
 	}
 
@@ -84,7 +84,7 @@ public class InfoAgent {
 		else tmpOp = NEU_INDEX;
 		
 		this.setTmpOpinion(tmpOp);
-		if (this.getTmpOpinion() != preOp) return true;
+		if (!this.getTmpOpinion().equals(preOp)) return true;
 		return false;
 	}
 
@@ -100,8 +100,8 @@ public class InfoAgent {
 	 * @return 変化すればtrue
 	 */
 	public boolean linearThreasholdMuzzling(InfoAgent[] infoAgentsArray) {
-		boolean preSilent = this.isSilent();
-		boolean tmpSilent = this.isSilent();
+		boolean preSilent = (this.isSilent())? true : false;
+		boolean tmpSilent = (this.isSilent())? true : false;
 		
 		int sumOfVocal = 0, sumOfVocalizedSameOpinion = 0;
 		for (int neighborIndex : this.getUndirectedList()) {
@@ -109,16 +109,20 @@ public class InfoAgent {
 			if (neighborOp == null) continue; //サイレントは無視
 			else {
 				sumOfVocal++; //nullでないならヴォーカル
-				if (neighborOp == this.forceGetOpinion()) sumOfVocalizedSameOpinion++;
-					//自分の真の意見と同じ意見の人を数える
-			} //FIXME we believe this method has some grave bug
+				if (neighborOp.equals(this.forceGetOpinion())) {
+					sumOfVocalizedSameOpinion++; //自分の真の意見と同じ意見の人を数える
+				}
+			}
 		}
-		if (sumOfVocal == 0) return false;
-		if (sumOfVocalizedSameOpinion / sumOfVocal > this.getThreshold()) tmpSilent = false;
+		if (sumOfVocal == 0){
+			this.tmpSilent = tmpSilent;
+			return false;
+		}
+		if ((double)sumOfVocalizedSameOpinion / (double)sumOfVocal > this.getThreshold()) tmpSilent = false;
 		else tmpSilent = true;
 		
 		this.tmpSilent = tmpSilent;
-		if (this.tmpSilent != preSilent) return true;
+		if (preSilent ^ this.tmpSilent) return true;
 		return false;
 	}
 
@@ -130,8 +134,8 @@ public class InfoAgent {
 	 * @param infoAgentsArray
 	 */
 	public boolean linearThresholdMuzzlingWithRelief(InfoAgent[] infoAgentsArray, double reliefRatio) {
-		boolean preSilent = this.isSilent();
-		boolean tmpSilent = this.isSilent();
+		boolean preSilent = (this.isSilent())? true : false;
+		boolean tmpSilent = (this.isSilent())? true : false;
 		
 		int sumOfVocal = 0, sumOfVocalizedSameOpinion = 0;
 		for (int neighborIndex : this.getUndirectedList()) {
@@ -139,23 +143,27 @@ public class InfoAgent {
 			if (neighborOp == null) continue; //サイレントは無視
 			else {
 				sumOfVocal++; //nullでないならヴォーカル
-				if (neighborOp == this.forceGetOpinion()) sumOfVocalizedSameOpinion++;
+				if (neighborOp.equals(this.forceGetOpinion())) sumOfVocalizedSameOpinion++;
 					//自分の真の意見と同じ意見の人を数える
 			}
 		}
-		if (sumOfVocal == 0) return false;
-		if (sumOfVocalizedSameOpinion / sumOfVocal > this.bendThreshold &&
-				sumOfVocalizedSameOpinion / this.getDegree() < reliefRatio) tmpSilent = false; //黙ってしまうほど少なくもないが，安心できるほど多くもないときにヴォーカルになる
+		if (sumOfVocal == 0) {
+			this.tmpSilent = tmpSilent;
+			return false;
+		}
+		if ((double)sumOfVocalizedSameOpinion / (double)sumOfVocal > this.bendThreshold &&
+				(double)sumOfVocalizedSameOpinion / (double)this.getDegree() < reliefRatio) tmpSilent = false; //黙ってしまうほど少なくもないが，安心できるほど多くもないときにヴォーカルになる
 		else tmpSilent = true;
 		
 		this.tmpSilent = tmpSilent;
-		if (this.tmpSilent != preSilent) return true;
+		if (preSilent ^ this.tmpSilent) return true;
 		return false;
 	}
 	
 	//文字列名を与えるスタイルはやめる.
 	
-	/**基本コンストラクタ．
+	/**
+	 * 基本コンストラクタ．
 	 * @param index -整数の識別番号
 	 * @param opinion -整数値の意見
 	 * @param isSilent -サイレントであるか
@@ -311,7 +319,7 @@ public class InfoAgent {
 	 * @return isSilent
 	 */
 	public boolean isSilent() {
-		return isSilent;
+		return this.isSilent;
 	}
 	/**
 	 * 情報エージェントをサイレントにする。
@@ -331,11 +339,8 @@ public class InfoAgent {
 	 * @return opinion
 	 */
 	public Integer getOpinion() {
-		if (!this.isSilent()) {
-			return this.opinion;
-		} else {
-			return null;
-		}
+		if (this.isSilent()) return null;
+		return this.forceGetOpinion();
 	}
 	/**
 	 * サイレント如何を問わず意見を取得する。記録用。

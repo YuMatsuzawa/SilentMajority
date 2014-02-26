@@ -6,11 +6,12 @@
 <entry key="initSilentRatio">0.9</entry>
 <entry key="totalPosRatio">0.4</entry>
 <entry key="simType">0</entry>
-<entry key="nIter">1</entry>
+<entry key="nIter">10</entry>
 <entry key="lowerBound">0.00</entry>
 <entry key="controlPitch">0.02</entry>
 <entry key="controlResol">21</entry>
 <entry key="nAgents">1000</entry>
-<entry key="ntwkType">CNN</entry>
-<entry key="pRewire">0.4</entry>
+<entry key="ntwkType">WS</entry>
+<entry key="pRewire">0.1</entry>
+<entry key="degree">10</entry>
 </properties>
