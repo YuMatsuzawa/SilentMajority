@@ -10,8 +10,8 @@ import matz.basics.network.*;
 
 public class SilentMajorityLT {
 
-	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2, TYPE_THRES = 3, TYPE_THRES2 = 4;
-	static String[] SIM_TYPE_NAME = {"HighD", "BiasedV", "Relief", "CtrlTH", "SepTH"};
+	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2, TYPE_THRES = 3, TYPE_THRES2 = 4, TYPE_NORMAL = 5;
+	static String[] SIM_TYPE_NAME = {"HighD", "BiasedV", "Relief", "CtrlTH", "SepTH", "Normal"};
 	
 	static int CNN_INDEX = 0, WS_INDEX = 1, BA_INDEX = 2, RND_INDEX = 3, REG_INDEX = 4;
 	static String[] NTWK_NAME = {"CNN","WS","BA","RND","REG"};
@@ -27,6 +27,7 @@ public class SilentMajorityLT {
 		double totalPosRatio = 0.2, initSilentRatio = 0.9;
 		double controlPitch, lowerBound;
 		Double pRewire = null, degree = null;
+		boolean noiseEnabled = false;
 		String ntwkType = NTWK_NAME[CNN_INDEX];
 		
 		/*
@@ -85,6 +86,11 @@ public class SilentMajorityLT {
 		} catch (Exception e) {
 			//do nothing
 		}
+		try {
+			noiseEnabled = (conf.getProperty("noiseEnabled").equals("0"))? false : true;
+		} catch (Exception e) {
+			//do nothing
+		}
 		
 		if (simType == TYPE_RANKED) {
 			if (lowerBound + controlPitch*(controlResol - 1) > totalPosRatio) {
@@ -100,6 +106,9 @@ public class SilentMajorityLT {
 				_E.closeLogFileHandler();
 				return;
 			}
+		} else if (simType == TYPE_NORMAL) {
+			lowerBound = 0.0;
+			controlResol = 1;
 		}
 		
 		_E.SimExecLogger.info("Starting "+ _E.getClass().getName() +". NumThreads = " + _E.getNumThreads());
@@ -132,7 +141,7 @@ public class SilentMajorityLT {
 						"sil="+String.format("%.2f",initSilentRatio) +
 						"ctrl="+String.format("%.2f",controlVar) +
 						"_" + iter,
-						nAgents, totalPosRatio, controlVar, initSilentRatio, ntwk, endGate);
+						nAgents, totalPosRatio, controlVar, initSilentRatio, noiseEnabled, ntwk, endGate);
 				_E.execute(rn);
 				_E.SimExecLogger.info("Submitted: " + rn.getInstanceName());
 			}

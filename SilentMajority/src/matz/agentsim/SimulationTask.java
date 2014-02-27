@@ -116,7 +116,7 @@ public class SimulationTask implements Runnable {
 				for (InfoAgent agent : this.infoAgentsArray) {
 					boolean isUpdated = (roll < this.getModelReferenceRatio())? //モデル選択比＝IC選択率を閾値として確率選択している。
 							agent.independentCascade(infoAgentsArray)
-							: agent.ｌinearThreashold(infoAgentsArray);
+							: agent.linearThreashold(infoAgentsArray);
 					if (isUpdated) {
 						nUpdated++;
 						Integer updatedOpinion = agent.getTmpOpinion();

@@ -3,6 +3,7 @@ package matz.agentsim;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import matz.basics.network.StaticNetwork;
 
@@ -20,6 +21,7 @@ public class InfoAgent {
 	private Integer tmpOpinion;
 	private double influence = Math.random();
 	private double threshold = Math.random(); //ランダムにする
+	private double noiseRatio = 0.05;
 	private double bendThreshold = 0.1; //reliefつきmuzzlingで少数派閾値の場合
 	private StaticNetwork refNetwork = null;
 	private boolean isNetworkStatic = false;
@@ -57,7 +59,7 @@ public class InfoAgent {
 	 * @param infoAgentsArray
 	 * @return
 	 */
-	public boolean ｌinearThreashold(InfoAgent[] infoAgentsArray) {
+	public boolean linearThreashold(InfoAgent[] infoAgentsArray) {
 		Integer preOp = this.forceGetOpinion();
 		Integer tmpOp = this.forceGetOpinion();
 		
@@ -118,7 +120,7 @@ public class InfoAgent {
 			this.tmpSilent = tmpSilent;
 			return false;
 		}
-		if ((double)sumOfVocalizedSameOpinion / (double)sumOfVocal > this.getThreshold()) tmpSilent = false;
+		if ((double)sumOfVocalizedSameOpinion / (double)sumOfVocal >= this.getThreshold()) tmpSilent = false;
 		else tmpSilent = true;
 		
 		this.tmpSilent = tmpSilent;
@@ -158,6 +160,23 @@ public class InfoAgent {
 		this.tmpSilent = tmpSilent;
 		if (preSilent ^ this.tmpSilent) return true;
 		return false;
+	}
+
+	/**
+	 * 相互作用が起こらなかった場合に呼ばれる、ランダムな自発変化。<br>
+	 * 要はノイズ項。事前状態を勘案せず、ランダムにサイレントかヴォーカルにする。<br>
+	 * @return
+	 */
+	public boolean randomUpdate(Random localRNG) {
+		boolean ret = false;
+		double roll = localRNG.nextDouble();
+		if (roll < this.noiseRatio) {
+			int rollInt = localRNG.nextInt(2);
+			if (rollInt == 0) this.tmpSilent = true;
+			else this.tmpSilent = false;
+			ret = true;
+		}
+		return ret;
 	}
 	
 	//文字列名を与えるスタイルはやめる.
@@ -378,7 +397,7 @@ public class InfoAgent {
 
 	/**
 	 * 派生シミュレーションのためのメソッド．<br>
-	 * LTmuzzlingで決定したmuzzlingの中間状態を本適用する．
+	 * {@link #linearThreasholdMuzzling(InfoAgent[])}で決定したmuzzlingの中間状態を本適用する．
 	 */
 	public void applyMuzzling() {
 		if (this.tmpSilent) this.muzzle();

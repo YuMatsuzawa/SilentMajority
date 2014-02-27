@@ -16,9 +16,10 @@ public class SimulationTaskLT extends SimulationTask {
 	private double totalPosRatio;
 	private double initSilentRatio;
 	private int simType;
+	private boolean noiseEnabled = false;
 	private static int NUM_OPINION = 2, POS_OPINION = 0, NEG_OPINION = 1;
-	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2, TYPE_THRES = 3, TYPE_THRES2 = 4;
-	static String[] SIM_TYPE_NAME = {"HighD", "BiasedV", "Relief", "CtrlTH", "SepTH"};
+	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2, TYPE_THRES = 3, TYPE_THRES2 = 4, TYPE_NORMAL = 5;
+	static String[] SIM_TYPE_NAME = {"HighD", "BiasedV", "Relief", "CtrlTH", "SepTH", "Normal"};
 	
 	@Override
 	public void run() {
@@ -104,9 +105,12 @@ public class SimulationTaskLT extends SimulationTask {
 				 * 
 				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
-					if (this.simType == TYPE_RELIEF) agent.linearThresholdMuzzlingWithRelief(infoAgentsArray, this.controlVar);
-					else agent.linearThreasholdMuzzling(infoAgentsArray);
+					boolean update;
+					if (this.simType == TYPE_RELIEF) update = agent.linearThresholdMuzzlingWithRelief(infoAgentsArray, this.controlVar);
+					else update = agent.linearThreasholdMuzzling(infoAgentsArray);
 					
+					//ノイズ有効ならランダムな自発変化を入れる
+					if (this.noiseEnabled  && !update) update = agent.randomUpdate(this.localRNG);
 				}
 				
 				for (InfoAgent agent : this.infoAgentsArray) agent.applyMuzzling(); //中間状態を本適用
@@ -183,7 +187,7 @@ public class SimulationTaskLT extends SimulationTask {
 	 * 通常の{@link InfoAgent#linearThreasholdMuzzling(InfoAgent[])}では閾値は一様分布に従うランダムで，<br>
 	 * 自分と同じ意見が自分の周囲に閾値を上回って存在していればヴォーカルに，そうでなければサイレントになる．<br>
 	 * その閾値を（平均して）下げることは，ヴォーカルになりやすくなることを意味する．<br>
-	 * たとえば0.0<threshold<0.1の範囲で一様分布であれば，自分の意見が少なくとも周囲で10%以上存在していればヴォーカルになる．<br>
+	 * たとえば{@code 0.0<threshold<0.1}の範囲で一様分布であれば，自分の意見が少なくとも周囲で10%以上存在していればヴォーカルになる．<br>
 	 * controlVarは閾値の取りうる範囲の上限値を1.0からどれだけ下げるかで，1.0未満で指定する．
 	 */
 	private void controlThresholds() {
@@ -248,15 +252,17 @@ public class SimulationTaskLT extends SimulationTask {
 	 * @param nAgents
 	 * @param controlVar
 	 * @param initSilentRatio
+	 * @param noiseEnabled 
 	 * @param endGate
 	 */
 	public SimulationTaskLT(String simName, String instanceName, int nAgents,
 			double totalPosRatio, double controlVar, double initSilentRatio,
-			StaticNetwork ntwk, CountDownLatch endGate) {
+			boolean noiseEnabled, StaticNetwork ntwk, CountDownLatch endGate) {
 		super(simName, instanceName, nAgents, ntwk, endGate);
 		this.totalPosRatio = totalPosRatio;
 		this.controlVar = controlVar;
 		this.initSilentRatio = initSilentRatio;
+		this.noiseEnabled = noiseEnabled;
 		for(int simTypeIndex = 0; simTypeIndex < SIM_TYPE_NAME.length; simTypeIndex++) {
 			if (simName.startsWith(SIM_TYPE_NAME[simTypeIndex])) this.simType = simTypeIndex;
 		} 
