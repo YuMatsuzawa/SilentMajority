@@ -13,4 +13,7 @@
 <entry key="nAgents">1000</entry>
 <entry key="ntwkType">CNN</entry>
 <entry key="degree">10</entry>
+<entry key="pRewire"></entry>
+<entry key="noiseEnabled">0</entry>
+<entry key="ntwkFig"></entry>
 </properties>

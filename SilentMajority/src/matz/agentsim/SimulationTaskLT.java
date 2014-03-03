@@ -17,6 +17,7 @@ public class SimulationTaskLT extends SimulationTask {
 	private double initSilentRatio;
 	private int simType;
 	private boolean noiseEnabled = false;
+	private boolean ntwkFig = true;
 	private static int NUM_OPINION = 2, POS_OPINION = 0, NEG_OPINION = 1;
 	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2, TYPE_THRES = 3, TYPE_THRES2 = 4, TYPE_NORMAL = 5;
 	static String[] SIM_TYPE_NAME = {"HighD", "BiasedV", "Relief", "CtrlTH", "SepTH", "Normal"};
@@ -57,9 +58,12 @@ public class SimulationTaskLT extends SimulationTask {
 			if (!outDir.isDirectory()) outDir.mkdirs();
 			
 			//ネットワークのチェック
-			NetworkVisualizer nv = new NetworkVisualizer(this.infoAgentsArray);
-			//初期状態の確認
-			nv.generateGraph(outDir, this.getTimeStamp() + "." + this.getInstanceName()+".initial.png");
+			NetworkVisualizer nv = null;
+			if (ntwkFig) {
+				nv = new NetworkVisualizer(this.infoAgentsArray);
+				//初期状態の確認
+				nv.generateGraph(outDir, this.getTimeStamp() + "." + this.getInstanceName()+".initial.png");
+			}
 			
 			//情報伝播試行
 			int maxStep = 100;
@@ -116,8 +120,10 @@ public class SimulationTaskLT extends SimulationTask {
 				for (InfoAgent agent : this.infoAgentsArray) agent.applyMuzzling(); //中間状態を本適用
 			}
 
-			//最終状態の確認．
-			nv.generateGraph(outDir, this.getTimeStamp() + "." + this.getInstanceName()+".final.png");
+			if (ntwkFig)  {
+				//最終状態の確認．
+				nv.generateGraph(outDir, this.getTimeStamp() + "." + this.getInstanceName()+".final.png");
+			}
 			
 			rbw.close();
 			
@@ -254,15 +260,17 @@ public class SimulationTaskLT extends SimulationTask {
 	 * @param initSilentRatio
 	 * @param noiseEnabled 
 	 * @param endGate
+	 * @param ntwkFig 
 	 */
 	public SimulationTaskLT(String simName, String instanceName, int nAgents,
 			double totalPosRatio, double controlVar, double initSilentRatio,
-			boolean noiseEnabled, StaticNetwork ntwk, CountDownLatch endGate) {
+			boolean noiseEnabled, StaticNetwork ntwk, CountDownLatch endGate, boolean ntwkFig) {
 		super(simName, instanceName, nAgents, ntwk, endGate);
 		this.totalPosRatio = totalPosRatio;
 		this.controlVar = controlVar;
 		this.initSilentRatio = initSilentRatio;
 		this.noiseEnabled = noiseEnabled;
+		this.ntwkFig  = ntwkFig;
 		for(int simTypeIndex = 0; simTypeIndex < SIM_TYPE_NAME.length; simTypeIndex++) {
 			if (simName.startsWith(SIM_TYPE_NAME[simTypeIndex])) this.simType = simTypeIndex;
 		} 

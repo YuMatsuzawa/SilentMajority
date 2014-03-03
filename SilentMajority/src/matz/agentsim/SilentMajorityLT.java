@@ -27,7 +27,7 @@ public class SilentMajorityLT {
 		double totalPosRatio = 0.2, initSilentRatio = 0.9;
 		double controlPitch, lowerBound;
 		Double pRewire = null, degree = null;
-		boolean noiseEnabled = false;
+		boolean noiseEnabled = false, ntwkFig = true;
 		String ntwkType = NTWK_NAME[CNN_INDEX];
 		
 		/*
@@ -91,6 +91,11 @@ public class SilentMajorityLT {
 		} catch (Exception e) {
 			//do nothing
 		}
+		try {
+			ntwkFig = (conf.getProperty("ntwkFig").equals("0"))? false : true;
+		} catch (Exception e) {
+			//do nothing
+		}
 		
 		if (simType == TYPE_RANKED) {
 			if (lowerBound + controlPitch*(controlResol - 1) > totalPosRatio) {
@@ -141,7 +146,7 @@ public class SilentMajorityLT {
 						"sil="+String.format("%.2f",initSilentRatio) +
 						"ctrl="+String.format("%.2f",controlVar) +
 						"_" + iter,
-						nAgents, totalPosRatio, controlVar, initSilentRatio, noiseEnabled, ntwk, endGate);
+						nAgents, totalPosRatio, controlVar, initSilentRatio, noiseEnabled, ntwk, endGate, ntwkFig);
 				_E.execute(rn);
 				_E.SimExecLogger.info("Submitted: " + rn.getInstanceName());
 			}
