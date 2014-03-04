@@ -2,8 +2,8 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>Configuration</comment>
-<entry key="nCore">8</entry>
-<entry key="simType">1</entry>
+<entry key="nCore"></entry>
+<entry key="simType">0</entry>
 <entry key="initSilentRatio">0.9</entry>
 <entry key="totalPosRatio">0.4</entry>
 <entry key="nIter">10</entry>

@@ -33,10 +33,10 @@ import java.util.logging.*;
 public class MatzExecutor {
 
 	private int NumThreads;
-	/**ExecutorServiceが持つThread数のデフォルト値。Core i7以上を想定しているので8としている。
+	/**ExecutorServiceが持つThread数のデフォルト値。i5等で作業されることも多いので4としている。<br>
 	 * デフォルト値なのでStatic。
 	 */
-	private static int NumThreadsDefault = 8;
+	private final static int NumThreadsDefault = 4;
 	/**MatzExecutorの基幹となるスレッドプールを保持するExecutorService.
 	 * @see java.util.concurrent.ExecutorService
 	 * 
