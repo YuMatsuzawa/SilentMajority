@@ -22,7 +22,7 @@ public class InfoAgent {
 	private double influence = Math.random();
 	private double threshold = Math.random(); //ランダムにする
 	private double noiseRatio = 0.05;
-	private double bendThreshold = 0.1; //reliefつきmuzzlingで少数派閾値の場合
+	private double bendThreshold = 0.05; //reliefつきmuzzlingで少数派閾値の場合
 	private StaticNetwork refNetwork = null;
 	private boolean isNetworkStatic = false;
 	
@@ -154,7 +154,7 @@ public class InfoAgent {
 			return false;
 		}
 		if ((double)sumOfVocalizedSameOpinion / (double)sumOfVocal > this.bendThreshold &&
-				(double)sumOfVocalizedSameOpinion / (double)this.getDegree() < reliefRatio) tmpSilent = false; //黙ってしまうほど少なくもないが，安心できるほど多くもないときにヴォーカルになる
+				(double)sumOfVocalizedSameOpinion / (double)sumOfVocal < reliefRatio) tmpSilent = false; //黙ってしまうほど少なくもないが，安心できるほど多くもないときにヴォーカルになる
 		else tmpSilent = true;
 		
 		this.tmpSilent = tmpSilent;
@@ -175,6 +175,21 @@ public class InfoAgent {
 			if (rollInt == 0) this.tmpSilent = true;
 			else this.tmpSilent = false;
 			ret = true;
+		}
+		return ret;
+	}
+	
+	/**
+	 * 上の派生版．ランダムにヴォーカルにするがサイレントにしない．
+	 * @param localRNG
+	 * @return
+	 */
+	public boolean randomUnmuzzle(Random localRNG) {
+		boolean ret = false;
+		double roll = localRNG.nextDouble();
+		if (roll < this.noiseRatio) {
+			this.tmpSilent = false;
+			ret = false;
 		}
 		return ret;
 	}

@@ -114,7 +114,7 @@ public class SimulationTaskLT extends SimulationTask {
 					else update = agent.linearThreasholdMuzzling(infoAgentsArray);
 					
 					//ノイズ有効ならランダムな自発変化を入れる
-					if (this.noiseEnabled  && !update) update = agent.randomUpdate(this.localRNG);
+					if (!update && this.noiseEnabled) update = agent.randomUnmuzzle(localRNG); //agent.randomUpdate(this.localRNG);
 				}
 				
 				for (InfoAgent agent : this.infoAgentsArray) agent.applyMuzzling(); //中間状態を本適用
