@@ -9,9 +9,9 @@ import java.util.List;
  * 確率p_nnで「友人の友人」という関係(潜在リンク)をランダムに選んで接続する操作、<br>
  * 確率1-p_nnで新しいエージェントをランダムに追加する操作を行うアルゴリズム。<br>
  * p_nnはパラメータであるが、与えられていない場合はデフォルト値{@value #P_NN_DEFAULT}を用いる。<br>
- * アルゴリズムから、確率p_nnでエージェント数が1増え、次数の総和が2増える一方、<br>
- * 1-p_nnで次数の総和だけが2増えることがわかる。<br>
- * 従って特定の次数degreeに漸近するネットワークにしたい場合は、{@code p_nn = 1 - 2/degree}とすれば良い。<br>
+ * アルゴリズムから、確率1-p_nnでエージェント数が1増え、次数の総和が2増える一方、<br>
+ * p_nnで次数の総和だけが2増えることがわかる。<br>
+ * 従って特定の次数degreeに漸近するネットワークにしたい場合は、{@code p_nn = 1 - 2/(degree)}とすれば良い。<br>
  * ただし、エージェント数が十分に大きくない場合は必ずしも良い近似とならない。
  * 
  * @author Yu
@@ -131,7 +131,7 @@ public class StaticCNNNetwork extends StaticNetwork {
 	 */
 	public StaticCNNNetwork(int nAgents, boolean orientation, Double degree) {
 		super("CNN", nAgents, orientation, degree);
-		this.p_nn = 1.0 - 2.0 / this.getGivenDegree();
+		this.p_nn = 1.0 - 2.0 / (this.getGivenDegree());
 		this.build();
 	}
 	/**
