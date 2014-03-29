@@ -51,9 +51,9 @@ public class SimulationTaskLT extends SimulationTask {
 			
 			File outDir = new File("results/"+this.getTimeStamp(),
 					"n="+String.format("%d",this.getnAgents()) +
-					"pos="+String.format("%.2f", this.totalPosRatio) +
-					"sil="+String.format("%.2f", this.initSilentRatio) +
-					"ctrl="+String.format("%.2f", this.controlVar)
+					"pos="+String.format("%.4f", this.totalPosRatio) +
+					"sil="+String.format("%.4f", this.initSilentRatio) +
+					"ctrl="+String.format("%.4f", this.controlVar)
 					);
 			if (!outDir.isDirectory()) outDir.mkdirs();
 			

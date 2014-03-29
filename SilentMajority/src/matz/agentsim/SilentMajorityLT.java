@@ -98,14 +98,16 @@ public class SilentMajorityLT {
 		}
 		
 		if (simType == TYPE_RANKED) {
-			if (lowerBound + controlPitch*(controlResol - 1) > totalPosRatio) {
+			String testStr = String.format("%.6f", lowerBound + controlPitch*(controlResol - 1));
+			if (Double.parseDouble(testStr) > totalPosRatio) {
 				_E.SimExecLogger.severe("ControlVar out of bound.");
 				_E.safeShutdown();
 				_E.closeLogFileHandler();
 				return;
 			}
 		} else if (simType == TYPE_THRES) {
-			if (lowerBound + controlPitch*(controlResol - 1) > 1.0) {
+			String testStr = String.format("%.6f", lowerBound + controlPitch*(controlResol - 1));
+			if (Double.parseDouble(testStr) > 1.0) {
 				_E.SimExecLogger.severe("ControlVar out of bound.");
 				_E.safeShutdown();
 				_E.closeLogFileHandler();
@@ -142,9 +144,9 @@ public class SilentMajorityLT {
 			for (int iter = 0; iter < nIter; iter++) {
 				SimulationTaskLT rn = new SimulationTaskLT(simName, 
 						"n="+String.format("%d",nAgents) +
-						"pos="+String.format("%.2f",totalPosRatio) +
-						"sil="+String.format("%.2f",initSilentRatio) +
-						"ctrl="+String.format("%.2f",controlVar) +
+						"pos="+String.format("%.4f",totalPosRatio) +
+						"sil="+String.format("%.4f",initSilentRatio) +
+						"ctrl="+String.format("%.4f",controlVar) +
 						"_" + iter,
 						nAgents, totalPosRatio, controlVar, initSilentRatio, noiseEnabled, ntwk, endGate, ntwkFig);
 				_E.execute(rn);
@@ -166,9 +168,9 @@ public class SilentMajorityLT {
 			for (double controlVar = lowerBound; controlVar < lowerBound + controlPitch*controlResol; controlVar += controlPitch) {
 				File resultDir = new File("results/"+simName,
 						"n="+String.format("%d",nAgents) +
-						"pos="+String.format("%.2f",totalPosRatio) +
-						"sil="+String.format("%.2f",initSilentRatio) +
-						"ctrl="+String.format("%.2f",controlVar)
+						"pos="+String.format("%.4f",totalPosRatio) +
+						"sil="+String.format("%.4f",initSilentRatio) +
+						"ctrl="+String.format("%.4f",controlVar)
 						);
 				File[] resultFiles = resultDir.listFiles(new FilenameFilter() {
 						@Override
