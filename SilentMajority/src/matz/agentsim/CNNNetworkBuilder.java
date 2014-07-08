@@ -6,8 +6,8 @@ import java.util.Random;
 
 import matz.basics.network.NetworkBuilder;
 
-/**InfoAgentѓNѓ‰ѓX‚ЕЌм‚з‚к‚ЅѓGЃ[ѓWѓFѓ“ѓgЉФ‚ЙѓЉѓ“ѓN‚р’Ј‚и,‚»‚МЋQЏЖЉЦЊW‚рЉeѓGЃ[ѓWѓFѓ“ѓg‚МЋќ‚ВѓЉѓXѓg‚Й‹L^‚µ‚Д‚ў‚­.
- * ѓpѓ‰ѓЃЃ[ѓ^‚Ж‚µ‚ДЃC‚ ‚йѓ^ѓCѓЂѓXѓeѓbѓv‚ЕЃu—F’B‚М—F’BЃvЉФ‚ЙѓЉѓ“ѓN‚р’Ј‚й‚©,Ѓu‘S‚­–іЉЦЊWor‰“‚ўЉЦЊW‚М“сЋТЃvЉФ‚Й’Ј‚й‚©‚М‘I‘ри‡’l‚рЋќ‚ВЃD
+/**InfoAgentг‚Їгѓ©г‚№гЃ§дЅњг‚‰г‚ЊгЃџг‚Ёгѓјг‚ёг‚§гѓігѓ€й–“гЃ«гѓЄгѓіг‚Їг‚’ејµг‚Љ,гЃќгЃ®еЏ‚з…§й–ўдї‚г‚’еђ„г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®жЊЃгЃ¤гѓЄг‚№гѓ€гЃ«иЁйЊІгЃ—гЃ¦гЃ„гЃЏ.
+ * гѓ‘гѓ©гѓЎгѓјг‚їгЃЁгЃ—гЃ¦пјЊгЃ‚г‚‹г‚їг‚¤гѓ г‚№гѓ†гѓѓгѓ—гЃ§гЂЊеЏ‹йЃ”гЃ®еЏ‹йЃ”гЂЌй–“гЃ«гѓЄгѓіг‚Їг‚’ејµг‚‹гЃ‹,гЂЊе…ЁгЃЏз„Ўй–ўдї‚orйЃ гЃ„й–ўдї‚гЃ®дєЊиЂ…гЂЌй–“гЃ«ејµг‚‹гЃ‹гЃ®йЃёжЉћй–ѕеЂ¤г‚’жЊЃгЃ¤пјЋ
  * @param infoAgentsArray
  */
 public class CNNNetworkBuilder implements NetworkBuilder {
@@ -23,7 +23,7 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 		int nAgents = infoAgentsArray.length;
 		
 		if (this.getOrientation() == UNDIRECTED) {
-			/*ѓlѓbѓgѓЏЃ[ѓN‚МЋн‚рЌм‚йЃi‚Ж‚и‚ ‚¦‚ё–іЊьѓOѓ‰ѓtЃj
+			/*гѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃ®зЁ®г‚’дЅњг‚‹пј€гЃЁг‚ЉгЃ‚гЃ€гЃљз„Ўеђ‘г‚°гѓ©гѓ•пј‰
 			 * 
 			 * 0----2----1
 			 * 
@@ -48,7 +48,7 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 				}
 			}
 
-			//ѓ`ѓFѓbѓN‚М‚Ѕ‚Я‚ЙЃC‘SѓGЃ[ѓWѓFѓ“ѓg‚М—ЧђЪѓЉѓXѓg‚рѓ\Ѓ[ѓg‚·‚йЃD
+			//гѓЃг‚§гѓѓг‚ЇгЃ®гЃџг‚ЃгЃ«пјЊе…Ёг‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®йљЈжЋҐгѓЄг‚№гѓ€г‚’г‚Ѕгѓјгѓ€гЃ™г‚‹пјЋ
 			for (InfoAgent agent : tmpAgentsArray) {
 				agent.sortLists();
 			}
@@ -57,7 +57,7 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 		return tmpAgentsArray;
 	}
 	
-	/**ѓ|ѓeѓ“ѓVѓѓѓ‹ѓЉѓ“ѓN‚рЋАЌЫ‚ЙђЪ‘±‚·‚йЃD
+	/**гѓќгѓ†гѓіг‚·гѓЈгѓ«гѓЄгѓіг‚Їг‚’е®џйљ›гЃ«жЋҐз¶љгЃ™г‚‹пјЋ
 	 * @param tmpAgentsArray
 	 */
 	private void connectPotential(InfoAgent[] tmpAgentsArray) {
@@ -67,11 +67,11 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 		int roll = this.localRNG.nextInt(listSize);
 		Integer[] pLink = this.potentialLinks.get(roll);
 		this.potentialLinks.remove(roll);
-			//roll‚Е“K“–‚Иѓ|ѓeѓ“ѓVѓѓѓ‹ѓЉѓ“ѓN‚р‘I‚СЏo‚µЃC‚±‚к‚рѓGѓbѓW‚Й•ПЉ·‚·‚йЃD
+			//rollгЃ§йЃ©еЅ“гЃЄгѓќгѓ†гѓіг‚·гѓЈгѓ«гѓЄгѓіг‚Їг‚’йЃёгЃіе‡єгЃ—пјЊгЃ“г‚Њг‚’г‚Ёгѓѓг‚ёгЃ«е¤‰жЏ›гЃ™г‚‹пјЋ
 
 		this.constructLink(pLink[0], pLink[1], tmpAgentsArray);
 	}
-	/**‚Ь‚ѕђЪ‘±‚і‚к‚Д‚ў‚И‚ўѓGЃ[ѓWѓFѓ“ѓg‚рѓ‰ѓ“ѓ_ѓЂ‚Й‰Б‚¦‚йЃD
+	/**гЃѕгЃ жЋҐз¶љгЃ•г‚ЊгЃ¦гЃ„гЃЄгЃ„г‚Ёгѓјг‚ёг‚§гѓігѓ€г‚’гѓ©гѓігѓЂгѓ гЃ«еЉ гЃ€г‚‹пјЋ
 	 * @param tmpAgentsArray
 	 */
 	private void includeAgent(InfoAgent[] tmpAgentsArray) {	
@@ -80,9 +80,9 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 
 		this.constructLink(newcomer, target, tmpAgentsArray);
 	}
-	/**target‚Жnewcomoer‚Ж‚МЉФ‚ЙѓЉѓ“ѓN‚р’Ј‚иЃCђ¶‚¶‚йѓ|ѓeѓ“ѓVѓѓѓ‹ѓЉѓ“ѓN‚р“o^‚·‚й.<br>
-	 * “сЏd“o^‚Є‚И‚ў‚ж‚¤ЌЧ‚©‚­ѓ`ѓFѓbѓN‚·‚йЃD<br>
-	 * ЊЭ‚ў‚МѓCѓ“ѓfѓbѓNѓX‚р€к“x‚ЙЊЭ‚ў‚М—ЧђЪѓЉѓXѓg‚ЙR‚к–і‚­“o^‚·‚й‚М‚ЕЃC‚±‚МѓЃѓ\ѓbѓh‚р€шђ”‚р‹t‚Й‚µ‚Д“с“xЊД‚Ф•K—v‚Н‚И‚ў‚µЃCЊД‚с‚Е‚Н‚И‚з‚И‚ўЃD
+	/**targetгЃЁnewcomoerгЃЁгЃ®й–“гЃ«гѓЄгѓіг‚Їг‚’ејµг‚ЉпјЊз”џгЃг‚‹гѓќгѓ†гѓіг‚·гѓЈгѓ«гѓЄгѓіг‚Їг‚’з™»йЊІгЃ™г‚‹.<br>
+	 * дєЊй‡Ќз™»йЊІгЃЊгЃЄгЃ„г‚€гЃ†зґ°гЃ‹гЃЏгѓЃг‚§гѓѓг‚ЇгЃ™г‚‹пјЋ<br>
+	 * дє’гЃ„гЃ®г‚¤гѓігѓ‡гѓѓг‚Їг‚№г‚’дёЂеє¦гЃ«дє’гЃ„гЃ®йљЈжЋҐгѓЄг‚№гѓ€гЃ«жјЏг‚Њз„ЎгЃЏз™»йЊІгЃ™г‚‹гЃ®гЃ§пјЊгЃ“гЃ®гѓЎг‚Ѕгѓѓгѓ‰г‚’еј•ж•°г‚’йЂ†гЃ«гЃ—гЃ¦дєЊеє¦е‘јгЃ¶еї…и¦ЃгЃЇгЃЄгЃ„гЃ—пјЊе‘јг‚“гЃ§гЃЇгЃЄг‚‰гЃЄгЃ„пјЋ
 	 * @param newcomer
 	 * @param target
 	 * @param tmpAgentsArray
@@ -93,8 +93,8 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 		safeAppendPotentialLink(newcomer,target,tmpAgentsArray);
 		safeAppendPotentialLink(target,newcomer,tmpAgentsArray);
 	}
-	/**Џd•Ў‚Є‚И‚ў‚ж‚¤Љm”F‚µ‚И‚Є‚зѓ|ѓeѓ“ѓVѓѓѓ‹ѓЉѓ“ѓN‚р’З‰Б‚·‚йЃD<br>
-	 * Ћ©•Є‚©‚з‚Э‚ЅЌЫ‚Мѓ|ѓeѓ“ѓVѓѓѓ‹ѓЉѓ“ѓN‚р“o^‚·‚й‚Ѕ‚Я‚Й€к“xЃC‘ЉЋи‚©‚зЊ©‚ЅЌЫ‚Мѓ|ѓeѓ“ѓVѓѓѓ‹ѓЉѓ“ѓN‚р“o^‚·‚й‚Ѕ‚Я‚ЙѓCѓ“ѓfѓbѓNѓX€шђ”‚р‹t‚Й‚µ‚Д‚а‚¤€к“xЊД‚Ф•K—v‚Є‚ ‚йЃD
+	/**й‡Ќи¤‡гЃЊгЃЄгЃ„г‚€гЃ†зўєиЄЌгЃ—гЃЄгЃЊг‚‰гѓќгѓ†гѓіг‚·гѓЈгѓ«гѓЄгѓіг‚Їг‚’иїЅеЉ гЃ™г‚‹пјЋ<br>
+	 * и‡Єе€†гЃ‹г‚‰гЃїгЃџйљ›гЃ®гѓќгѓ†гѓіг‚·гѓЈгѓ«гѓЄгѓіг‚Їг‚’з™»йЊІгЃ™г‚‹гЃџг‚ЃгЃ«дёЂеє¦пјЊз›ёж‰‹гЃ‹г‚‰и¦‹гЃџйљ›гЃ®гѓќгѓ†гѓіг‚·гѓЈгѓ«гѓЄгѓіг‚Їг‚’з™»йЊІгЃ™г‚‹гЃџг‚ЃгЃ«г‚¤гѓігѓ‡гѓѓг‚Їг‚№еј•ж•°г‚’йЂ†гЃ«гЃ—гЃ¦г‚‚гЃ†дёЂеє¦е‘јгЃ¶еї…и¦ЃгЃЊгЃ‚г‚‹пјЋ
 	 * @param newcomer
 	 * @param target
 	 * @param tmpAgentsArray
@@ -105,7 +105,7 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 				Integer[] pLink = {pIndex, newcomer};
 				Integer[] rLink = {newcomer, pIndex};
 				boolean isNew = true;
-				for(Integer[] link : this.potentialLinks) { //ArrayList<Integer[]>‚Е‚МЏd•Ў‰с”р‚Н‚±‚¤‚ў‚Б‚Ѕ•ы–@‚Е‚И‚ў‚Жѓ_ѓЃ.ѓmЃ[ѓgЋQЏЖ
+				for(Integer[] link : this.potentialLinks) { //ArrayList<Integer[]>гЃ§гЃ®й‡Ќи¤‡е›ћйЃїгЃЇгЃ“гЃ†гЃ„гЃЈгЃџж–№жі•гЃ§гЃЄгЃ„гЃЁгѓЂгѓЎ.гѓЋгѓјгѓ€еЏ‚з…§
 					if (Arrays.equals(pLink, link) || Arrays.equals(rLink, link)) {
 						isNew = false;
 						break;
@@ -116,7 +116,7 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 		}
 	}
 	
-	/**Љm—¦ѓpѓ‰ѓЃЃ[ѓ^‚ЖЋwЊьђ«‚р—^‚¦‚ДѓlѓbѓgѓЏЃ[ѓN‚рѓRѓ“ѓXѓgѓ‰ѓNѓgЃD
+	/**зўєзЋ‡гѓ‘гѓ©гѓЎгѓјг‚їгЃЁжЊ‡еђ‘жЂ§г‚’дёЋгЃ€гЃ¦гѓЌгѓѓгѓ€гѓЇгѓјг‚Їг‚’г‚ігѓіг‚№гѓ€гѓ©г‚Їгѓ€пјЋ
 	 * 
 	 * @param infoAgentsArray
 	 */
@@ -125,35 +125,35 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 		this.setOrientation(isDirected);
 	}
 
-	/**ЋwЊьђ«‚р—^‚¦‚ДѓlѓbѓgѓЏЃ[ѓN‚рѓRѓ“ѓXѓgѓ‰ѓNѓgЃD<br>
-	 * 2/3‚МЉm—¦‚ЕЃu—F’B‚М—F’BЃvЃC1/3‚МЉm—¦‚Е‚»‚к€ИЉO‚рѓЉѓ“ѓN‚·‚йЃD
+	/**жЊ‡еђ‘жЂ§г‚’дёЋгЃ€гЃ¦гѓЌгѓѓгѓ€гѓЇгѓјг‚Їг‚’г‚ігѓіг‚№гѓ€гѓ©г‚Їгѓ€пјЋ<br>
+	 * 2/3гЃ®зўєзЋ‡гЃ§гЂЊеЏ‹йЃ”гЃ®еЏ‹йЃ”гЂЌпјЊ1/3гЃ®зўєзЋ‡гЃ§гЃќг‚Њд»Ґе¤–г‚’гѓЄгѓіг‚ЇгЃ™г‚‹пјЋ
 	 */
 	public CNNNetworkBuilder(boolean isDirected) {
 		this.setP_nn(P_NN_DEFAULT);
 		this.setOrientation(UNDIRECTED);
 	}
 
-	/**ѓfѓtѓHѓ‹ѓg‚МЉm—¦ѓpѓ‰ѓЃЃ[ѓ^‚Е–іЊьѓlѓbѓgѓЏЃ[ѓN‚рѓRѓ“ѓXѓgѓ‰ѓNѓgЃD<br>
-	 * 2/3‚МЉm—¦‚ЕЃu—F’B‚М—F’BЃvЃC1/3‚МЉm—¦‚Е‚»‚к€ИЉO‚рѓЉѓ“ѓN‚·‚йЃD
+	/**гѓ‡гѓ•г‚©гѓ«гѓ€гЃ®зўєзЋ‡гѓ‘гѓ©гѓЎгѓјг‚їгЃ§з„Ўеђ‘гѓЌгѓѓгѓ€гѓЇгѓјг‚Їг‚’г‚ігѓіг‚№гѓ€гѓ©г‚Їгѓ€пјЋ<br>
+	 * 2/3гЃ®зўєзЋ‡гЃ§гЂЊеЏ‹йЃ”гЃ®еЏ‹йЃ”гЂЌпјЊ1/3гЃ®зўєзЋ‡гЃ§гЃќг‚Њд»Ґе¤–г‚’гѓЄгѓіг‚ЇгЃ™г‚‹пјЋ
 	 */
 	public CNNNetworkBuilder() {
 		this.setP_nn(P_NN_DEFAULT);
 		this.setOrientation(UNDIRECTED);
 	}
 	
-	/**Љm—¦ѓpѓ‰ѓЃЃ[ѓ^‚рЋж“ѕЃD
+	/**зўєзЋ‡гѓ‘гѓ©гѓЎгѓјг‚їг‚’еЏ–еѕ—пјЋ
 	 * @return p_nn
 	 */
 	public double getP_nn() {
 		return p_nn;
 	}
-	/**Љm—¦ѓpѓ‰ѓЃЃ[ѓ^‚рЋw’иЃD
-	 * @param p_nn ѓZѓbѓg‚·‚й p_nn
+	/**зўєзЋ‡гѓ‘гѓ©гѓЎгѓјг‚їг‚’жЊ‡е®љпјЋ
+	 * @param p_nn г‚»гѓѓгѓ€гЃ™г‚‹ p_nn
 	 */
 	public void setP_nn(double p_nn) {
 		this.p_nn = p_nn;
 	}
-	/**—LЊь‚©–іЊь‚©‚рЋж“ѕЃB
+	/**жњ‰еђ‘гЃ‹з„Ўеђ‘гЃ‹г‚’еЏ–еѕ—гЂ‚
 	 * 
 	 * @param isDirected
 	 */
@@ -161,7 +161,7 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 		return this.isDirected;
 		
 	}
-	/**—LЊь‚©–іЊь‚©‚рЋw’иЃB
+	/**жњ‰еђ‘гЃ‹з„Ўеђ‘гЃ‹г‚’жЊ‡е®љгЂ‚
 	 * 
 	 * @param isDirected
 	 */
@@ -169,7 +169,7 @@ public class CNNNetworkBuilder implements NetworkBuilder {
 		this.isDirected = isDirected;
 		
 	}
-	/**Њ»ЌЭЋg—p‚і‚к‚Д‚ў‚й•ы‚Мѓ|ѓeѓ“ѓVѓѓѓ‹ѓЉѓ“ѓN‚МѓTѓCѓY‚р•Ф‚·ЃD
+	/**зЏѕењЁдЅїз”ЁгЃ•г‚ЊгЃ¦гЃ„г‚‹ж–№гЃ®гѓќгѓ†гѓіг‚·гѓЈгѓ«гѓЄгѓіг‚ЇгЃ®г‚µг‚¤г‚єг‚’иї”гЃ™пјЋ
 	 * @return
 	 */
 	private int getPotentialLinksLength() {

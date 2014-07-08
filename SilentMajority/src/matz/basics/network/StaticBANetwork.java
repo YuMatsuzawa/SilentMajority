@@ -5,12 +5,12 @@ import java.util.List;
 
 
 /**
- * Barabasi-Albert���f���Ɋ�Â��C�X�P�[���t���[�l�b�g���[�N�𐶐�����N���X�D<br>
- * �p�����[�^�͏����m�[�h�̐�m_0�ƁC�ǉ�����m�[�h�̃G�b�W��m(<=m_0)�ł���D<br>
- * ���̂Ƃ��C�\���ɑ傫��N�ɑ΂��Ă�m_0�͖����ł���悤�ɂȂ�C<br>
- * ���m�[�h��1�ǉ�����ƃG�b�W��m�{�����邱�Ƃ��玟�����a��2m�������邱�ƂɂȂ邽�߁C<br>
- * �w�肵�����ώ���degree�ɑQ�߂���l�b�g���[�N�𓾂���悤��m��m=degree/2�ƂȂ�D<br>
- * m_0��m_0=m�Ƃ��ė^����D
+ * Barabasi-Albertモデルに基づき，スケールフリーネットワークを生成するクラス．<br>
+ * パラメータは初期ノードの数m_0と，追加するノードのエッジ数m(<=m_0)である．<br>
+ * このとき，十分に大きいNに対してはm_0は無視できるようになり，<br>
+ * かつノードを1つ追加するとエッジがm本増えることから次数総和は2mずつ増えることになるため，<br>
+ * 指定した平均次数degreeに漸近するネットワークを得られるようなmはm=degree/2となる．<br>
+ * m_0はm_0=mとして与える．
  * @author Matsuzawa
  *
  */
@@ -20,27 +20,27 @@ public class StaticBANetwork extends StaticNetwork {
 	
 	@Override
 	public void build() {
-		//�������̂��߂ɁC�ǉ�����m�[�h�̃G�b�W���ȏ�̃m�[�h���K�v�D
+		//初期化のために，追加するノードのエッジ数以上のノードが必要．
 		int initHub = this.mEdge;
-		for (int initLeaf = 0; initLeaf < this.mEdge; initLeaf++) this.constructLink(initHub,initLeaf); //�l�b�g���[�N�̎�
-		//���Ƃ�Preferential attachment
+		for (int initLeaf = 0; initLeaf < this.mEdge; initLeaf++) this.constructLink(initHub,initLeaf); //ネットワークの種
+		//あとはPreferential attachment
 		for(int subject = initHub + 1; subject < this.getnAgents(); subject++) {
 			List<Integer> candidates = new ArrayList<Integer>();
 			for (int candidate = 0; candidate < subject; candidate++) candidates.add(candidate);
 			int attached = 0;
 			while (attached < this.mEdge){
 				double roll = this.localRNG.nextDouble();
-				double sumCandDegree = 0.0; //����ɂȂ�D���ɑI�����ꂽ���m�[�h����菜�����тɍČv�Z����
+				double sumCandDegree = 0.0; //分母になる．既に選択された候補ノードを取り除くたびに再計算する
 				for (Integer candidate : candidates) sumCandDegree += this.getDegreeOf(candidate);
 				double pAttached = 0.0;
 				for (Integer candidate : candidates) {
-					//���[���b�g�̃|�P�b�g��1�����ԂɌ��Ă����C���[�W
-					//roll���_�Ń{�[���̐Î~�ʒu�͊m�肵�Ă���C���_���珇�Ɏ����̑傫���ɉ������傫���̃|�P�b�g���e���ɂ��Ă����Ă����D
-					//�{�[���̐Î~�ʒu�Ƀ|�P�b�g�������Ă�����₪������ƂȂ�D
-					pAttached += (double) this.getDegreeOf(candidate) / sumCandDegree; //���̉��Z�l���|�P�b�g�̕��ɑ�������
+					//ルーレットのポケットを1つずつ順番に見ていくイメージ
+					//roll時点でボールの静止位置は確定しており，原点から順に次数の大きさに応じた大きさのポケットを各候補にあてがっていく．
+					//ボールの静止位置にポケットを持っていた候補があたりとなる．
+					pAttached += (double) this.getDegreeOf(candidate) / sumCandDegree; //この加算値がポケットの幅に相当する
 					if (roll < pAttached) {
 						this.constructLink(subject, candidate);
-						candidates.remove(candidate); //�����肪�m�肵�����_�ł�������������菜��
+						candidates.remove(candidate); //あたりが確定した時点であたった候補を取り除く
 						break;
 					}
 				}
@@ -50,8 +50,8 @@ public class StaticBANetwork extends StaticNetwork {
 	}
 
 	/**
-	 * subject����object�Aobject����subject�Ƀ����N�𒣂�D<br>
-	 * ��d�o�^���Ȃ��悤�Ƀ`�F�b�N���邪�A���Ƀ����N������ꂽ�G�[�W�F���g�͐ڑ���₩�珜����Ă���͂��Ȃ̂ŋN���肦�Ȃ��D
+	 * subjectからobject、objectからsubjectにリンクを張る．<br>
+	 * 二重登録がないようにチェックするが、既にリンクが張られたエージェントは接続候補から除かれているはずなので起こりえない．
 	 * @param subject
 	 * @param object
 	 */
@@ -67,7 +67,7 @@ public class StaticBANetwork extends StaticNetwork {
 	}
 	
 	/**
-	 * �G�[�W�F���g����degree��^����R���X�g���N�^�D
+	 * エージェント数とdegreeを与えるコンストラクタ．
 	 * @param nAgents
 	 * @param degree
 	 */

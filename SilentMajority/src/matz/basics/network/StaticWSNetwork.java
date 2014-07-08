@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Watts-Strogatzƒ‚ƒfƒ‹‚ÉŠî‚Ã‚«AƒXƒ‚[ƒ‹ƒ[ƒ‹ƒhE‚ƒNƒ‰ƒXƒ^«‚Ìƒlƒbƒgƒ[ƒN‚ğ¶¬‚·‚éƒNƒ‰ƒXB<br>
- * {@link StaticREGNetwork}‚ğŠg’£‚µ‚ÄAƒRƒ“ƒXƒgƒ‰ƒNƒg‚É‚Ü‚¸ŠiqƒOƒ‰ƒt‚ğ¶¬‚µ‚½ã‚ÅArewire()‚ÅŠm—¦‚É‚æ‚é’£‘Ö‚¦‚ğs‚¤B<br>
- * ŠiqƒOƒ‰ƒt‚ğ¶¬‚·‚é‚½‚ß‚ÌŸ”degree‚Ærewire‚ÌŠm—¦pRewire‚ğ‚Ç‚¿‚ç‚àdouble‚Å—^‚¦‚é•K—v‚ª‚ ‚éB<br>
+ * Watts-Strogatzãƒ¢ãƒ‡ãƒ«ã«åŸºã¥ãã€ã‚¹ãƒ¢ãƒ¼ãƒ«ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒ»é«˜ã‚¯ãƒ©ã‚¹ã‚¿æ€§ã®ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚’ç”Ÿæˆã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚<br>
+ * {@link StaticREGNetwork}ã‚’æ‹¡å¼µã—ã¦ã€ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ãƒˆæ™‚ã«ã¾ãšæ ¼å­ã‚°ãƒ©ãƒ•ã‚’ç”Ÿæˆã—ãŸä¸Šã§ã€rewire()ã§ç¢ºç‡ã«ã‚ˆã‚‹å¼µæ›¿ãˆã‚’è¡Œã†ã€‚<br>
+ * æ ¼å­ã‚°ãƒ©ãƒ•ã‚’ç”Ÿæˆã™ã‚‹ãŸã‚ã®æ¬¡æ•°degreeã¨rewireã®ç¢ºç‡pRewireã‚’ã©ã¡ã‚‰ã‚‚doubleã§ä¸ãˆã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚<br>
  * @author Yu
  *
  */
@@ -16,8 +16,8 @@ public class StaticWSNetwork extends StaticREGNetwork {
 	protected double pRewire;
 	
 	public void rewire() {
-		// ƒRƒ“ƒXƒgƒ‰ƒNƒg“_‚ÅREGƒlƒbƒgƒ[ƒN‚ğ’£‚èAƒ‰ƒ“ƒ_ƒ€‚É’£‚è‘Ö‚¦‚éibuild()‚ğOverride‚¹‚¸‚É‚¨‚«AStaticREGNetwork‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğ‚»‚Ì‚Ü‚Üg‚¤jB
-		// Watts-Strogatz‚Ì˜_•¶’Ê‚èAŠiq‚Ì•Ğ‘¤‚ÉŒü‚¯‚Ä’H‚Á‚Äs‚«Ak/2ü‚·‚é
+		// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ãƒˆæ™‚ç‚¹ã§REGãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚’å¼µã‚Šã€ãƒ©ãƒ³ãƒ€ãƒ ã«å¼µã‚Šæ›¿ãˆã‚‹ï¼ˆbuild()ã‚’Overrideã›ãšã«ãŠãã€StaticREGNetworkã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’ãã®ã¾ã¾ä½¿ã†ï¼‰ã€‚
+		// Watts-Strogatzã®è«–æ–‡é€šã‚Šã€æ ¼å­ã®ç‰‡å´ã«å‘ã‘ã¦è¾¿ã£ã¦è¡Œãã€k/2å‘¨ã™ã‚‹
 		for (int lap = 1; lap <= this.getGivenDegree() / 2; lap++) {
 			for (int subject = 0; subject < this.getnAgents(); subject++) {
 				int objectRewired = subject + lap;
@@ -32,9 +32,9 @@ public class StaticWSNetwork extends StaticREGNetwork {
 	
 	private void rewireLink(int subject, int objectRewired) {
 		List<Integer> candidateAgents = new ArrayList<Integer>();
-		for(int index = 0; index < this.getnAgents(); index++) candidateAgents.add(index);	//‘SƒG[ƒWƒFƒ“ƒg‚ÌƒŠƒXƒg‚ğ‚Â‚­‚é
+		for(int index = 0; index < this.getnAgents(); index++) candidateAgents.add(index);	//å…¨ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆã®ãƒªã‚¹ãƒˆã‚’ã¤ãã‚‹
 		candidateAgents.remove((Integer) subject);
-		candidateAgents.removeAll(this.getUndirectedListOf(subject));						//‚»‚±‚©‚çŠù‚ÉƒŠƒ“ƒN‚µ‚Ä‚¢‚éƒG[ƒWƒFƒ“ƒg‚ÌƒŠƒXƒg‚Æ‚Ì·W‡‚ğæ‚Á‚Ä’£‘Ö‚¦Œó•âƒŠƒXƒg‚Æ‚·‚é
+		candidateAgents.removeAll(this.getUndirectedListOf(subject));						//ãã“ã‹ã‚‰æ—¢ã«ãƒªãƒ³ã‚¯ã—ã¦ã„ã‚‹ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆã®ãƒªã‚¹ãƒˆã¨ã®å·®é›†åˆã‚’å–ã£ã¦å¼µæ›¿ãˆå€™è£œãƒªã‚¹ãƒˆã¨ã™ã‚‹
 		double roll = this.localRNG.nextDouble();
 		if (roll < this.pRewire) {
 			int newObject = candidateAgents.get(this.localRNG.nextInt(candidateAgents.size()));
@@ -51,7 +51,7 @@ public class StaticWSNetwork extends StaticREGNetwork {
 	}
 	
 	/**
-	 * ƒG[ƒWƒFƒ“ƒg”CdegreeCpRewire‚ğ—^‚¦‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^D
+	 * ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°ï¼Œdegreeï¼ŒpRewireã‚’ä¸ãˆã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼
 	 * @param nAgents
 	 * @param degree
 	 * @param pRewire
@@ -61,7 +61,7 @@ public class StaticWSNetwork extends StaticREGNetwork {
 	}
 	
 	/**
-	 * ƒG[ƒWƒFƒ“ƒg”‚Ædegree‚ğ—^‚¦‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^D
+	 * ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°ã¨degreeã‚’ä¸ãˆã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼
 	 * @param nAgents
 	 * @param pRewire
 	 */

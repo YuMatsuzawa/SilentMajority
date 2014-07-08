@@ -19,9 +19,9 @@ import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 
 /**
- * InfoAgent”z—ñ‚©‚ç‚È‚éƒG[ƒWƒFƒ“ƒgƒlƒbƒgƒ[ƒN‚ğ‰Â‹‰»‚·‚éƒNƒ‰ƒXD<br>
- * ‚Æ‚è‚ ‚¦‚¸–³ŒüƒOƒ‰ƒtCŸ”‚É‚æ‚éƒm[ƒhƒTƒCƒY’²®CˆÓŒ©‚É‚æ‚éƒm[ƒh‚ÌF’²®‚ğ·‚è‚ŞD<br>
- * ˆê‰ƒGƒbƒW‚É‚Í‚Ì‚¿‚Ì‚¿‰e‹¿—Í‚ğ”½‰f‚Å‚«‚é‚æ‚¤‚ÉÀ‘•‚µ‚Ä‚¨‚­D
+ * InfoAgenté…åˆ—ã‹ã‚‰ãªã‚‹ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚’å¯è¦–åŒ–ã™ã‚‹ã‚¯ãƒ©ã‚¹ï¼<br>
+ * ã¨ã‚Šã‚ãˆãšç„¡å‘ã‚°ãƒ©ãƒ•ï¼Œæ¬¡æ•°ã«ã‚ˆã‚‹ãƒãƒ¼ãƒ‰ã‚µã‚¤ã‚ºèª¿æ•´ï¼Œæ„è¦‹ã«ã‚ˆã‚‹ãƒãƒ¼ãƒ‰ã®è‰²èª¿æ•´ã‚’ç››ã‚Šè¾¼ã‚€ï¼<br>
+ * ä¸€å¿œã‚¨ãƒƒã‚¸ã«ã¯ã®ã¡ã®ã¡å½±éŸ¿åŠ›ã‚’åæ˜ ã§ãã‚‹ã‚ˆã†ã«å®Ÿè£…ã—ã¦ãŠãï¼
  * @author Matsuzawa
  *
  */
@@ -49,7 +49,7 @@ public class NetworkVisualizer {
 	
 	public NetworkVisualizer(InfoAgent[] infoAgentArray, Dimension figureSize) {
 		this.infoAgentArray = infoAgentArray;
-		this.figureSize = (figureSize != null)? figureSize : new Dimension(600,600); //ƒfƒtƒHƒ‹ƒgƒTƒCƒY
+		this.figureSize = (figureSize != null)? figureSize : new Dimension(600,600); //ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚µã‚¤ã‚º
 		this.constructGraph();
 		this.configureRenderer();
 	}
@@ -72,7 +72,7 @@ public class NetworkVisualizer {
 
 	private void configureRenderer() {
 		Transformer<InfoAgent,Paint> nodeFillColor = new Transformer<InfoAgent,Paint>() {
-			//ƒm[ƒh‚ÌF‚ğƒm[ƒh‚Ì‘®«ˆË‘¶‚Å•Ï‚¦‚é‚½‚ß‚ÌTransformer
+			//ãƒãƒ¼ãƒ‰ã®è‰²ã‚’ãƒãƒ¼ãƒ‰ã®å±æ€§ä¾å­˜ã§å¤‰ãˆã‚‹ãŸã‚ã®Transformer
 			@Override
 			public Paint transform(InfoAgent arg0) {
 				Paint retColor = Color.YELLOW;
@@ -86,7 +86,7 @@ public class NetworkVisualizer {
 		};
 
 		Transformer<InfoAgent,Shape> nodeShape = new Transformer<InfoAgent,Shape>() {
-			//ƒm[ƒh‚ÌƒTƒCƒY‚ğƒm[ƒh‚Ì‘®«ˆË‘¶‚Å•Ï‚¦‚é‚½‚ß‚ÌTransformer
+			//ãƒãƒ¼ãƒ‰ã®ã‚µã‚¤ã‚ºã‚’ãƒãƒ¼ãƒ‰ã®å±æ€§ä¾å­˜ã§å¤‰ãˆã‚‹ãŸã‚ã®Transformer
 			@Override
 			public Shape transform(InfoAgent arg0) {
 				int degree = arg0.getDegree();

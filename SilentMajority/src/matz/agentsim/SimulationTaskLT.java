@@ -29,23 +29,23 @@ public class SimulationTaskLT extends SimulationTask {
 		
 		try { //main procedure calling bracket
 			
-			//ƒG[ƒWƒFƒ“ƒg‰Šú‰»
+			//ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆåˆæœŸåŒ–
 			this.initInfoAgentsArray(this.getnAgents(), this.refNetwork);
 			if (this.refNetwork == null) {
-				//Ã“Iƒlƒbƒgƒ[ƒN‚ğg‚í‚È‚¢‚È‚çAƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“ŒÂ•Ê‚Ìƒlƒbƒgƒ[ƒN‚ğ¶¬‚·‚éD
+				//é™çš„ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚’ä½¿ã‚ãªã„ãªã‚‰ã€ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³å€‹åˆ¥ã®ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚’ç”Ÿæˆã™ã‚‹ï¼
 				NetworkBuilder ntwk = new CNNNetworkBuilder();
 				this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
 			}
 			
-			//ˆÓŒ©•ª•z‚ğ‰Šú‰»
+			//æ„è¦‹åˆ†å¸ƒã‚’åˆæœŸåŒ–
 			if (simType == TYPE_RANKED) this.rankedInitOpinions();
 			else this.simpleInitOpinions();
 			
-			//ˆÓŒ©‚É‚æ‚Á‚Äè‡’l‚Ì•ª•z‚ğ•Ï‚¦‚é
+			//æ„è¦‹ã«ã‚ˆã£ã¦é–¾å€¤ã®åˆ†å¸ƒã‚’å¤‰ãˆã‚‹
 			if (simType == TYPE_THRES) this.controlThresholds();
 			else if (simType == TYPE_THRES2) this.separateThresholds();
 			
-			//ˆê’èŠ„‡‚ğƒ”ƒH[ƒJƒ‹‚É‚µ‚Äî•ñ“`”d‚Ì‹N“_‚É‚·‚éimuzzleAgents‚É‘Š“–j
+			//ä¸€å®šå‰²åˆã‚’ãƒ´ã‚©ãƒ¼ã‚«ãƒ«ã«ã—ã¦æƒ…å ±ä¼æ’­ã®èµ·ç‚¹ã«ã™ã‚‹ï¼ˆmuzzleAgentsã«ç›¸å½“ï¼‰
 			if (simType == TYPE_BIASED) this.biasedPropagation();
 			else this.simpleInitPropagation();
 			
@@ -57,15 +57,15 @@ public class SimulationTaskLT extends SimulationTask {
 					);
 			if (!outDir.isDirectory()) outDir.mkdirs();
 			
-			//ƒlƒbƒgƒ[ƒN‚Ìƒ`ƒFƒbƒN
+			//ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®ãƒã‚§ãƒƒã‚¯
 			NetworkVisualizer nv = null;
 			if (ntwkFig) {
 				nv = new NetworkVisualizer(this.infoAgentsArray);
-				//‰Šúó‘Ô‚ÌŠm”F
+				//åˆæœŸçŠ¶æ…‹ã®ç¢ºèª
 				nv.generateGraph(outDir, this.getTimeStamp() + "." + this.getInstanceName()+".initial.png");
 			}
 			
-			//î•ñ“`”ds
+			//æƒ…å ±ä¼æ’­è©¦è¡Œ
 			int maxStep = 100;
 			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream(new File(outDir, this.getTimeStamp() + "." + this.getInstanceName()+".csv"))));
@@ -81,11 +81,11 @@ public class SimulationTaskLT extends SimulationTask {
 			rbw.newLine();
 			for (int step = 0; step < maxStep; step++) {
 				/*
-				 * WŒv
+				 * é›†è¨ˆ
 				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
-					//Integer vOpinion = agent.getOpinion(); //‹L˜^‚·‚é‚Ì‚Íƒ”ƒH[ƒJƒ‹‚Ì’†‚Å‚Ì”ä—¦‚È‚Ì‚ÅCforceGet‚µ‚È‚¢
-					Integer opinion = agent.forceGetOpinion(); //debug‚Ì‚½‚ß‚É‘S•”‹L˜^‚µ‚½‚¢‚Ì‚ÅforceGet‚·‚é
+					//Integer vOpinion = agent.getOpinion(); //è¨˜éŒ²ã™ã‚‹ã®ã¯ãƒ´ã‚©ãƒ¼ã‚«ãƒ«ã®ä¸­ã§ã®æ¯”ç‡ãªã®ã§ï¼ŒforceGetã—ãªã„
+					Integer opinion = agent.forceGetOpinion(); //debugã®ãŸã‚ã«å…¨éƒ¨è¨˜éŒ²ã—ãŸã„ã®ã§forceGetã™ã‚‹
 					if (opinion == null) continue;
 					else {
 						//vocalRecords[step][NEG_OPINION]++;
@@ -96,16 +96,16 @@ public class SimulationTaskLT extends SimulationTask {
 				}
 				rbw.write(String.valueOf(step));
 				for (int op = 0; op < NUM_OPINION; op++) rbw.write(","+vocalRecords[step][op]);
-				//debug‚Ì‚½‚ß‚É‘S•”‹L˜^
+				//debugã®ãŸã‚ã«å…¨éƒ¨è¨˜éŒ²
 				rbw.write(",");
 				for (int op = 0; op < NUM_OPINION; op++) rbw.write(","+totalRecords[step][op]);
 				rbw.write(",");
 				for (int op = 0; op < NUM_OPINION; op++) rbw.write(","+silentRecords[step][op]);
-				//debug‚±‚±‚Ü‚Å
+				//debugã“ã“ã¾ã§
 				rbw.newLine();
 				
 				/*
-				 * LTƒ‚ƒfƒ‹‘ŠŒİì—p
+				 * LTãƒ¢ãƒ‡ãƒ«ç›¸äº’ä½œç”¨
 				 * 
 				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
@@ -113,21 +113,21 @@ public class SimulationTaskLT extends SimulationTask {
 					if (this.simType == TYPE_RELIEF) update = agent.linearThresholdMuzzlingWithRelief(infoAgentsArray, this.controlVar);
 					else update = agent.linearThreasholdMuzzling(infoAgentsArray);
 					
-					//ƒmƒCƒY—LŒø‚È‚çƒ‰ƒ“ƒ_ƒ€‚È©”­•Ï‰»‚ğ“ü‚ê‚é
+					//ãƒã‚¤ã‚ºæœ‰åŠ¹ãªã‚‰ãƒ©ãƒ³ãƒ€ãƒ ãªè‡ªç™ºå¤‰åŒ–ã‚’å…¥ã‚Œã‚‹
 					if (!update && this.noiseEnabled) update = agent.randomUnmuzzle(localRNG); //agent.randomUpdate(this.localRNG);
 				}
 				
-				for (InfoAgent agent : this.infoAgentsArray) agent.applyMuzzling(); //’†ŠÔó‘Ô‚ğ–{“K—p
+				for (InfoAgent agent : this.infoAgentsArray) agent.applyMuzzling(); //ä¸­é–“çŠ¶æ…‹ã‚’æœ¬é©ç”¨
 			}
 
 			if (ntwkFig)  {
-				//ÅIó‘Ô‚ÌŠm”FD
+				//æœ€çµ‚çŠ¶æ…‹ã®ç¢ºèªï¼
 				nv.generateGraph(outDir, this.getTimeStamp() + "." + this.getInstanceName()+".final.png");
 			}
 			
 			rbw.close();
 			
-			this.endGate.countDown(); //ƒJƒEƒ“ƒgƒ_ƒEƒ“
+			this.endGate.countDown(); //ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³
 			this.TaskLogger.info("Done: " + this.getInstanceName());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -138,16 +138,16 @@ public class SimulationTaskLT extends SimulationTask {
 	}
 
 	/**
-	 * ˆÓŒ©•ª•z‚Ì‰Šú‰»D<br>
-	 * ‘S‘Ì‚ÌˆÓŒ©Š„‡‚ÍtotalPosRatio‚ÅPOS‚ÌŠ„‡‚Æ‚µ‚Ä’è‚ß‚éD^‚ÌˆÓŒ©‚Í‘SˆõPOS‚©NEG‚ğ‚ÂD<br>
-	 * ƒTƒCƒŒƒ“ƒg‚Å‚ ‚ê‚ÎŠO‚©‚ç‚Ínull‚Å‚ ‚é‚æ‚¤‚É‚İ‚¦‚é‚±‚Æ‚É‚È‚é‚Ì‚ÅC“à•”“I‚É‚Í2’lCŠO•”“I‚É‚Í3’lD<br>
-	 * ƒnƒuƒG[ƒWƒFƒ“ƒgi‚Ÿ”ƒG[ƒWƒFƒ“ƒgj‚ÌPOS‚ÌŠ„‡‚ğ§Œä‚·‚éDinitPosHubRatio‚ªX%‚È‚çC<br>
-	 * Ÿ”ãˆÊX%‚ğ‹­§POS‚É‚·‚éDc‚éƒG[ƒWƒFƒ“ƒg‚Í‘S‘Ì‚ÌŠ„‡‚ğtotalPosRatio‚É‡‚í‚¹‚é‚æ‚¤‚ÉŠ„‚èU‚éD<br>
-	 * totalPosRatio=initHubPosRatio‚È‚çC‰ŠúPOS‚ğ‚Á‚Ä‚¢‚é‚Ì‚ÍƒnƒuƒG[ƒWƒFƒ“ƒg‚Ì‚İ‚ÅCc‚éƒG[ƒWƒFƒ“ƒg‚ÍNEG‚É‚È‚éD
+	 * æ„è¦‹åˆ†å¸ƒã®åˆæœŸåŒ–ï¼<br>
+	 * å…¨ä½“ã®æ„è¦‹å‰²åˆã¯totalPosRatioã§POSã®å‰²åˆã¨ã—ã¦å®šã‚ã‚‹ï¼çœŸã®æ„è¦‹ã¯å…¨å“¡POSã‹NEGã‚’æŒã¤ï¼<br>
+	 * ã‚µã‚¤ãƒ¬ãƒ³ãƒˆã§ã‚ã‚Œã°å¤–ã‹ã‚‰ã¯nullã§ã‚ã‚‹ã‚ˆã†ã«ã¿ãˆã‚‹ã“ã¨ã«ãªã‚‹ã®ã§ï¼Œå†…éƒ¨çš„ã«ã¯2å€¤ï¼Œå¤–éƒ¨çš„ã«ã¯3å€¤ï¼<br>
+	 * ãƒãƒ–ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆï¼ˆé«˜æ¬¡æ•°ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆï¼‰ã®POSã®å‰²åˆã‚’åˆ¶å¾¡ã™ã‚‹ï¼initPosHubRatioãŒX%ãªã‚‰ï¼Œ<br>
+	 * æ¬¡æ•°ä¸Šä½X%ã‚’å¼·åˆ¶POSã«ã™ã‚‹ï¼æ®‹ã‚‹ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆã¯å…¨ä½“ã®å‰²åˆã‚’totalPosRatioã«åˆã‚ã›ã‚‹ã‚ˆã†ã«å‰²ã‚ŠæŒ¯ã‚‹ï¼<br>
+	 * totalPosRatio=initHubPosRatioãªã‚‰ï¼ŒåˆæœŸPOSã‚’æŒã£ã¦ã„ã‚‹ã®ã¯ãƒãƒ–ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆã®ã¿ã§ï¼Œæ®‹ã‚‹ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆã¯NEGã«ãªã‚‹ï¼
 	 * 
 	 */
 	public void rankedInitOpinions() {
-		//POS‚Ån‚Ü‚éƒnƒu‚Ì‹«ŠE’l‚Æ‚È‚éŸ”‚ğ’T‚·
+		//POSã§å§‹ã¾ã‚‹ãƒãƒ–ã®å¢ƒç•Œå€¤ã¨ãªã‚‹æ¬¡æ•°ã‚’æ¢ã™
 		int hubCutoff = this.refNetwork.getDegreeFreq().firstKey() - 1;
 		double nPosCandidate = this.getnAgents();
 		double nPosInitiator = this.getnAgents() * this.controlVar;
@@ -163,7 +163,7 @@ public class SimulationTaskLT extends SimulationTask {
 			}
 		}
 		double pPosLeaf = ((double)this.getnAgents() * this.totalPosRatio - nPos) / ((double)this.getnAgents() - nPos);
-		//Ÿ”‚ª‹«ŠE’l‚æ‚èã‚È‚çPOSC‚»‚êˆÈŠO‚È‚ç‘S‘Ì‚ÌPOSŠ„‡‚ğ–‚½‚·‚¾‚¯POSCc‚è‚ÍNEG
+		//æ¬¡æ•°ãŒå¢ƒç•Œå€¤ã‚ˆã‚Šä¸Šãªã‚‰POSï¼Œãã‚Œä»¥å¤–ãªã‚‰å…¨ä½“ã®POSå‰²åˆã‚’æº€ãŸã™ã ã‘POSï¼Œæ®‹ã‚Šã¯NEG
 		for (InfoAgent agent : this.infoAgentsArray) {
 			Integer opinion = null;
 			if (agent.getDegree() > hubCutoff) {
@@ -178,7 +178,7 @@ public class SimulationTaskLT extends SimulationTask {
 	}
 	
 	/**
-	 * ’P‚Éˆê’èŠ„‡‚ÉPOSC‚»‚êˆÈŠO‚ÉNEG‚ğ‚à‚½‚¹‚éˆÓŒ©‰Šú‰»D
+	 * å˜ã«ä¸€å®šå‰²åˆã«POSï¼Œãã‚Œä»¥å¤–ã«NEGã‚’ã‚‚ãŸã›ã‚‹æ„è¦‹åˆæœŸåŒ–ï¼
 	 */
 	public void simpleInitOpinions() {
 		for (InfoAgent agent : this.infoAgentsArray) {
@@ -189,12 +189,12 @@ public class SimulationTaskLT extends SimulationTask {
 	}
 
 	/**
-	 * ­””h‚Ìè‡’l‚ğ‰º‚°‚éD]‚Á‚ÄˆÓŒ©‰Šú‰»Œã‚ÉŒÄ‚Ô•K—v‚ª‚ ‚éD<br>
-	 * ’Êí‚Ì{@link InfoAgent#linearThreasholdMuzzling(InfoAgent[])}‚Å‚Íè‡’l‚Íˆê—l•ª•z‚É]‚¤ƒ‰ƒ“ƒ_ƒ€‚ÅC<br>
-	 * ©•ª‚Æ“¯‚¶ˆÓŒ©‚ª©•ª‚ÌüˆÍ‚Éè‡’l‚ğã‰ñ‚Á‚Ä‘¶İ‚µ‚Ä‚¢‚ê‚Îƒ”ƒH[ƒJƒ‹‚ÉC‚»‚¤‚Å‚È‚¯‚ê‚ÎƒTƒCƒŒƒ“ƒg‚É‚È‚éD<br>
-	 * ‚»‚Ìè‡’l‚ği•½‹Ï‚µ‚Äj‰º‚°‚é‚±‚Æ‚ÍCƒ”ƒH[ƒJƒ‹‚É‚È‚è‚â‚·‚­‚È‚é‚±‚Æ‚ğˆÓ–¡‚·‚éD<br>
-	 * ‚½‚Æ‚¦‚Î{@code 0.0<threshold<0.1}‚Ì”ÍˆÍ‚Åˆê—l•ª•z‚Å‚ ‚ê‚ÎC©•ª‚ÌˆÓŒ©‚ª­‚È‚­‚Æ‚àüˆÍ‚Å10%ˆÈã‘¶İ‚µ‚Ä‚¢‚ê‚Îƒ”ƒH[ƒJƒ‹‚É‚È‚éD<br>
-	 * controlVar‚Íè‡’l‚Ìæ‚è‚¤‚é”ÍˆÍ‚ÌãŒÀ’l‚ğ1.0‚©‚ç‚Ç‚ê‚¾‚¯‰º‚°‚é‚©‚ÅC1.0–¢–‚Åw’è‚·‚éD
+	 * å°‘æ•°æ´¾ã®é–¾å€¤ã‚’ä¸‹ã’ã‚‹ï¼å¾“ã£ã¦æ„è¦‹åˆæœŸåŒ–å¾Œã«å‘¼ã¶å¿…è¦ãŒã‚ã‚‹ï¼<br>
+	 * é€šå¸¸ã®{@link InfoAgent#linearThreasholdMuzzling(InfoAgent[])}ã§ã¯é–¾å€¤ã¯ä¸€æ§˜åˆ†å¸ƒã«å¾“ã†ãƒ©ãƒ³ãƒ€ãƒ ã§ï¼Œ<br>
+	 * è‡ªåˆ†ã¨åŒã˜æ„è¦‹ãŒè‡ªåˆ†ã®å‘¨å›²ã«é–¾å€¤ã‚’ä¸Šå›ã£ã¦å­˜åœ¨ã—ã¦ã„ã‚Œã°ãƒ´ã‚©ãƒ¼ã‚«ãƒ«ã«ï¼Œãã†ã§ãªã‘ã‚Œã°ã‚µã‚¤ãƒ¬ãƒ³ãƒˆã«ãªã‚‹ï¼<br>
+	 * ãã®é–¾å€¤ã‚’ï¼ˆå¹³å‡ã—ã¦ï¼‰ä¸‹ã’ã‚‹ã“ã¨ã¯ï¼Œãƒ´ã‚©ãƒ¼ã‚«ãƒ«ã«ãªã‚Šã‚„ã™ããªã‚‹ã“ã¨ã‚’æ„å‘³ã™ã‚‹ï¼<br>
+	 * ãŸã¨ãˆã°{@code 0.0<threshold<0.1}ã®ç¯„å›²ã§ä¸€æ§˜åˆ†å¸ƒã§ã‚ã‚Œã°ï¼Œè‡ªåˆ†ã®æ„è¦‹ãŒå°‘ãªãã¨ã‚‚å‘¨å›²ã§10%ä»¥ä¸Šå­˜åœ¨ã—ã¦ã„ã‚Œã°ãƒ´ã‚©ãƒ¼ã‚«ãƒ«ã«ãªã‚‹ï¼<br>
+	 * controlVarã¯é–¾å€¤ã®å–ã‚Šã†ã‚‹ç¯„å›²ã®ä¸Šé™å€¤ã‚’1.0ã‹ã‚‰ã©ã‚Œã ã‘ä¸‹ã’ã‚‹ã‹ã§ï¼Œ1.0æœªæº€ã§æŒ‡å®šã™ã‚‹ï¼
 	 */
 	private void controlThresholds() {
 		for (InfoAgent agent : this.infoAgentsArray) {
@@ -205,7 +205,7 @@ public class SimulationTaskLT extends SimulationTask {
 		}
 	}
 	/**
-	 * ­””h‚Ìè‡’l‚ğ‰º‚°C‘½””h‚Ìè‡’l‚ğã‚°‚éD
+	 * å°‘æ•°æ´¾ã®é–¾å€¤ã‚’ä¸‹ã’ï¼Œå¤šæ•°æ´¾ã®é–¾å€¤ã‚’ä¸Šã’ã‚‹ï¼
 	 */
 	private void separateThresholds() {
 		for (InfoAgent agent : this.infoAgentsArray) {
@@ -218,8 +218,8 @@ public class SimulationTaskLT extends SimulationTask {
 	}
 
 	/**
-	 * ‘S‘Ì‚ÌinitSilentRatio‚¾‚¯Silent‚É‚µCc‚è‚ÍVocal‚É‚·‚éD<br>
-	 * ˆê”Ê‚ÉinitSilentRatio‚Í‚‚¢’l‚Å‚ ‚èC“–‰Vocal‚Å‚ ‚él‚Í­‚È‚¢<br>
+	 * å…¨ä½“ã®initSilentRatioã ã‘Silentã«ã—ï¼Œæ®‹ã‚Šã¯Vocalã«ã™ã‚‹ï¼<br>
+	 * ä¸€èˆ¬ã«initSilentRatioã¯é«˜ã„å€¤ã§ã‚ã‚Šï¼Œå½“åˆVocalã§ã‚ã‚‹äººã¯å°‘ãªã„<br>
 	 */
 	public void simpleInitPropagation() {
 		for (InfoAgent agent : this.infoAgentsArray){
@@ -230,9 +230,9 @@ public class SimulationTaskLT extends SimulationTask {
 	}
 	
 	/**
-	 * ‰Šú‚Éƒ”ƒH[ƒJƒ‹‚Å‚ ‚éŠ„‡1.0 - initSilentRatio‚Ì‚¤‚¿C<br>
-	 * ‰½Š„‚ªPos‚Å‚ ‚é‚©‚ğƒRƒ“ƒgƒ[ƒ‹‚·‚éD‘S‘Ì‚ÌPos/Neg”ä‚Í•s•Ï‚Å‚ ‚éD<br>
-	 * ‘S‘Ì“I‚ÈˆÓŒ©‚Ì–¨‚Æ‹t‚Ì”­M‚©‚çn‚Ü‚Á‚½ê‡‚Ç‚¤‚È‚é‚©‚ğ’²¸‚·‚éD
+	 * åˆæœŸã«ãƒ´ã‚©ãƒ¼ã‚«ãƒ«ã§ã‚ã‚‹å‰²åˆ1.0 - initSilentRatioã®ã†ã¡ï¼Œ<br>
+	 * ä½•å‰²ãŒPosã§ã‚ã‚‹ã‹ã‚’ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã™ã‚‹ï¼å…¨ä½“ã®Pos/Negæ¯”ã¯ä¸å¤‰ã§ã‚ã‚‹ï¼<br>
+	 * å…¨ä½“çš„ãªæ„è¦‹ã®è¶¨å‹¢ã¨é€†ã®ç™ºä¿¡ã‹ã‚‰å§‹ã¾ã£ãŸå ´åˆã©ã†ãªã‚‹ã‹ã‚’èª¿æŸ»ã™ã‚‹ï¼
 	 */
 	public void biasedPropagation() {
 		double pVocalBase = 1.0 - this.initSilentRatio;
@@ -252,7 +252,7 @@ public class SimulationTaskLT extends SimulationTask {
 	}
 
 	/**
-	 * ”h¶ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ÌŠî–{ƒRƒ“ƒXƒgƒ‰ƒNƒ^D
+	 * æ´¾ç”Ÿã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã®åŸºæœ¬ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼
 	 * @param simName
 	 * @param instanceName
 	 * @param nAgents

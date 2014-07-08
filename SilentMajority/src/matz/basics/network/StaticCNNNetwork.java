@@ -5,14 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Vazquez‚ÌCNNƒ‚ƒfƒ‹‚ÉŠî‚Ã‚«AŒ»ŽÀ‚âSNS‚Å‚Ì—FlŠÖŒW‚É‹ß‚¢ƒlƒbƒgƒ[ƒN‚ð¶¬‚·‚éƒNƒ‰ƒXB<br>
- * Šm—¦p_nn‚Åu—Fl‚Ì—Flv‚Æ‚¢‚¤ŠÖŒW(öÝƒŠƒ“ƒN)‚ðƒ‰ƒ“ƒ_ƒ€‚É‘I‚ñ‚ÅÚ‘±‚·‚é‘€ìA<br>
- * Šm—¦1-p_nn‚ÅV‚µ‚¢ƒG[ƒWƒFƒ“ƒg‚ðƒ‰ƒ“ƒ_ƒ€‚É’Ç‰Á‚·‚é‘€ì‚ðs‚¤ƒAƒ‹ƒSƒŠƒYƒ€B<br>
- * p_nn‚Íƒpƒ‰ƒ[ƒ^‚Å‚ ‚é‚ªA—^‚¦‚ç‚ê‚Ä‚¢‚È‚¢ê‡‚ÍƒfƒtƒHƒ‹ƒg’l{@value #P_NN_DEFAULT}‚ð—p‚¢‚éB<br>
- * ƒAƒ‹ƒSƒŠƒYƒ€‚©‚çAŠm—¦1-p_nn‚ÅƒG[ƒWƒFƒ“ƒg”‚ª1‘‚¦AŽŸ”‚Ì‘˜a‚ª2‘‚¦‚éˆê•ûA<br>
- * p_nn‚ÅŽŸ”‚Ì‘˜a‚¾‚¯‚ª2‘‚¦‚é‚±‚Æ‚ª‚í‚©‚éB<br>
- * ]‚Á‚Ä“Á’è‚ÌŽŸ”degree‚É‘Q‹ß‚·‚éƒlƒbƒgƒ[ƒN‚É‚µ‚½‚¢ê‡‚ÍA{@code p_nn = 1 - 2/(degree)}‚Æ‚·‚ê‚Î—Ç‚¢B<br>
- * ‚½‚¾‚µAƒG[ƒWƒFƒ“ƒg”‚ª\•ª‚É‘å‚«‚­‚È‚¢ê‡‚Í•K‚¸‚µ‚à—Ç‚¢‹ßŽ—‚Æ‚È‚ç‚È‚¢B
+ * Vazquezã®CNNãƒ¢ãƒ‡ãƒ«ã«åŸºã¥ãã€ç¾å®Ÿã‚„SNSã§ã®å‹äººé–¢ä¿‚ã«è¿‘ã„ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚’ç”Ÿæˆã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚<br>
+ * ç¢ºçŽ‡p_nnã§ã€Œå‹äººã®å‹äººã€ã¨ã„ã†é–¢ä¿‚(æ½œåœ¨ãƒªãƒ³ã‚¯)ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«é¸ã‚“ã§æŽ¥ç¶šã™ã‚‹æ“ä½œã€<br>
+ * ç¢ºçŽ‡1-p_nnã§æ–°ã—ã„ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«è¿½åŠ ã™ã‚‹æ“ä½œã‚’è¡Œã†ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã€‚<br>
+ * p_nnã¯ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã§ã‚ã‚‹ãŒã€ä¸Žãˆã‚‰ã‚Œã¦ã„ãªã„å ´åˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤{@value #P_NN_DEFAULT}ã‚’ç”¨ã„ã‚‹ã€‚<br>
+ * ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã‹ã‚‰ã€ç¢ºçŽ‡1-p_nnã§ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°ãŒ1å¢—ãˆã€æ¬¡æ•°ã®ç·å’ŒãŒ2å¢—ãˆã‚‹ä¸€æ–¹ã€<br>
+ * p_nnã§æ¬¡æ•°ã®ç·å’Œã ã‘ãŒ2å¢—ãˆã‚‹ã“ã¨ãŒã‚ã‹ã‚‹ã€‚<br>
+ * å¾“ã£ã¦ç‰¹å®šã®æ¬¡æ•°degreeã«æ¼¸è¿‘ã™ã‚‹ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã«ã—ãŸã„å ´åˆã¯ã€{@code p_nn = 1 - 2/(degree)}ã¨ã™ã‚Œã°è‰¯ã„ã€‚<br>
+ * ãŸã ã—ã€ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°ãŒååˆ†ã«å¤§ãããªã„å ´åˆã¯å¿…ãšã—ã‚‚è‰¯ã„è¿‘ä¼¼ã¨ãªã‚‰ãªã„ã€‚
  * 
  * @author Yu
  *
@@ -27,14 +27,14 @@ public class StaticCNNNetwork extends StaticNetwork {
 
 	@Override
 	public void build() {
-		//‚Æ‚è‚ ‚¦‚¸–³ŒüƒOƒ‰ƒt
+		//ã¨ã‚Šã‚ãˆãšç„¡å‘ã‚°ãƒ©ãƒ•
 		if (this.getOrientation() == UNDIRECTED) {
-			//ƒlƒbƒgƒ[ƒN‚ÌŽí‚ðì‚é
+			//ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®ç¨®ã‚’ä½œã‚‹
 			this.constructLink(0, 2);
 			this.constructLink(1, 2);
 			this.includedAgents = 3;
 			
-			//Žw’è‚³‚ê‚½”‚ÌƒG[ƒWƒFƒ“ƒg‚©‚ç‚È‚éƒlƒbƒgƒ[ƒN‚ªo—ˆ‚é‚Ü‚ÅƒCƒeƒŒ[ƒg
+			//æŒ‡å®šã•ã‚ŒãŸæ•°ã®ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆã‹ã‚‰ãªã‚‹ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ãŒå‡ºæ¥ã‚‹ã¾ã§ã‚¤ãƒ†ãƒ¬ãƒ¼ãƒˆ
 			while(this.includedAgents < this.getnAgents()) {
 				double roll = this.localRNG.nextDouble();
 				if (roll < this.p_nn) {
@@ -47,7 +47,7 @@ public class StaticCNNNetwork extends StaticNetwork {
 	}
 
 	/**
-	 * ƒ|ƒeƒ“ƒVƒƒƒ‹ƒŠƒ“ƒN‚ðƒŠƒ“ƒN‚É‚·‚éB
+	 * ãƒãƒ†ãƒ³ã‚·ãƒ£ãƒ«ãƒªãƒ³ã‚¯ã‚’ãƒªãƒ³ã‚¯ã«ã™ã‚‹ã€‚
 	 */
 	private void connectPotential() {
 		int listSize = this.potentialLinks.size();
@@ -56,14 +56,14 @@ public class StaticCNNNetwork extends StaticNetwork {
 		int roll = this.localRNG.nextInt(listSize);
 		Integer[] pLink = this.potentialLinks.get(roll);
 		this.potentialLinks.remove(roll);
-			//roll‚Åƒ‰ƒ“ƒ_ƒ€‚Èƒ|ƒeƒ“ƒVƒƒƒ‹ƒŠƒ“ƒN‚ð‘I‚Ño‚µ
+			//rollã§ãƒ©ãƒ³ãƒ€ãƒ ãªãƒãƒ†ãƒ³ã‚·ãƒ£ãƒ«ãƒªãƒ³ã‚¯ã‚’é¸ã³å‡ºã—
 		this.constructLink(pLink[0], pLink[1]);
-			//‚»‚ê‚ðƒGƒbƒW‚É•ÏŠ·
+			//ãã‚Œã‚’ã‚¨ãƒƒã‚¸ã«å¤‰æ›
 		
 	}
 
 	/**
-	 * V‹KƒG[ƒWƒFƒ“ƒg‚ðƒ‰ƒ“ƒ_ƒ€‚É‰Á‚¦‚éB
+	 * æ–°è¦ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«åŠ ãˆã‚‹ã€‚
 	 */
 	private void includeAgent() {
 		int target = this.localRNG.nextInt(this.includedAgents);
@@ -72,9 +72,9 @@ public class StaticCNNNetwork extends StaticNetwork {
 	}
 
 	/**
-	 * subject‚Æobject‚ÌŠÔ‚ÉƒŠƒ“ƒN‚ð’£‚èA¶‚¶‚éƒ|ƒeƒ“ƒVƒƒƒ‹ƒŠƒ“ƒN‚ð“o˜^‚·‚éB<br>
-	 * “ñd“o˜^‚ª‚È‚¢‚æ‚¤‚É×‚©‚­ƒ`ƒFƒbƒN‚·‚é<br>
-	 * ŒÝ‚¢‚ðŒÝ‚¢‚ÌƒŠƒXƒg‚É˜R‚ê–³‚­“o˜^‚·‚é‚Ì‚ÅAˆø”‚ð‹t‚É‚µ‚Ä‚±‚Ìƒƒ\ƒbƒh‚ð2‰ñŒÄ‚Ô•K—v‚Í‚È‚¢
+	 * subjectã¨objectã®é–“ã«ãƒªãƒ³ã‚¯ã‚’å¼µã‚Šã€ç”Ÿã˜ã‚‹ãƒãƒ†ãƒ³ã‚·ãƒ£ãƒ«ãƒªãƒ³ã‚¯ã‚’ç™»éŒ²ã™ã‚‹ã€‚<br>
+	 * äºŒé‡ç™»éŒ²ãŒãªã„ã‚ˆã†ã«ç´°ã‹ããƒã‚§ãƒƒã‚¯ã™ã‚‹<br>
+	 * äº’ã„ã‚’äº’ã„ã®ãƒªã‚¹ãƒˆã«æ¼ã‚Œç„¡ãç™»éŒ²ã™ã‚‹ã®ã§ã€å¼•æ•°ã‚’é€†ã«ã—ã¦ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’2å›žå‘¼ã¶å¿…è¦ã¯ãªã„
 	 * @param subject
 	 * @param object
 	 */
@@ -86,9 +86,9 @@ public class StaticCNNNetwork extends StaticNetwork {
 	}
 
 	/**
-	 * d•¡‚È‚«‚æ‚¤Šm”F‚µ‚È‚ª‚çƒ|ƒeƒ“ƒVƒƒƒ‹ƒŠƒ“ƒN‚ð’Ç‰ÁB<br>
-	 * subject‚©‚çŒ©‚½ê‡‚ÆAobject‚©‚çŒ©‚½ê‡A—¼•û‚Ìƒ|ƒeƒ“ƒVƒƒƒ‹ƒŠƒ“ƒN‚ð“o˜^‚·‚é‚½‚ß‚ÉA<br>
-	 * ˆø”‚ð‹t‚É‚µ‚Ä2‰ñŒÄ‚Ô•K—v‚ª‚ ‚éB
+	 * é‡è¤‡ãªãã‚ˆã†ç¢ºèªã—ãªãŒã‚‰ãƒãƒ†ãƒ³ã‚·ãƒ£ãƒ«ãƒªãƒ³ã‚¯ã‚’è¿½åŠ ã€‚<br>
+	 * subjectã‹ã‚‰è¦‹ãŸå ´åˆã¨ã€objectã‹ã‚‰è¦‹ãŸå ´åˆã€ä¸¡æ–¹ã®ãƒãƒ†ãƒ³ã‚·ãƒ£ãƒ«ãƒªãƒ³ã‚¯ã‚’ç™»éŒ²ã™ã‚‹ãŸã‚ã«ã€<br>
+	 * å¼•æ•°ã‚’é€†ã«ã—ã¦2å›žå‘¼ã¶å¿…è¦ãŒã‚ã‚‹ã€‚
 	 * @param subject
 	 * @param object
 	 */
@@ -101,21 +101,21 @@ public class StaticCNNNetwork extends StaticNetwork {
 				boolean isNew = true;
 				for(Integer[] link : this.potentialLinks) {
 					if (Arrays.equals(pLink, link) ||
-							Arrays.equals(rLink, link)) { //—¼•ûŒü‚È‚¢‚±‚Æ‚ðŠm”F‚µA
+							Arrays.equals(rLink, link)) { //ä¸¡æ–¹å‘ãªã„ã“ã¨ã‚’ç¢ºèªã—ã€
 						isNew = false;
 						break;
 					}
 				}
-				if (isNew) this.potentialLinks.add(pLink); //ˆê•ûŒü‚¾‚¯“o˜^B
+				if (isNew) this.potentialLinks.add(pLink); //ä¸€æ–¹å‘ã ã‘ç™»éŒ²ã€‚
 			}
 		}
 	}
 	
 	/**
-	 * ‘€ì‚Ì‘I‘ð—¦‚ð—^‚¦‚éŠî–{ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
-	 * @param nAgents -ƒG[ƒWƒFƒ“ƒg”
-	 * @param p_nn -ƒ|ƒeƒ“ƒVƒƒƒ‹ƒŠƒ“ƒNÚ‘±‚Ì‘I‘ð—¦
-	 * @param orientation -ŽwŒü«
+	 * æ“ä½œã®é¸æŠžçŽ‡ã‚’ä¸Žãˆã‚‹åŸºæœ¬ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
+	 * @param nAgents -ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°
+	 * @param p_nn -ãƒãƒ†ãƒ³ã‚·ãƒ£ãƒ«ãƒªãƒ³ã‚¯æŽ¥ç¶šã®é¸æŠžçŽ‡
+	 * @param orientation -æŒ‡å‘æ€§
 	 */
 	public StaticCNNNetwork(int nAgents, boolean orientation, double p_nn) {
 		super("CNN", nAgents, orientation, null);
@@ -124,7 +124,7 @@ public class StaticCNNNetwork extends StaticNetwork {
 	}
 	
 	/**
-	 * –Ú•W•½‹ÏŽŸ”‚ð—^‚¦‚éŠî–{ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+	 * ç›®æ¨™å¹³å‡æ¬¡æ•°ã‚’ä¸Žãˆã‚‹åŸºæœ¬ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 	 * @param nAgents
 	 * @param orientation
 	 * @param degree
@@ -135,7 +135,7 @@ public class StaticCNNNetwork extends StaticNetwork {
 		this.build();
 	}
 	/**
-	 * ƒfƒtƒHƒ‹ƒg‚Ìp_nn‚ð—p‚¢‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+	 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®p_nnã‚’ç”¨ã„ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 	 * @param nAgents
 	 * @param orientation
 	 */
@@ -144,7 +144,7 @@ public class StaticCNNNetwork extends StaticNetwork {
 	}
 	
 	/**
-	 * ƒG[ƒWƒFƒ“ƒg”‚Æ•½‹ÏŽŸ”‚ð—^‚¦‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^D–³ŒüƒOƒ‰ƒtDp_nn‚Í•½‹ÏŽŸ”‚ªdegree‚É‘Q‹ß‚·‚é‚æ‚¤Ý’è‚³‚ê‚éD
+	 * ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°ã¨å¹³å‡æ¬¡æ•°ã‚’ä¸Žãˆã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼Žç„¡å‘ã‚°ãƒ©ãƒ•ï¼Žp_nnã¯å¹³å‡æ¬¡æ•°ãŒdegreeã«æ¼¸è¿‘ã™ã‚‹ã‚ˆã†è¨­å®šã•ã‚Œã‚‹ï¼Ž
 	 * @param nAgents
 	 * @param degree
 	 */
@@ -153,7 +153,7 @@ public class StaticCNNNetwork extends StaticNetwork {
 	}
 	
 	/**
-	 * ƒG[ƒWƒFƒ“ƒg”‚ð—^‚¦‚Ä–³ŒüƒOƒ‰ƒt‚ðì‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+	 * ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°ã‚’ä¸Žãˆã¦ç„¡å‘ã‚°ãƒ©ãƒ•ã‚’ä½œã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 	 * @param nAgents
 	 */
 	public StaticCNNNetwork(int nAgents) {

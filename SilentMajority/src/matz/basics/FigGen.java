@@ -10,9 +10,9 @@ import org.jfree.chart.StandardChartTheme;
 import org.jfree.data.general.DefaultPieDataset;
 
 /**
- * JFreeChart‚ğ—p‚¢‚½ƒOƒ‰ƒt¶¬‚ÌƒTƒ“ƒvƒ‹B<br>
- * ’P‘Ì‚Å“®ì‚·‚é‚Ì‚Åeclipse“™‚Å‚ÌƒeƒXƒgEƒfƒoƒbƒO‚Í‹N“®\¬‚ğì¬‚·‚é‚±‚ÆB<br>
- * JFreeChart‚Ìƒ‰ƒCƒuƒ‰ƒŠ‚ÍlibsˆÈ‰º‚Éû‚ß‚Ä‚ ‚éB
+ * JFreeChartã‚’ç”¨ã„ãŸã‚°ãƒ©ãƒ•ç”Ÿæˆã®ã‚µãƒ³ãƒ—ãƒ«ã€‚<br>
+ * å˜ä½“ã§å‹•ä½œã™ã‚‹ã®ã§eclipseç­‰ã§ã®ãƒ†ã‚¹ãƒˆãƒ»ãƒ‡ãƒãƒƒã‚°æ™‚ã¯èµ·å‹•æ§‹æˆã‚’ä½œæˆã™ã‚‹ã“ã¨ã€‚<br>
+ * JFreeChartã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã¯libsä»¥ä¸‹ã«åã‚ã¦ã‚ã‚‹ã€‚
  * @author Yu
  *
  */
@@ -24,18 +24,18 @@ public class FigGen {
 	public static void main(String[] args) {
 	    DefaultPieDataset data = new DefaultPieDataset();
 
-	    data.setValue("ƒAƒTƒq", 37);
+	    data.setValue("ã‚¢ã‚µãƒ’", 37);
 	    data.setValue("Kirin", 36);
 	    data.setValue("Suntory", 13);
 	    data.setValue("Sapporo", 12);
 	    data.setValue("Others", 2);
 
 	    ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
-	    	//‚¨‚Ü‚¶‚È‚¢BChartTheme‚ÅƒtƒHƒ“ƒg“™×‚©‚­İ’è‚Å‚«‚é‚ªAÅ‹ß‚Ìƒo[ƒWƒ‡ƒ“‚ÌƒfƒtƒHƒ‹ƒgİ’è‚¾‚Æ“ú–{Œê‚ª•¶š‰»‚¯‚·‚é‚æ‚¤‚¾B
-	    	//‚»‚±‚ÅLegacyTheme‚Æ‚¢‚¤‚Ì‚ğ“K—p‚µ‚Ä‚â‚é‚Æ³í‚É•\¦‚³‚ê‚éB
+	    	//ãŠã¾ã˜ãªã„ã€‚ChartThemeã§ãƒ•ã‚©ãƒ³ãƒˆç­‰ç´°ã‹ãè¨­å®šã§ãã‚‹ãŒã€æœ€è¿‘ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¨­å®šã ã¨æ—¥æœ¬èªãŒæ–‡å­—åŒ–ã‘ã™ã‚‹ã‚ˆã†ã ã€‚
+	    	//ãã“ã§LegacyThemeã¨ã„ã†ã®ã‚’é©ç”¨ã—ã¦ã‚„ã‚‹ã¨æ­£å¸¸ã«è¡¨ç¤ºã•ã‚Œã‚‹ã€‚
 	    
 	    JFreeChart chart = 
-	      ChartFactory.createPieChart("ƒTƒ“ƒvƒ‹", data, true, false, false);
+	      ChartFactory.createPieChart("ã‚µãƒ³ãƒ—ãƒ«", data, true, false, false);
 
 	    File file = new File("./chart.png");
 	    try {

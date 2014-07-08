@@ -7,13 +7,13 @@ import java.util.Map.Entry;
 import matz.basics.ScatterPlotGenerator;
 
 /**
- * ŠO•”‚©‚çQÆ‰Â”\‚ÈÃ“Iƒlƒbƒgƒ[ƒNƒ}ƒbƒv‚ğ¶¬‚µC•Û‚·‚éƒNƒ‰ƒXD<br>
- * ‚±‚ÌƒNƒ‰ƒX‚Í’ŠÛƒNƒ‰ƒX‚È‚Ì‚ÅAextend‚µ‚Ä‹ï‘Ì“I‚ÈƒOƒ‰ƒt¶¬ƒ‚ƒfƒ‹(WSƒ‚ƒfƒ‹‚È‚Ç)‚ÉŠî‚Ã‚«AÀ‘•‚·‚éB<br>
- * ƒRƒ“ƒXƒgƒ‰ƒNƒg‚Ì•K{ˆø”‚Íint‚ÌƒG[ƒWƒFƒ“ƒg”.ˆê”Ê‚Éˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Í—pˆÓ‚·‚é‚×‚«‚Å‚È‚¢B<br>
- * ‚»‚Ì‘¼‚ÉwŒü«orientation, ‹L˜^—p‚Éƒ‚ƒfƒ‹–¼ntwkName‚à—^‚¦‚éB<br>
- * Ÿ”‚ğw’è‚µ‚Ä¶¬‚·‚éƒ‚ƒfƒ‹‚Ì‚½‚ß‚Édegree‚àw’è‚Å‚«‚éBnull‚ğ‹–—e‚³‚¹‚é‚½‚ß‚ÉDouble‚Æ‚µ‚Ä‚¢‚éB<br>
- * ƒlƒbƒgƒ[ƒNƒ}ƒbƒv‚ğ¶¬‚·‚ébuild()ƒƒ\ƒbƒh‚ğÀ‘•‚·‚é•K—v‚ª‚ ‚éD<br>
- * ƒlƒbƒgƒ[ƒNƒ}ƒbƒv‚ÍArrayList‚Ì”z—ñ‚ÅŠÇ—‚·‚éD‚±‚Ì•û®‚Í‘ÌŒ^‚Ì”z—ñ‚Æ‚È‚é‚Ì‚Åˆµ‚¢‚É’ˆÓ‚ğ—v‚·‚éB<br>
+ * å¤–éƒ¨ã‹ã‚‰å‚ç…§å¯èƒ½ãªé™çš„ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ãƒãƒƒãƒ—ã‚’ç”Ÿæˆã—ï¼Œä¿æŒã™ã‚‹ã‚¯ãƒ©ã‚¹ï¼<br>
+ * ã“ã®ã‚¯ãƒ©ã‚¹ã¯æŠ½è±¡ã‚¯ãƒ©ã‚¹ãªã®ã§ã€extendã—ã¦å…·ä½“çš„ãªã‚°ãƒ©ãƒ•ç”Ÿæˆãƒ¢ãƒ‡ãƒ«(WSãƒ¢ãƒ‡ãƒ«ãªã©)ã«åŸºã¥ãã€å®Ÿè£…ã™ã‚‹ã€‚<br>
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ãƒˆæ™‚ã®å¿…é ˆå¼•æ•°ã¯intã®ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°.ä¸€èˆ¬ã«å¼•æ•°ãªã—ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯ç”¨æ„ã™ã‚‹ã¹ãã§ãªã„ã€‚<br>
+ * ãã®ä»–ã«æŒ‡å‘æ€§orientation, è¨˜éŒ²ç”¨ã«ãƒ¢ãƒ‡ãƒ«åntwkNameã‚‚ä¸ãˆã‚‹ã€‚<br>
+ * æ¬¡æ•°ã‚’æŒ‡å®šã—ã¦ç”Ÿæˆã™ã‚‹ãƒ¢ãƒ‡ãƒ«ã®ãŸã‚ã«degreeã‚‚æŒ‡å®šã§ãã‚‹ã€‚nullã‚’è¨±å®¹ã•ã›ã‚‹ãŸã‚ã«Doubleã¨ã—ã¦ã„ã‚‹ã€‚<br>
+ * ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ãƒãƒƒãƒ—ã‚’ç”Ÿæˆã™ã‚‹build()ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®Ÿè£…ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ï¼<br>
+ * ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ãƒãƒƒãƒ—ã¯ArrayListã®é…åˆ—ã§ç®¡ç†ã™ã‚‹ï¼ã“ã®æ–¹å¼ã¯ç·ç§°å‹ã®é…åˆ—ã¨ãªã‚‹ã®ã§æ‰±ã„ã«æ³¨æ„ã‚’è¦ã™ã‚‹ã€‚<br>
  * @author Matsuzawa
  *
  */
@@ -24,8 +24,8 @@ public abstract class StaticNetwork {
 	protected static Double DEGREE_DEFAULT = 6.0;
 	
 	/**
-	 * Ã“Iƒlƒbƒgƒ[ƒN‚ğ•Û‚·‚éArrayList‚Ì”z—ñB<br>
-	 * ‘ÌŒ^‚Ì”z—ñ‚È‚Ì‚Åˆµ‚¢‚É’ˆÓ‚·‚éDˆÓ–¡˜_“I‚Ég‚¢‚â‚·‚¢‚Ì‚Å‚±‚¤‚µ‚Ä‚¢‚é‚ªC–{—ˆ‚ ‚Ü‚è‚â‚ç‚È‚¢‚Ù‚¤‚ª‚¢‚¢‚ç‚µ‚¢<br>
+	 * é™çš„ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚’ä¿æŒã™ã‚‹ArrayListã®é…åˆ—ã€‚<br>
+	 * ç·ç§°å‹ã®é…åˆ—ãªã®ã§æ‰±ã„ã«æ³¨æ„ã™ã‚‹ï¼æ„å‘³è«–çš„ã«ä½¿ã„ã‚„ã™ã„ã®ã§ã“ã†ã—ã¦ã„ã‚‹ãŒï¼Œæœ¬æ¥ã‚ã¾ã‚Šã‚„ã‚‰ãªã„ã»ã†ãŒã„ã„ã‚‰ã—ã„<br>
 	 */
 	protected List<Integer>[][] networkList = null;
 	protected String ntwkName;
@@ -34,17 +34,17 @@ public abstract class StaticNetwork {
 	protected double givenDegree;
 	//protected boolean degreeGiven = false;
 
-	protected TreeMap<Integer, Integer> nFollowedFreqMap = new TreeMap<Integer,Integer>(); //TreeMap‚ÍKey‚ğ¸‡‚É‡˜•t‚¯‚·‚é‚Ì‚ÅA
+	protected TreeMap<Integer, Integer> nFollowedFreqMap = new TreeMap<Integer,Integer>(); //TreeMapã¯Keyã‚’æ˜‡é †ã«é †åºä»˜ã‘ã™ã‚‹ã®ã§ã€
 	protected TreeMap<Integer, Integer> nFollowingFreqMap = new TreeMap<Integer,Integer>();
 	
 	protected Random localRNG = new Random();
 	
 	public abstract void build();
 	/**
-	 * Šî–{ƒRƒ“ƒXƒgƒ‰ƒNƒ^.ƒG[ƒWƒFƒ“ƒg”‚ğ—^‚¦‚È‚¢ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Íì‚ç‚È‚¢.<br>
+	 * åŸºæœ¬ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°ã‚’ä¸ãˆãªã„ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯ä½œã‚‰ãªã„.<br>
 	 * 
 	 * @param nAgents
-	 * @param orientation - —LŒü‚È‚çtrue,–³Œü‚È‚çfalse
+	 * @param orientation - æœ‰å‘ãªã‚‰true,ç„¡å‘ãªã‚‰false
 	 */
 	@SuppressWarnings("unchecked")
 	public StaticNetwork(String ntwkName, int nAgents, boolean orientation, Double degree) {
@@ -62,14 +62,14 @@ public abstract class StaticNetwork {
 	}
 	
 	/**
-	 * ƒG[ƒWƒFƒ“ƒg”‚Ì‚İ—^‚¦‚Ä–³ŒüƒOƒ‰ƒt‚ğì‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+	 * ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°ã®ã¿ä¸ãˆã¦ç„¡å‘ã‚°ãƒ©ãƒ•ã‚’ä½œã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 	 * @param nAgents
 	 */
 	public StaticNetwork(String ntwkName, int nAgents) {
 		this(ntwkName, nAgents, UNDIRECTED, null);
 	}
 	
-	// TODO ƒlƒbƒgƒ[ƒNƒf[ƒ^‚ğæ“¾‚Å‚«‚éê‡C‚»‚ê‚ğŒ³‚ÉƒRƒ“ƒXƒgƒ‰ƒNƒg‚Å‚«‚é‚æ‚¤‚ÈÀ‘•
+	// TODO ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã§ãã‚‹å ´åˆï¼Œãã‚Œã‚’å…ƒã«ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ãƒˆã§ãã‚‹ã‚ˆã†ãªå®Ÿè£…
 	
 	/**
 	 * @return ntwkName
@@ -78,13 +78,13 @@ public abstract class StaticNetwork {
 		return ntwkName;
 	}
 	/**
-	 * @param ntwkName ƒZƒbƒg‚·‚é ntwkName
+	 * @param ntwkName ã‚»ãƒƒãƒˆã™ã‚‹ ntwkName
 	 */
 	public void setNtwkName(String ntwkName) {
 		this.ntwkName = ntwkName;
 	}
 	/**
-	 * ƒG[ƒWƒFƒ“ƒg”‚ğæ“¾‚·‚éB
+	 * ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°ã‚’å–å¾—ã™ã‚‹ã€‚
 	 * @return nAgents
 	 */
 	public int getnAgents() {
@@ -92,15 +92,15 @@ public abstract class StaticNetwork {
 	}
 
 	/**
-	 * ƒG[ƒWƒFƒ“ƒg”‚ğw’è‚·‚éB
-	 * @param nAgents ƒZƒbƒg‚·‚é nAgents
+	 * ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆæ•°ã‚’æŒ‡å®šã™ã‚‹ã€‚
+	 * @param nAgents ã‚»ãƒƒãƒˆã™ã‚‹ nAgents
 	 */
 	public void setnAgents(int nAgents) {
 		this.nAgents = nAgents;
 	}
 
 	/**
-	 * ƒlƒbƒgƒ[ƒN‚ÌwŒü«‚ğæ“¾B
+	 * ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®æŒ‡å‘æ€§ã‚’å–å¾—ã€‚
 	 * @return orientation
 	 */
 	public boolean getOrientation() {
@@ -108,8 +108,8 @@ public abstract class StaticNetwork {
 	}
 
 	/**
-	 * ƒlƒbƒgƒ[ƒN‚ÌwŒü«‚ğw’è
-	 * @param orientation ƒZƒbƒg‚·‚é orientation
+	 * ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®æŒ‡å‘æ€§ã‚’æŒ‡å®š
+	 * @param orientation ã‚»ãƒƒãƒˆã™ã‚‹ orientation
 	 */
 	public void setOrientation(boolean orientation) {
 		this.orientation = orientation;
@@ -122,14 +122,14 @@ public abstract class StaticNetwork {
 		return givenDegree;
 	}
 	/**
-	 * @param givenDegree ƒZƒbƒg‚·‚é givenDegree
+	 * @param givenDegree ã‚»ãƒƒãƒˆã™ã‚‹ givenDegree
 	 */
 	public void setGivenDegree(Double givenDegree) {
 		this.givenDegree = givenDegree;
 	}	
 	
 	/**
-	 * subject‚Ì”íQÆƒŠƒXƒg‚Éobject‚ğ’Ç‰ÁB
+	 * subjectã®è¢«å‚ç…§ãƒªã‚¹ãƒˆã«objectã‚’è¿½åŠ ã€‚
 	 * @param subject
 	 * @param object
 	 */
@@ -137,7 +137,7 @@ public abstract class StaticNetwork {
 		this.networkList[subject][FOLLOWED_INDEX].add(object);
 	}
 	/**
-	 * subject‚ÌQÆƒŠƒXƒg‚Éobject‚ğ’Ç‰ÁB
+	 * subjectã®å‚ç…§ãƒªã‚¹ãƒˆã«objectã‚’è¿½åŠ ã€‚
 	 * @param subject
 	 * @param object
 	 */
@@ -145,7 +145,7 @@ public abstract class StaticNetwork {
 		this.networkList[subject][FOLLOWING_INDEX].add(object);
 	}
 	/**
-	 * –³ŒüƒOƒ‰ƒt‚ÅAsubject‚Ì—¼•ûŒü‚ÌƒŠƒXƒg‚Éobject‚ğ’Ç‰ÁB
+	 * ç„¡å‘ã‚°ãƒ©ãƒ•ã§ã€subjectã®ä¸¡æ–¹å‘ã®ãƒªã‚¹ãƒˆã«objectã‚’è¿½åŠ ã€‚
 	 * @param subject
 	 * @param object
 	 */
@@ -154,7 +154,7 @@ public abstract class StaticNetwork {
 		this.appendToFollowingListOf(subject, object);
 	}
 	/**
-	 * subject‚Ì”íQÆƒŠƒXƒg‚©‚çobject‚ğœ‹B
+	 * subjectã®è¢«å‚ç…§ãƒªã‚¹ãƒˆã‹ã‚‰objectã‚’é™¤å»ã€‚
 	 * @param subject
 	 * @param object
 	 */
@@ -162,7 +162,7 @@ public abstract class StaticNetwork {
 		this.networkList[subject][FOLLOWED_INDEX].remove(object);
 	}
 	/**
-	 * subject‚ÌQÆƒŠƒXƒg‚©‚çobject‚ğœ‹B
+	 * subjectã®å‚ç…§ãƒªã‚¹ãƒˆã‹ã‚‰objectã‚’é™¤å»ã€‚
 	 * @param subject
 	 * @param object
 	 */
@@ -170,7 +170,7 @@ public abstract class StaticNetwork {
 		this.networkList[subject][FOLLOWING_INDEX].remove(object);
 	}
 	/**
-	 * –³ŒüƒOƒ‰ƒt‚ÅAsubject‚Ì—¼•ûŒü‚ÌƒŠƒXƒg‚©‚çobject‚ğœ‹B
+	 * ç„¡å‘ã‚°ãƒ©ãƒ•ã§ã€subjectã®ä¸¡æ–¹å‘ã®ãƒªã‚¹ãƒˆã‹ã‚‰objectã‚’é™¤å»ã€‚
 	 * @param subject
 	 * @param object
 	 */
@@ -179,7 +179,7 @@ public abstract class StaticNetwork {
 		this.removeFromFollowingListOf(subject, object);
 	}
 	/**
-	 * —LŒüƒOƒ‰ƒt‚É‚¨‚¯‚é”íQÆƒŠƒXƒg‚ğ•Ô‚·.
+	 * æœ‰å‘ã‚°ãƒ©ãƒ•ã«ãŠã‘ã‚‹è¢«å‚ç…§ãƒªã‚¹ãƒˆã‚’è¿”ã™.
 	 * @param index
 	 * @return
 	 */
@@ -188,7 +188,7 @@ public abstract class StaticNetwork {
 	}
 	
 	/**
-	 * —LŒüƒOƒ‰ƒt‚É‚¨‚¯‚éQÆƒŠƒXƒg‚ğ•Ô‚·.
+	 * æœ‰å‘ã‚°ãƒ©ãƒ•ã«ãŠã‘ã‚‹å‚ç…§ãƒªã‚¹ãƒˆã‚’è¿”ã™.
 	 * @param index
 	 * @return
 	 */
@@ -197,7 +197,7 @@ public abstract class StaticNetwork {
 	}
 	
 	/**
-	 * –³ŒüƒOƒ‰ƒt‚É‚¨‚¯‚é—×ÚƒŠƒXƒg‚ğ•Ô‚·D“à•”“I‚É‚Í—LŒüƒOƒ‰ƒt‚Ì”íQÆƒŠƒXƒg‚Æ“¯‚¶‚à‚Ì‚ğ•Ô‚·D
+	 * ç„¡å‘ã‚°ãƒ©ãƒ•ã«ãŠã‘ã‚‹éš£æ¥ãƒªã‚¹ãƒˆã‚’è¿”ã™ï¼å†…éƒ¨çš„ã«ã¯æœ‰å‘ã‚°ãƒ©ãƒ•ã®è¢«å‚ç…§ãƒªã‚¹ãƒˆã¨åŒã˜ã‚‚ã®ã‚’è¿”ã™ï¼
 	 * @param index
 	 * @return
 	 */
@@ -206,7 +206,7 @@ public abstract class StaticNetwork {
 	}
 	
 	/**
-	 * —LŒüƒOƒ‰ƒt‚É‚¨‚¯‚é”íQÆ”i“üŸ”j‚ğ•Ô‚·D
+	 * æœ‰å‘ã‚°ãƒ©ãƒ•ã«ãŠã‘ã‚‹è¢«å‚ç…§æ•°ï¼ˆå…¥æ¬¡æ•°ï¼‰ã‚’è¿”ã™ï¼
 	 * @param index
 	 * @return
 	 */
@@ -215,7 +215,7 @@ public abstract class StaticNetwork {
 	}
 	
 	/**
-	 * —LŒüƒOƒ‰ƒt‚É‚¨‚¯‚éQÆ”ioŸ”j‚ğ•Ô‚·D
+	 * æœ‰å‘ã‚°ãƒ©ãƒ•ã«ãŠã‘ã‚‹å‚ç…§æ•°ï¼ˆå‡ºæ¬¡æ•°ï¼‰ã‚’è¿”ã™ï¼
 	 * @param index
 	 * @return
 	 */
@@ -224,7 +224,7 @@ public abstract class StaticNetwork {
 	}
 	
 	/**
-	 * –³ŒüƒOƒ‰ƒt‚É‚¨‚¯‚éŸ”‚ğ•Ô‚·D“à•”“I‚É‚Í—LŒüƒOƒ‰ƒt‚Ì”íQÆ”‚Æ“¯‚¶‚à‚Ì‚ğ•Ô‚·D
+	 * ç„¡å‘ã‚°ãƒ©ãƒ•ã«ãŠã‘ã‚‹æ¬¡æ•°ã‚’è¿”ã™ï¼å†…éƒ¨çš„ã«ã¯æœ‰å‘ã‚°ãƒ©ãƒ•ã®è¢«å‚ç…§æ•°ã¨åŒã˜ã‚‚ã®ã‚’è¿”ã™ï¼
 	 * @param index
 	 * @return
 	 */
@@ -279,22 +279,22 @@ public abstract class StaticNetwork {
 	}
 	
 	/**
-	 * ƒ`ƒFƒbƒN‚Ì‚½‚ß‚Éƒlƒbƒgƒ[ƒN‚Ìî•ñ‚ğƒtƒ@ƒCƒ‹‚â‰æ‘œ‚Éo—Í‚·‚éD
+	 * ãƒã‚§ãƒƒã‚¯ã®ãŸã‚ã«ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®æƒ…å ±ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã‚„ç”»åƒã«å‡ºåŠ›ã™ã‚‹ï¼
 	 * @param outDir
 	 */
 	public void dumpNetwork(File outDir) {
 		if (!outDir.isDirectory()) outDir.mkdirs();
 		
-		//‘SƒG[ƒWƒFƒ“ƒg‚Ì—×ÚƒŠƒXƒg‚ğƒ\[ƒg‚·‚éBƒRƒƒ“ƒgƒAƒEƒg‚µ‚Ä‚µ‚Ü‚Á‚Ä‚à‚¢‚¢B
+		//å…¨ã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆã®éš£æ¥ãƒªã‚¹ãƒˆã‚’ã‚½ãƒ¼ãƒˆã™ã‚‹ã€‚ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆã—ã¦ã—ã¾ã£ã¦ã‚‚ã„ã„ã€‚
 		for (List<Integer>[] agentLists : networkList) {
 			Collections.sort(agentLists[FOLLOWED_INDEX]);
 			Collections.sort(agentLists[FOLLOWING_INDEX]);
 		}
-		//ƒlƒbƒgƒ[ƒN‚Ì“Œv“I«¿‚ğƒ`ƒFƒbƒN‚·‚éB
-		this.countDegreeFreq(); //Ÿ”‚Ì•p“x•ª•z
+		//ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®çµ±è¨ˆçš„æ€§è³ªã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
+		this.countDegreeFreq(); //æ¬¡æ•°ã®é »åº¦åˆ†å¸ƒ
 		
 		try {
-			//—×ÚƒŠƒXƒg“f‚«o‚µ
+			//éš£æ¥ãƒªã‚¹ãƒˆåãå‡ºã—
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
 			for (int i = 0; i < this.getnAgents(); i++) {
 				bw.write(i + "(" + this.getnFollowedOf(i) + ")\t:\t");
@@ -305,7 +305,7 @@ public abstract class StaticNetwork {
 			}
 			bw.close();
 			
-			//•p“x•ª•z“f‚«o‚µ
+			//é »åº¦åˆ†å¸ƒåãå‡ºã—
 			BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwkDegreeFreq.csv"))));
 			for (Entry<Integer,Integer> entry : this.nFollowedFreqMap.entrySet()) {
 				bw2.write(entry.getKey() + "," + entry.getValue());

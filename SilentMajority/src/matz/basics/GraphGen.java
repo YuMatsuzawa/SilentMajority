@@ -21,7 +21,7 @@ import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 
 /**
- * Jungƒ‰ƒCƒuƒ‰ƒŠ‚ğ—p‚¢‚½ƒOƒ‰ƒt•`‰æ‚ÌƒeƒXƒgƒNƒ‰ƒXD<br>
+ * Jungãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’ç”¨ã„ãŸã‚°ãƒ©ãƒ•æç”»ã®ãƒ†ã‚¹ãƒˆã‚¯ãƒ©ã‚¹ï¼<br>
  * 
  * @author Matsuzawa
  *
@@ -32,11 +32,11 @@ public class GraphGen {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//ƒeƒXƒgƒlƒbƒgƒ[ƒN‚Ì¶¬
+		//ãƒ†ã‚¹ãƒˆãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®ç”Ÿæˆ
 		int nAgents = 1000;
 		StaticNetwork ntwk = new StaticCNNNetwork(nAgents);
 		
-		//ƒOƒ‰ƒt‚Ìì¬
+		//ã‚°ãƒ©ãƒ•ã®ä½œæˆ
 		Graph<Integer,String> graph = new UndirectedSparseGraph<Integer,String>();
 		for (int subjectIndex = 0; subjectIndex < nAgents; subjectIndex++) {
 			if (!graph.containsVertex(subjectIndex)) graph.addVertex(subjectIndex);
@@ -47,7 +47,7 @@ public class GraphGen {
 		}
 		
 		Transformer<Integer,Paint> nodeFillColor = new Transformer<Integer,Paint>() {
-			//ƒm[ƒh‚ÌF‚ğƒm[ƒh‚Ì‘®«ˆË‘¶‚Å•Ï‚¦‚é‚½‚ß‚ÌTransformer
+			//ãƒãƒ¼ãƒ‰ã®è‰²ã‚’ãƒãƒ¼ãƒ‰ã®å±æ€§ä¾å­˜ã§å¤‰ãˆã‚‹ãŸã‚ã®Transformer
 			@Override
 			public Paint transform(Integer arg0) {
 				Integer opinion = arg0 % 3;
@@ -64,7 +64,7 @@ public class GraphGen {
 		};
 		
 		Transformer<Integer,Shape> nodeShape = new Transformer<Integer,Shape>() {
-			//ƒm[ƒh‚ÌƒTƒCƒY‚ğƒm[ƒh‚Ì‘®«ˆË‘¶‚Å•Ï‚¦‚é‚½‚ß‚ÌTransformer
+			//ãƒãƒ¼ãƒ‰ã®ã‚µã‚¤ã‚ºã‚’ãƒãƒ¼ãƒ‰ã®å±æ€§ä¾å­˜ã§å¤‰ãˆã‚‹ãŸã‚ã®Transformer
 			@Override
 			public Shape transform(Integer arg0) {
 				Integer degree = 1000 - arg0;
@@ -75,7 +75,7 @@ public class GraphGen {
 			
 		};
 		
-		//•`‰æ—ÌˆæE•`‰æƒCƒ“ƒXƒ^ƒ“ƒX¶¬
+		//æç”»é ˜åŸŸãƒ»æç”»ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç”Ÿæˆ
 		Dimension viewArea = new Dimension(600, 600);
 		//Layout<Integer,String> layout = new CircleLayout<Integer,String>(graph);
 		Layout<Integer,String> layout = new FRLayout<Integer,String>(graph, viewArea);
@@ -87,7 +87,7 @@ public class GraphGen {
 		panel.getRenderContext().setVertexShapeTransformer(nodeShape);
 		panel.setBackground(Color.WHITE);
 		
-		//‰æ‘œ“f‚«o‚µ
+		//ç”»åƒåãå‡ºã—
 		BufferedImage bi = (BufferedImage) panel.getImage(
 				new Point2D.Double(layout.getSize().getWidth() / 2, layout.getSize().getWidth() /2), 
 				viewArea);
@@ -97,7 +97,7 @@ public class GraphGen {
 			e.printStackTrace();
 		}
 		
-		//ƒEƒBƒ“ƒhƒE¶¬E•\¦
+		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç”Ÿæˆãƒ»è¡¨ç¤º
 		JFrame frame = new JFrame("Grapth view: "+layout.getClass().getSimpleName());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(panel);

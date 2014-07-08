@@ -47,26 +47,26 @@ public class SimulationTask implements Runnable {
 	@Override
 	public void run() {
 		this.initTaskLogger();
-			//thread‚І‚Ж‚МѓЌѓO‚рЋж“ѕ‚·‚й‚Ѕ‚Я‚ЙЃCrun()“а‚ЕѓЌѓKЃ[‚рЏ‰Љъ‰»‚·‚йЃD
-			//‚±‚МRunnableѓ^ѓXѓN‚»‚М‚а‚М‚рѓRѓ“ѓXѓgѓ‰ѓNѓg‚·‚й‚М‚НExecutor‚МѓЃѓCѓ“thread‚И‚М‚ЕЃC
-			//‚»‚МЋћ“_‚ЕѓЌѓKЃ[‚рЏ‰Љъ‰»‚µ‚Д‚µ‚Ь‚¤‚ЖЉeЃX‚Мthread–ј‚ЄЋж“ѕ‚Е‚«‚И‚ў(main‚МthreadЏо•с‚Є•Ф‚Б‚Д‚­‚й)
-			//run()“а‚ЕѓЌѓKЃ[‚рЏ‰Љъ‰»‚·‚к‚ОЃArun()“а‚МѓvѓЌѓVЃ[ѓWѓѓ‚рЋАЌs‚·‚йthread(ЃЃѓvЃ[ѓ‹‚і‚к‚Д‚ў‚йthread‚М‚¤‚ї‚М€к‚В)‚МЏо•с‚рЋж“ѕ‚Е‚«‚й
+			//threadгЃ”гЃЁгЃ®гѓ­г‚°г‚’еЏ–еѕ—гЃ™г‚‹гЃџг‚ЃгЃ«пјЊrun()е†…гЃ§гѓ­г‚¬гѓјг‚’е€ќжњџеЊ–гЃ™г‚‹пјЋ
+			//гЃ“гЃ®Runnableг‚їг‚№г‚ЇгЃќгЃ®г‚‚гЃ®г‚’г‚ігѓіг‚№гѓ€гѓ©г‚Їгѓ€гЃ™г‚‹гЃ®гЃЇExecutorгЃ®гѓЎг‚¤гѓіthreadгЃЄгЃ®гЃ§пјЊ
+			//гЃќгЃ®ж™‚з‚№гЃ§гѓ­г‚¬гѓјг‚’е€ќжњџеЊ–гЃ—гЃ¦гЃ—гЃѕгЃ†гЃЁеђ„гЂ…гЃ®threadеђЌгЃЊеЏ–еѕ—гЃ§гЃЌгЃЄгЃ„(mainгЃ®threadжѓ…е ±гЃЊиї”гЃЈгЃ¦гЃЏг‚‹)
+			//run()е†…гЃ§гѓ­г‚¬гѓјг‚’е€ќжњџеЊ–гЃ™г‚ЊгЃ°гЂЃrun()е†…гЃ®гѓ—гѓ­г‚·гѓјг‚ёгѓЈг‚’е®џиЎЊгЃ™г‚‹thread(пјќгѓ—гѓјгѓ«гЃ•г‚ЊгЃ¦гЃ„г‚‹threadгЃ®гЃ†гЃЎгЃ®дёЂгЃ¤)гЃ®жѓ…е ±г‚’еЏ–еѕ—гЃ§гЃЌг‚‹
 		
 		this.TaskLogger.info("Start: "+this.getInstanceName());
 		try { // main procedure calling bracket
 						
-			//ѓGЃ[ѓWѓFѓ“ѓgЏWЌ‡‚М”z—с‚рЏ‰Љъ‰»‚·‚йЃD
-			//refNetworkѓtѓBЃ[ѓ‹ѓh‚НЃAђГ“IѓlѓbѓgѓЏЃ[ѓN‚Є—^‚¦‚з‚к‚Д‚ў‚й‚И‚з‚»‚МѓCѓ“ѓXѓ^ѓ“ѓX‚ЄЃA—^‚¦‚з‚к‚Д‚ў‚И‚ў‚И‚зnull‚Є“ь‚Б‚Д‚ў‚йЃB
+			//г‚Ёгѓјг‚ёг‚§гѓігѓ€й›†еђ€гЃ®й…Ќе€—г‚’е€ќжњџеЊ–гЃ™г‚‹пјЋ
+			//refNetworkгѓ•г‚Јгѓјгѓ«гѓ‰гЃЇгЂЃйќ™зљ„гѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃЊдёЋгЃ€г‚‰г‚ЊгЃ¦гЃ„г‚‹гЃЄг‚‰гЃќгЃ®г‚¤гѓіг‚№г‚їгѓіг‚№гЃЊгЂЃдёЋгЃ€г‚‰г‚ЊгЃ¦гЃ„гЃЄгЃ„гЃЄг‚‰nullгЃЊе…ҐгЃЈгЃ¦гЃ„г‚‹гЂ‚
 			this.initInfoAgentsArray(this.getnAgents(), this.refNetwork);
 			if (this.refNetwork == null) {
-				//ђГ“IѓlѓbѓgѓЏЃ[ѓN‚рЋg‚н‚И‚ў‚И‚зЃAѓVѓ~ѓ…ѓЊЃ[ѓVѓ‡ѓ“ЊВ•К‚МѓlѓbѓgѓЏЃ[ѓN‚рђ¶ђ¬‚·‚йЃD
+				//йќ™зљ„гѓЌгѓѓгѓ€гѓЇгѓјг‚Їг‚’дЅїг‚ЏгЃЄгЃ„гЃЄг‚‰гЂЃг‚·гѓџгѓҐгѓ¬гѓјг‚·гѓ§гѓіеЂ‹е€ҐгЃ®гѓЌгѓѓгѓ€гѓЇгѓјг‚Їг‚’з”џж€ђгЃ™г‚‹пјЋ
 				CNNNetworkBuilder ntwk = new CNNNetworkBuilder();
 				this.infoAgentsArray = ntwk.build(this.infoAgentsArray);
 			}
-			//ѓlѓbѓgѓЏЃ[ѓNЉm’иЊгЃAЋџђ”‚Й€Л‘¶‚·‚йЉm—¦•Є•z‚ЙЏ]‚ўЃAѓGЃ[ѓWѓFѓ“ѓg‚рѓTѓCѓЊѓ“ѓg‚Й‚·‚йЃB
+			//гѓЌгѓѓгѓ€гѓЇгѓјг‚Їзўєе®љеѕЊгЂЃж¬Ўж•°гЃ«дѕќе­гЃ™г‚‹зўєзЋ‡е€†еёѓгЃ«еѕ“гЃ„гЂЃг‚Ёгѓјг‚ёг‚§гѓігѓ€г‚’г‚µг‚¤гѓ¬гѓігѓ€гЃ«гЃ™г‚‹гЂ‚
 			this.muzzleAgents();
 			
-			//€УЊ©•Є•z‚р‚±‚±‚ЕЏ‰Љъ‰»‚·‚йЃB
+			//ж„Џи¦‹е€†еёѓг‚’гЃ“гЃ“гЃ§е€ќжњџеЊ–гЃ™г‚‹гЂ‚
 			this.initOpinions(this.initPattern);
 			
 			File outDir = new File("results/" + this.getTimeStamp() + "/" + 
@@ -76,21 +76,21 @@ public class SimulationTask implements Runnable {
 					"m=" + String.format("%.1f", this.getModelReferenceRatio()));
 			if (!outDir.isDirectory()) outDir.mkdirs();
 			
-			//ѓlѓbѓgѓЏЃ[ѓN‚Мѓ`ѓFѓbѓN
+			//гѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃ®гѓЃг‚§гѓѓг‚Ї
 			//this.dumpNetworkList(outDir);
 			NetworkVisualizer nv = new NetworkVisualizer(this.infoAgentsArray);
-			//Џ‰ЉъЏу‘Ф‚МЉm”F
+			//е€ќжњџзЉ¶ж…‹гЃ®зўєиЄЌ
 			nv.generateGraph(outDir, this.getInstanceName()+".initial.png");
 			
-			//Џо•с“`”d‚рЋЋЌs‚·‚й
+			//жѓ…е ±дјќж’­г‚’и©¦иЎЊгЃ™г‚‹
 			int cStep = 0, nUpdated = 0, iStable = 0, nAgents = this.getnAgents();
 			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, this.getInstanceName()+".csv"))));
 			ArrayList<Integer[][][]> records = new ArrayList<Integer[][][]>();
-			//TODO ‰Ѕ‚©ѓTѓCѓЊѓ“ѓg—¦‚Й€Л‘¶‚µ‚»‚¤‚И“ќЊvЋw•W‚р’T‚µЃA“ЇЏрЊЏ‚Е‚М•Ўђ”‰сЋЋЌs‚р‘O’с‚Ж‚µ‚Ѕ‰рђН‚рЏЂ”х‚·‚й
+			//TODO дЅ•гЃ‹г‚µг‚¤гѓ¬гѓігѓ€зЋ‡гЃ«дѕќе­гЃ—гЃќгЃ†гЃЄзµ±иЁ€жЊ‡жЁ™г‚’жЋўгЃ—гЂЃеђЊжќЎд»¶гЃ§гЃ®и¤‡ж•°е›ћи©¦иЎЊг‚’е‰ЌжЏђгЃЁгЃ—гЃџи§Јжћђг‚’жє–е‚™гЃ™г‚‹
 			while(iStable < 10 && cStep < MAX_ITER) {
-				//Ћы‘©ЏрЊЏ‚Н€УЊ©•П‰»‚М‚ ‚Б‚ЅѓGЃ[ѓWѓFѓ“ѓg‚Є‘S‘М‚М5%€И‰є‚МЏу‘Ф‚Є10ѓXѓeѓbѓvЊp‘±‚·‚й‚©ЃA‚ ‚й‚ў‚Н20ѓXѓeѓbѓv‚Й“ћ’B‚·‚й‚©ЃB
+				//еЏЋжќџжќЎд»¶гЃЇж„Џи¦‹е¤‰еЊ–гЃ®гЃ‚гЃЈгЃџг‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊе…ЁдЅ“гЃ®5%д»Ґдё‹гЃ®зЉ¶ж…‹гЃЊ10г‚№гѓ†гѓѓгѓ—з¶™з¶љгЃ™г‚‹гЃ‹гЂЃгЃ‚г‚‹гЃ„гЃЇ20г‚№гѓ†гѓѓгѓ—гЃ«е€°йЃ”гЃ™г‚‹гЃ‹гЂ‚
 				
-				// €УЊ©”д—¦‚М’ЗђХЃB‘S‘МЃAѓTѓCѓЊѓ“ѓgЃAѓ”ѓHЃ[ѓJѓ‹‚МЏ‡ЃB
+				// ж„Џи¦‹жЇ”зЋ‡гЃ®иїЅи·ЎгЂ‚е…ЁдЅ“гЂЃг‚µг‚¤гѓ¬гѓігѓ€гЂЃгѓґг‚©гѓјг‚«гѓ«гЃ®й †гЂ‚
 				Integer[][] sumRecord = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 				for (InfoAgent agent : this.infoAgentsArray) {
 					Integer opinion = agent.forceGetOpinion();
@@ -99,22 +99,22 @@ public class SimulationTask implements Runnable {
 					if(agent.isSilent()) sumRecord[SILENT_INDEX][opinion]++;
 					else sumRecord[VOCAL_INDEX][opinion]++;
 				}
-				//€УЊ©”д—¦‚М‹L^ЃB
+				//ж„Џи¦‹жЇ”зЋ‡гЃ®иЁйЊІгЂ‚
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 4; j++) rbw.write(sumRecord[i][j] + ",");
 					rbw.write(" ,");
 				}
 				
 				nUpdated = 0;
-				//update‚М’ЗђХЃB
+				//updateгЃ®иїЅи·ЎгЂ‚
 				Integer[][] updateRecord = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 				double roll = this.localRNG.nextDouble();
 				/*
-				 * ‘SѓGЃ[ѓWѓFѓ“ѓg‚Й‚В‚ў‚ДЃAѓ‚ѓfѓ‹‚ЙЉо‚Г‚­‘ЉЊЭЌм—p‚рЋАЌs
+				 * е…Ёг‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ«гЃ¤гЃ„гЃ¦гЂЃгѓўгѓ‡гѓ«гЃ«еџєгЃҐгЃЏз›ёдє’дЅњз”Ёг‚’е®џиЎЊ
 				 * 
 				 */
 				for (InfoAgent agent : this.infoAgentsArray) {
-					boolean isUpdated = (roll < this.getModelReferenceRatio())? //ѓ‚ѓfѓ‹‘I‘р”дЃЃIC‘I‘р—¦‚ри‡’l‚Ж‚µ‚ДЉm—¦‘I‘р‚µ‚Д‚ў‚йЃB
+					boolean isUpdated = (roll < this.getModelReferenceRatio())? //гѓўгѓ‡гѓ«йЃёжЉћжЇ”пјќICйЃёжЉћзЋ‡г‚’й–ѕеЂ¤гЃЁгЃ—гЃ¦зўєзЋ‡йЃёжЉћгЃ—гЃ¦гЃ„г‚‹гЂ‚
 							agent.independentCascade(infoAgentsArray)
 							: agent.linearThreashold(infoAgentsArray);
 					if (isUpdated) {
@@ -126,7 +126,7 @@ public class SimulationTask implements Runnable {
 						else updateRecord[VOCAL_INDEX][updatedOpinion]++;
 					}
 				}
-				//update‹L^‚МЏ‘‚«Ќћ‚Э
+				//updateиЁйЊІгЃ®ж›ёгЃЌиѕјгЃї
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 4; j++) rbw.write(updateRecord[i][j] + ",");
 					rbw.write(" ,");					
@@ -136,7 +136,7 @@ public class SimulationTask implements Runnable {
 				Integer[][][] tmpRecords = {sumRecord, updateRecord};
 				records.add(tmpRecords);
 				
-				for (InfoAgent agent : this.infoAgentsArray) agent.applyOpinion(); //’†ЉФѓfЃ[ѓ^‚р–{“K—p‚·‚йЃB
+				for (InfoAgent agent : this.infoAgentsArray) agent.applyOpinion(); //дё­й–“гѓ‡гѓјг‚їг‚’жњ¬йЃ©з”ЁгЃ™г‚‹гЂ‚
 				
 				if (((double)nUpdated / (double)nAgents) < CONVERGENCE_CONDITION){
 					iStable++;
@@ -147,10 +147,10 @@ public class SimulationTask implements Runnable {
 				cStep++;
 			}
 			
-			//ЌЕЏIЏу‘Ф‚МЉm”FЃD
+			//жњЂзµ‚зЉ¶ж…‹гЃ®зўєиЄЌпјЋ
 			nv.generateGraph(outDir, this.getInstanceName()+".final.png");
 			
-			//ЏWЊvѓfЃ[ѓ^‚МЊvЋZ
+			//й›†иЁ€гѓ‡гѓјг‚їгЃ®иЁ€з®—
 			double totalPosRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][POS_INDEX] / (double)this.getnAgents();
 			double totalNegRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][NEG_INDEX] / (double)this.getnAgents();
 			double totalNeuRatio = (double)records.get(cStep-1)[SUM_INDEX][TOTAL_INDEX][NEU_INDEX] / (double)this.getnAgents();
@@ -168,7 +168,7 @@ public class SimulationTask implements Runnable {
 			double STDivergence = (silentPosRatio > totalPosRatio)? silentPosRatio / totalPosRatio : totalPosRatio / silentPosRatio;
 			//double silentDivergence = silentPNRatio / totalPNRatio;
 			
-			//ЏWЊvѓfЃ[ѓ^‚М‹L^(“З‚ЭЌћ‚Э‚в‚·‚­‚·‚й‚Ѕ‚Я‚ЙЌЕЏIЌs‚Й‚Ь‚Ж‚Я‚ДЏ‘‚­)
+			//й›†иЁ€гѓ‡гѓјг‚їгЃ®иЁйЊІ(иЄ­гЃїиѕјгЃїг‚„гЃ™гЃЏгЃ™г‚‹гЃџг‚ЃгЃ«жњЂзµ‚иЎЊгЃ«гЃѕгЃЁг‚ЃгЃ¦ж›ёгЃЏ)
 			rbw.newLine();
 			rbw.write(totalNullRatio + "," + VTDivergence + "," + STDivergence);
 			
@@ -182,7 +182,7 @@ public class SimulationTask implements Runnable {
 				this.logStackTrace(e);
 			}
 			
-			this.endGate.countDown(); //ѓJѓEѓ“ѓgѓ_ѓEѓ“
+			this.endGate.countDown(); //г‚«г‚¦гѓігѓ€гѓЂг‚¦гѓі
 			this.TaskLogger.info("Done: " + this.getInstanceName());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -194,24 +194,24 @@ public class SimulationTask implements Runnable {
 
 
 	/**
-	 * Џо•сѓGЃ[ѓWѓFѓ“ѓg”z—с‚рЏ‰Љъ‰»‚·‚йЃD‚±‚МЏ€—ќ‚Нrun()“а‚ЕЊД‚О‚к‚й‚Ч‚«‚Е‚ ‚йЃiЋqѓXѓЊѓbѓh“а‚ЕЏ€—ќ‚і‚к‚й‚Ч‚«‚Е‚ ‚йЃjЃD<br>
+	 * жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€й…Ќе€—г‚’е€ќжњџеЊ–гЃ™г‚‹пјЋгЃ“гЃ®е‡¦зђ†гЃЇrun()е†…гЃ§е‘јгЃ°г‚Њг‚‹гЃ№гЃЌгЃ§гЃ‚г‚‹пј€е­ђг‚№гѓ¬гѓѓгѓ‰е†…гЃ§е‡¦зђ†гЃ•г‚Њг‚‹гЃ№гЃЌгЃ§гЃ‚г‚‹пј‰пјЋ<br>
 	 * @param nAgents
 	 */
 	protected void initInfoAgentsArray(int nAgents, StaticNetwork ntwk) {
 		this.infoAgentsArray= new InfoAgent[nAgents];
 		for (int index = 0; index < nAgents; index++) {
 			this.infoAgentsArray[index] = new InfoAgent(index, this.initOpinion(NULL_PATTERN), ntwk);
-				//InfoAgent‚МѓCѓ“ѓXѓ^ѓ“ѓX‰»‚МЌЫЃAѓRѓ“ѓXѓgѓ‰ѓNѓ^‚МЋн—Ю‚Й‚ж‚Б‚ДЃAѓTѓCѓЊѓ“ѓgЃ^ѓ”ѓHЃ[ѓJѓ‹‚вЏ‰Љъ€УЊ©‚аЋw’и‚Е‚«‚йЃB
-				//‚µ‚©‚µЃA‚ў‚л‚ў‚л‚в‚Б‚ЅЊ‹‰К‚Ж‚µ‚ДЏ‰Љъ‰»Ћћ‚Й‚Н“K“–‚Й—^‚¦‚Д‚Ё‚«ЃAѓlѓbѓgѓЏЃ[ѓN‚МЌ\‘ў‚©‚з’и‚Ь‚йѓGЃ[ѓWѓFѓ“ѓg‚Мђ«Љi‚Й€Л‘¶‚µ‚Д‚М‚ї‚ЙS/V‚в€УЊ©‚р•К‚ЙЏ‰Љъ‰»‚·‚й‚±‚Ж‚Й‚µ‚ЅЃB
-				//‚ж‚Б‚ДЉо–{“I‚Й‚Н‚·‚Ч‚Дѓ”ѓHЃ[ѓJѓ‹‚©‚ВNULL_PATTERN‚ЕЏ‰Љъ‰»‚·‚йЃB
+				//InfoAgentгЃ®г‚¤гѓіг‚№г‚їгѓіг‚№еЊ–гЃ®йљ›гЂЃг‚ігѓіг‚№гѓ€гѓ©г‚Їг‚їгЃ®зЁ®йЎћгЃ«г‚€гЃЈгЃ¦гЂЃг‚µг‚¤гѓ¬гѓігѓ€пјЏгѓґг‚©гѓјг‚«гѓ«г‚„е€ќжњџж„Џи¦‹г‚‚жЊ‡е®љгЃ§гЃЌг‚‹гЂ‚
+				//гЃ—гЃ‹гЃ—гЂЃгЃ„г‚ЌгЃ„г‚Ќг‚„гЃЈгЃџзµђжћњгЃЁгЃ—гЃ¦е€ќжњџеЊ–ж™‚гЃ«гЃЇйЃ©еЅ“гЃ«дёЋгЃ€гЃ¦гЃЉгЃЌгЂЃгѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃ®ж§‹йЂ гЃ‹г‚‰е®љгЃѕг‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®жЂ§ж јгЃ«дѕќе­гЃ—гЃ¦гЃ®гЃЎгЃ«S/Vг‚„ж„Џи¦‹г‚’е€ҐгЃ«е€ќжњџеЊ–гЃ™г‚‹гЃ“гЃЁгЃ«гЃ—гЃџгЂ‚
+				//г‚€гЃЈгЃ¦еџєжњ¬зљ„гЃ«гЃЇгЃ™гЃ№гЃ¦гѓґг‚©гѓјг‚«гѓ«гЃ‹гЃ¤NULL_PATTERNгЃ§е€ќжњџеЊ–гЃ™г‚‹гЂ‚
 		}
 		
 	}
 	
 	/**
-	 * Ћџђ”‚Й€Л‘¶‚·‚йЉm—¦•Є•z+—ђђ”‚ЙЏ]‚ўЃAѓGЃ[ѓWѓFѓ“ѓg‚рѓTѓCѓЊѓ“ѓg‚Й‚·‚йЃB<br>
-	 * –іЊьѓOѓ‰ѓt‚И‚зgetDegree()‚ЕЋџђ”‚рЋж‚к‚йЃBgetnFollowed()‚Е‚аЋж‚Б‚Д‚­‚йђ”’l‚Н“Ї‚¶‚ѕ‚ЄЃB<br>
-	 * —LЊьѓOѓ‰ѓt‚И‚з‘Ѕ‚­‚МЋQЏЖ‚рЏW‚Я‚йѓGЃ[ѓWѓFѓ“ѓg‚Єѓnѓu‚ЖЌl‚¦‚з‚к‚й‚М‚ЕЃAgetnFollowed()‚рЋg‚¤ЃB
+	 * ж¬Ўж•°гЃ«дѕќе­гЃ™г‚‹зўєзЋ‡е€†еёѓ+д№±ж•°гЃ«еѕ“гЃ„гЂЃг‚Ёгѓјг‚ёг‚§гѓігѓ€г‚’г‚µг‚¤гѓ¬гѓігѓ€гЃ«гЃ™г‚‹гЂ‚<br>
+	 * з„Ўеђ‘г‚°гѓ©гѓ•гЃЄг‚‰getDegree()гЃ§ж¬Ўж•°г‚’еЏ–г‚Њг‚‹гЂ‚getnFollowed()гЃ§г‚‚еЏ–гЃЈгЃ¦гЃЏг‚‹ж•°еЂ¤гЃЇеђЊгЃгЃ гЃЊгЂ‚<br>
+	 * жњ‰еђ‘г‚°гѓ©гѓ•гЃЄг‚‰е¤љгЃЏгЃ®еЏ‚з…§г‚’й›†г‚Ѓг‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊгѓЏгѓ–гЃЁиЂѓгЃ€г‚‰г‚Њг‚‹гЃ®гЃ§гЂЃgetnFollowed()г‚’дЅїгЃ†гЂ‚
 	 */
 	private void muzzleAgents() {		
 		for (InfoAgent agent : this.infoAgentsArray) {
@@ -222,20 +222,20 @@ public class SimulationTask implements Runnable {
 	}
 
 	/**
-	 * Ћџђ”‚Й€Л‘¶‚·‚йѓTѓCѓЊѓ“ѓgђ«‚МЉm—¦•Є•zЉЦђ”ЃB<br>
-	 * €шђ”‚Н—ЈЋU’l‚МЋџђ”‚И‚М‚ЕProbability Distribution Function(PDF)ЃBProbability Mass Function(PMF)‚Ж‚аЊѕ‚¦‚йЃB<br>
-	 * ѓpѓ‰ѓЃЃ[ѓ^‚МѓTѓCѓЊѓ“ѓg—¦‚ЄЏг‚Є‚й‚ЖЃAЋџђ”‚М’б‚ў•ы‚©‚зЌ‚‚ўЉm—¦‚ЕѓTѓCѓЊѓ“ѓg‰»‚µ‚Д‚ў‚­‚ж‚¤‚ИЉm—¦‚р—^‚¦‚йЉЦђ”‚Й‚И‚Б‚Д‚ў‚йЃB<br>
-	 * ѓTѓCѓЊѓ“ѓg—¦‚Є0.9‚И‚зЃAЋџђ”Џ‡€К‚Е‰є€К90%€И“а‚Й‘®‚·‚йѓGЃ[ѓWѓFѓ“ѓg‚НЌ‚Љm—¦‚Е(‚Щ‚Ж‚с‚ЗЉm’и‚Е)ѓTѓCѓЊѓ“ѓg‰»‚·‚йЃB<br>
+	 * ж¬Ўж•°гЃ«дѕќе­гЃ™г‚‹г‚µг‚¤гѓ¬гѓігѓ€жЂ§гЃ®зўєзЋ‡е€†еёѓй–ўж•°гЂ‚<br>
+	 * еј•ж•°гЃЇй›ўж•ЈеЂ¤гЃ®ж¬Ўж•°гЃЄгЃ®гЃ§Probability Distribution Function(PDF)гЂ‚Probability Mass Function(PMF)гЃЁг‚‚иЁЂгЃ€г‚‹гЂ‚<br>
+	 * гѓ‘гѓ©гѓЎгѓјг‚їгЃ®г‚µг‚¤гѓ¬гѓігѓ€зЋ‡гЃЊдёЉгЃЊг‚‹гЃЁгЂЃж¬Ўж•°гЃ®дЅЋгЃ„ж–№гЃ‹г‚‰й«гЃ„зўєзЋ‡гЃ§г‚µг‚¤гѓ¬гѓігѓ€еЊ–гЃ—гЃ¦гЃ„гЃЏг‚€гЃ†гЃЄзўєзЋ‡г‚’дёЋгЃ€г‚‹й–ўж•°гЃ«гЃЄгЃЈгЃ¦гЃ„г‚‹гЂ‚<br>
+	 * г‚µг‚¤гѓ¬гѓігѓ€зЋ‡гЃЊ0.9гЃЄг‚‰гЂЃж¬Ўж•°й †дЅЌгЃ§дё‹дЅЌ90%д»Ґе†…гЃ«е±ћгЃ™г‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЇй«зўєзЋ‡гЃ§(гЃ»гЃЁг‚“гЃ©зўєе®љгЃ§)г‚µг‚¤гѓ¬гѓігѓ€еЊ–гЃ™г‚‹гЂ‚<br>
 	 * <br>
-	 * ‹п‘М“I‚Иѓ‹Ѓ[ѓ`ѓ“‚Н€И‰єЃF<br>
-	 * ЏёЏ‡ѓ\Ѓ[ѓg‚і‚к‚Д‚ў‚й•p“x•Є•zTreeMap‚рЋж“ѕ‚µ‚ДЃA’б‚ўЋџђ”‚©‚з(Map‚МЌЕЏ‰‚МEntry‚©‚з)‚»‚МЋџђ”‚М•p“x‚р‘«‚µ‚Д‚ў‚­ЃB<br>
-	 * a‚ЄѓTѓCѓЊѓ“ѓgђ”‚М–Ъ•W’l(‘ЌѓGЃ[ѓWѓFѓ“ѓgђ”*ѓTѓCѓЊѓ“ѓg—¦ѓpѓ‰ѓЃЃ[ѓ^)‚рЏг‰с‚Б‚ЅЋџђ”‚рcutoffЋџђ”‚Ж‚·‚йЃB<br>
-	 * Ћџђ”‚Єcutoff€И‰є‚МѓGЃ[ѓWѓFѓ“ѓg‚НЊу•в‚Ж‚И‚йЃB‚±‚М‚ж‚¤‚ИѓGЃ[ѓWѓFѓ“ѓg‚Й—^‚¦‚з‚к‚йѓTѓCѓЊѓ“ѓg‰»Љm—¦pSilent‚Н(–Ъ•WѓTѓCѓЊѓ“ѓgђ”)/(ѓTѓCѓЊѓ“ѓgЊу•вђ”)‚Е‚ ‚йЃB<br>
-	 * —б‚¦‚ОЃAѓTѓCѓЊѓ“ѓg—¦‚Є0.1ЃA‘ЌѓGЃ[ѓWѓFѓ“ѓgђ”1000ђl‚И‚з–Ъ•WѓTѓCѓЊѓ“ѓgђ”‚Н100ђl‚Е‚ ‚й‚ЄЃA<br>
-	 * ‰ј‚ЙЋџђ”1‚МѓGЃ[ѓWѓFѓ“ѓg‚Є‚ї‚е‚¤‚З100ђl‚ў‚й‚ж‚¤‚ИѓlѓbѓgѓЏЃ[ѓN‚Е‚ ‚к‚ОЃApSilent=1.0‚Ж‚И‚йЃB<br>
-	 * Ћџђ”1‚МѓGЃ[ѓWѓFѓ“ѓg‚Є300ђl‚ў‚й‚И‚зЃApSilent=0.3333‚Ж‚И‚йЃB<br>
-	 * ‚±‚М‚ж‚¤‚Й—^‚¦‚ЅpSilent‚ЙЏ]‚Б‚ДѓTѓCѓЊѓ“ѓg‰»‚рЌs‚¤‚ЖЃA‘S‘М‚Й‘О‚·‚йѓTѓCѓЊѓ“ѓg—¦‚Н‚ї‚е‚¤‚Зѓpѓ‰ѓЃЃ[ѓ^‚Е—^‚¦‚ЅЉ„Ќ‡‚ЙЌ‡’v‚·‚йЃB
-	 * @param degree Ћџђ”
+	 * е…·дЅ“зљ„гЃЄгѓ«гѓјгѓЃгѓігЃЇд»Ґдё‹пјљ<br>
+	 * ж‡й †г‚Ѕгѓјгѓ€гЃ•г‚ЊгЃ¦гЃ„г‚‹й »еє¦е€†еёѓTreeMapг‚’еЏ–еѕ—гЃ—гЃ¦гЂЃдЅЋгЃ„ж¬Ўж•°гЃ‹г‚‰(MapгЃ®жњЂе€ќгЃ®EntryгЃ‹г‚‰)гЃќгЃ®ж¬Ўж•°гЃ®й »еє¦г‚’и¶ігЃ—гЃ¦гЃ„гЃЏгЂ‚<br>
+	 * е’ЊгЃЊг‚µг‚¤гѓ¬гѓігѓ€ж•°гЃ®з›®жЁ™еЂ¤(з·Џг‚Ёгѓјг‚ёг‚§гѓігѓ€ж•°*г‚µг‚¤гѓ¬гѓігѓ€зЋ‡гѓ‘гѓ©гѓЎгѓјг‚ї)г‚’дёЉе›ћгЃЈгЃџж¬Ўж•°г‚’cutoffж¬Ўж•°гЃЁгЃ™г‚‹гЂ‚<br>
+	 * ж¬Ўж•°гЃЊcutoffд»Ґдё‹гЃ®г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЇеЂ™иЈњгЃЁгЃЄг‚‹гЂ‚гЃ“гЃ®г‚€гЃ†гЃЄг‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ«дёЋгЃ€г‚‰г‚Њг‚‹г‚µг‚¤гѓ¬гѓігѓ€еЊ–зўєзЋ‡pSilentгЃЇ(з›®жЁ™г‚µг‚¤гѓ¬гѓігѓ€ж•°)/(г‚µг‚¤гѓ¬гѓігѓ€еЂ™иЈњж•°)гЃ§гЃ‚г‚‹гЂ‚<br>
+	 * дѕ‹гЃ€гЃ°гЂЃг‚µг‚¤гѓ¬гѓігѓ€зЋ‡гЃЊ0.1гЂЃз·Џг‚Ёгѓјг‚ёг‚§гѓігѓ€ж•°1000дєєгЃЄг‚‰з›®жЁ™г‚µг‚¤гѓ¬гѓігѓ€ж•°гЃЇ100дєєгЃ§гЃ‚г‚‹гЃЊгЂЃ<br>
+	 * д»®гЃ«ж¬Ўж•°1гЃ®г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊгЃЎг‚‡гЃ†гЃ©100дєєгЃ„г‚‹г‚€гЃ†гЃЄгѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃ§гЃ‚г‚ЊгЃ°гЂЃpSilent=1.0гЃЁгЃЄг‚‹гЂ‚<br>
+	 * ж¬Ўж•°1гЃ®г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊ300дєєгЃ„г‚‹гЃЄг‚‰гЂЃpSilent=0.3333гЃЁгЃЄг‚‹гЂ‚<br>
+	 * гЃ“гЃ®г‚€гЃ†гЃ«дёЋгЃ€гЃџpSilentгЃ«еѕ“гЃЈгЃ¦г‚µг‚¤гѓ¬гѓігѓ€еЊ–г‚’иЎЊгЃ†гЃЁгЂЃе…ЁдЅ“гЃ«еЇѕгЃ™г‚‹г‚µг‚¤гѓ¬гѓігѓ€зЋ‡гЃЇгЃЎг‚‡гЃ†гЃ©гѓ‘гѓ©гѓЎгѓјг‚їгЃ§дёЋгЃ€гЃџе‰Іеђ€гЃ«еђ€и‡ґгЃ™г‚‹гЂ‚
+	 * @param degree ж¬Ўж•°
 	 * @return
 	 */
 	private double silentPDF(int degree) {
@@ -255,9 +255,9 @@ public class SimulationTask implements Runnable {
 	}
 
 	/**
-	 * ѓlѓbѓgѓЏЃ[ѓN‚ЖѓTѓCѓЊѓ“ѓgЃ^ѓ”ѓHЃ[ѓJѓ‹‚рЋw’и‚µ‚ЅЊг‚ЙЊД‚с‚ЕЃA€УЊ©‚рЏ‰Љъ‰»‚·‚йЃB<br>
-	 * ѓGЃ[ѓWѓFѓ“ѓg‚МЏ‰Љъ‰»Ћћ‚М€УЊ©‚Н‚·‚Ч‚ДЏгЏ‘‚«‚і‚к‚йЃB<br>
-	 * initOpinion()‚Е—LЊш‚Иѓpѓ^Ѓ[ѓ“€ИЉO‚ЙЃAЋџђ”‚МЌ‚‚ўѓ†Ѓ[ѓU‚р”­ђ¶Њ№‚Ж‚·‚йHUB_DRIVEN_PATTERN‚ЖЃAЋџђ”‚М’б‚ўѓ†Ѓ[ѓU‚р”­ђ¶Њ№‚Ж‚·‚йLEAF_DRIVEN_PATTERN‚Є‚ ‚йЃB
+	 * гѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃЁг‚µг‚¤гѓ¬гѓігѓ€пјЏгѓґг‚©гѓјг‚«гѓ«г‚’жЊ‡е®љгЃ—гЃџеѕЊгЃ«е‘јг‚“гЃ§гЂЃж„Џи¦‹г‚’е€ќжњџеЊ–гЃ™г‚‹гЂ‚<br>
+	 * г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®е€ќжњџеЊ–ж™‚гЃ®ж„Џи¦‹гЃЇгЃ™гЃ№гЃ¦дёЉж›ёгЃЌгЃ•г‚Њг‚‹гЂ‚<br>
+	 * initOpinion()гЃ§жњ‰еЉ№гЃЄгѓ‘г‚їгѓјгѓід»Ґе¤–гЃ«гЂЃж¬Ўж•°гЃ®й«гЃ„гѓ¦гѓјг‚¶г‚’з™єз”џжєђгЃЁгЃ™г‚‹HUB_DRIVEN_PATTERNгЃЁгЂЃж¬Ўж•°гЃ®дЅЋгЃ„гѓ¦гѓјг‚¶г‚’з™єз”џжєђгЃЁгЃ™г‚‹LEAF_DRIVEN_PATTERNгЃЊгЃ‚г‚‹гЂ‚
 	 * 
 	 */
 	private void initOpinions(int pattern) {
@@ -314,10 +314,10 @@ public class SimulationTask implements Runnable {
 	}
 	
 	/**
-	 * €УЊ©‚МЏ‰Љъ’l‚р—^‚¦‚йЃDpattern‚Й‚ж‚Б‚Д‹““®‚Є•П‚н‚йЃD<br>
-	 * ЃENULL_PATTERNЃi=0Ѓj‚МЏкЌ‡ЃF‘S‚Дnull‚Й‚·‚йЃDnull‚Н€УЊ©–ўЊ€’иЏу‘ФЃD<br>
-	 * ЃEMIX_PATTERNЃi=1)‚МЏкЌ‡ЃFnull,0,1,2‚М‚ў‚ё‚к‚©‚Й‚·‚йЃD<br>
-	 * ЃESPARSE_PATTERN(=2)‚МЏкЌ‡ЃF90%‚НnullЃC10%‚Нѓ‰ѓ“ѓ_ѓЂ‚Е0,1,2‚М‚ў‚ё‚к‚©‚Й‚·‚йЃB
+	 * ж„Џи¦‹гЃ®е€ќжњџеЂ¤г‚’дёЋгЃ€г‚‹пјЋpatternгЃ«г‚€гЃЈгЃ¦жЊ™е‹•гЃЊе¤‰г‚Џг‚‹пјЋ<br>
+	 * гѓ»NULL_PATTERNпј€=0пј‰гЃ®е ґеђ€пјље…ЁгЃ¦nullгЃ«гЃ™г‚‹пјЋnullгЃЇж„Џи¦‹жњЄж±єе®љзЉ¶ж…‹пјЋ<br>
+	 * гѓ»MIX_PATTERNпј€=1)гЃ®е ґеђ€пјљnull,0,1,2гЃ®гЃ„гЃљг‚ЊгЃ‹гЃ«гЃ™г‚‹пјЋ<br>
+	 * гѓ»SPARSE_PATTERN(=2)гЃ®е ґеђ€пјљ90%гЃЇnullпјЊ10%гЃЇгѓ©гѓігѓЂгѓ гЃ§0,1,2гЃ®гЃ„гЃљг‚ЊгЃ‹гЃ«гЃ™г‚‹гЂ‚
 	 * @param pattern
 	 * @return
 	 */
@@ -337,15 +337,15 @@ public class SimulationTask implements Runnable {
 	}
 
 	/**
-	 * –ј‘O€ИЉO‰Ѕ‚а—^‚¦‚ёЃAѓ‰ѓ“ѓ_ѓЂ‚Иѓpѓ‰ѓЃЃ[ѓ^‚ЕЏ‰Љъ‰»‚·‚йѓRѓ“ѓXѓgѓ‰ѓNѓ^ЃB
-	 * @param instanceName - –ј‘O
+	 * еђЌе‰Ќд»Ґе¤–дЅ•г‚‚дёЋгЃ€гЃљгЂЃгѓ©гѓігѓЂгѓ гЃЄгѓ‘гѓ©гѓЎгѓјг‚їгЃ§е€ќжњџеЊ–гЃ™г‚‹г‚ігѓіг‚№гѓ€гѓ©г‚Їг‚їгЂ‚
+	 * @param instanceName - еђЌе‰Ќ
 	 */
 	public SimulationTask(Object instanceName, CountDownLatch endGate) {
 		this("recent", instanceName, NAGENTS_DEFAUT, Math.random(),Math.random(), SPARSE_PATTERN, null, endGate);
 	}
 	
 	/**
-	 * ѓ^ѓCѓЂѓXѓ^ѓ“ѓv‚р—^‚¦‚ё‚ЙЏ‰Љъ‰»‚·‚йѓRѓ“ѓXѓgѓ‰ѓNѓ^ЃBѓlѓbѓgѓЏЃ[ѓN‚НЊВ•К‚Йђ¶ђ¬‚·‚йЃBЊ‹‰К‚Н"recent"€И‰є‚ЙЏo—Н‚і‚к‚йЃB
+	 * г‚їг‚¤гѓ г‚№г‚їгѓігѓ—г‚’дёЋгЃ€гЃљгЃ«е€ќжњџеЊ–гЃ™г‚‹г‚ігѓіг‚№гѓ€гѓ©г‚Їг‚їгЂ‚гѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃЇеЂ‹е€ҐгЃ«з”џж€ђгЃ™г‚‹гЂ‚зµђжћњгЃЇ"recent"д»Ґдё‹гЃ«е‡єеЉ›гЃ•г‚Њг‚‹гЂ‚
 	 * @param instanceName
 	 * @param nAgents
 	 * @param silentAgentsRatio
@@ -356,7 +356,7 @@ public class SimulationTask implements Runnable {
 	}
 
 	/**
-	 * ”hђ¶ѓVѓ~ѓ…ѓЊЃ[ѓVѓ‡ѓ“—p‚МѓXЃ[ѓpЃ[ѓRѓ“ѓXѓgѓ‰ѓNѓ^ЃDѓpѓ‰ѓЃЃ[ѓ^‚ЖЏ‰Љъ‰»ѓpѓ^Ѓ[ѓ“‚НЋg‚н‚И‚ў‚М‚Еѓ‰ѓ“ѓ_ѓЂ‚Й—^‚¦‚йЃD
+	 * жґѕз”џг‚·гѓџгѓҐгѓ¬гѓјг‚·гѓ§гѓіз”ЁгЃ®г‚№гѓјгѓ‘гѓјг‚ігѓіг‚№гѓ€гѓ©г‚Їг‚їпјЋгѓ‘гѓ©гѓЎгѓјг‚їгЃЁе€ќжњџеЊ–гѓ‘г‚їгѓјгѓігЃЇдЅїг‚ЏгЃЄгЃ„гЃ®гЃ§гѓ©гѓігѓЂгѓ гЃ«дёЋгЃ€г‚‹пјЋ
 	 * @param simName
 	 * @param instanceName
 	 * @param nAgents
@@ -370,7 +370,7 @@ public class SimulationTask implements Runnable {
 
 	
 	/**
-	 * ѓ^ѓCѓЂѓXѓ^ѓ“ѓv‚р—^‚¦‚ё‚ЙЏ‰Љъ‰»‚·‚йѓRѓ“ѓXѓgѓ‰ѓNѓ^ЃBђГ“IѓlѓbѓgѓЏЃ[ѓN‚р—^‚¦‚йЃBЊ‹‰К‚Н"recent"€И‰є‚ЙЏo—Н‚і‚к‚йЃB
+	 * г‚їг‚¤гѓ г‚№г‚їгѓігѓ—г‚’дёЋгЃ€гЃљгЃ«е€ќжњџеЊ–гЃ™г‚‹г‚ігѓіг‚№гѓ€гѓ©г‚Їг‚їгЂ‚йќ™зљ„гѓЌгѓѓгѓ€гѓЇгѓјг‚Їг‚’дёЋгЃ€г‚‹гЂ‚зµђжћњгЃЇ"recent"д»Ґдё‹гЃ«е‡єеЉ›гЃ•г‚Њг‚‹гЂ‚
 	 * @param instanceName
 	 * @param nAgents
 	 * @param silentAgentsRatio
@@ -380,14 +380,14 @@ public class SimulationTask implements Runnable {
 	public SimulationTask(Object instanceName, int nAgents, double silentAgentsRatio, double modelReferenceRatio, int pattern, StaticNetwork ntwk, CountDownLatch endGate) {
 		this("recent", instanceName, nAgents, silentAgentsRatio, modelReferenceRatio, pattern, ntwk, endGate);
 	}
-	/**Љо–{ѓRѓ“ѓXѓgѓ‰ѓNѓ^ЃB
+	/**еџєжњ¬г‚ігѓіг‚№гѓ€гѓ©г‚Їг‚їгЂ‚
 	 * 
-	 * @param timeStamp - ѓVѓ~ѓ…ѓЊЃ[ѓVѓ‡ѓ“‘S‘М‚МЋЇ•К‚М‚Ѕ‚Я‚Й—^‚¦‚йExectorService‚Є‹N“®‚µ‚ЅЋћЌЏЃB
-	 * @param instanceName - “K“–‚И‰В“З‚И–ј‘OЃB
-	 * @param nAgents - ѓGЃ[ѓWѓFѓ“ѓgђ”
-	 * @param silentAgentsRatio - ѓTѓCѓЊѓ“ѓg—¦
-	 * @param modelReferenceRatio - ѓ‚ѓfѓ‹‘I‘р”д
-	 * @param ntwk - ѓlѓbѓgѓЏЃ[ѓNѓCѓ“ѓXѓ^ѓ“ѓX
+	 * @param timeStamp - г‚·гѓџгѓҐгѓ¬гѓјг‚·гѓ§гѓіе…ЁдЅ“гЃ®и­е€ҐгЃ®гЃџг‚ЃгЃ«дёЋгЃ€г‚‹ExectorServiceгЃЊиµ·е‹•гЃ—гЃџж™‚е€»гЂ‚
+	 * @param instanceName - йЃ©еЅ“гЃЄеЏЇиЄ­гЃЄеђЌе‰ЌгЂ‚
+	 * @param nAgents - г‚Ёгѓјг‚ёг‚§гѓігѓ€ж•°
+	 * @param silentAgentsRatio - г‚µг‚¤гѓ¬гѓігѓ€зЋ‡
+	 * @param modelReferenceRatio - гѓўгѓ‡гѓ«йЃёжЉћжЇ”
+	 * @param ntwk - гѓЌгѓѓгѓ€гѓЇгѓјг‚Їг‚¤гѓіг‚№г‚їгѓіг‚№
 	 */
 	public SimulationTask(String timeStamp,
 						Object instanceName,
@@ -408,7 +408,7 @@ public class SimulationTask implements Runnable {
 			this.endGate  = endGate;
 			//initTaskLogger();
 		} catch (Exception e) {
-			e.printStackTrace(); //TaskLogger‚рѓRѓ“ѓXѓgѓ‰ѓNѓ^‚ЕЏ‰Љъ‰»‚µ‚И‚ў‚М‚ЕѓfѓtѓHѓ‹ѓgЏo—Н‚рЋg—p‚·‚йЃD
+			e.printStackTrace(); //TaskLoggerг‚’г‚ігѓіг‚№гѓ€гѓ©г‚Їг‚їгЃ§е€ќжњџеЊ–гЃ—гЃЄгЃ„гЃ®гЃ§гѓ‡гѓ•г‚©гѓ«гѓ€е‡єеЉ›г‚’дЅїз”ЁгЃ™г‚‹пјЋ
 		}
 	}
 
@@ -420,56 +420,56 @@ public class SimulationTask implements Runnable {
 		this.timeStamp = timeStamp;
 	}
 
-	/**ѓVѓ~ѓ…ѓЊЃ[ѓ^ѓCѓ“ѓXѓ^ѓ“ѓX‚М–ј‘O‚рЋж“ѕ‚·‚йЃD
+	/**г‚·гѓџгѓҐгѓ¬гѓјг‚їг‚¤гѓіг‚№г‚їгѓіг‚№гЃ®еђЌе‰Ќг‚’еЏ–еѕ—гЃ™г‚‹пјЋ
 	 * @return
 	 */
 	public String getInstanceName() {
 		return this.InstanceName;
 	}
 
-	/**ѓVѓ~ѓ…ѓЊЃ[ѓ^ѓCѓ“ѓXѓ^ѓ“ѓX‚М–ј‘O‚рЋw’и‚·‚йЃD
-	 * —^‚¦‚з‚к‚й–ј‘O‚МЊ^‚Є‰Ѕ‚Е‚а‚ў‚ў‚ж‚¤‚ЙЃCvalueOf‚Еparse‚·‚йЃD
+	/**г‚·гѓџгѓҐгѓ¬гѓјг‚їг‚¤гѓіг‚№г‚їгѓіг‚№гЃ®еђЌе‰Ќг‚’жЊ‡е®љгЃ™г‚‹пјЋ
+	 * дёЋгЃ€г‚‰г‚Њг‚‹еђЌе‰ЌгЃ®ећ‹гЃЊдЅ•гЃ§г‚‚гЃ„гЃ„г‚€гЃ†гЃ«пјЊvalueOfгЃ§parseгЃ™г‚‹пјЋ
 	 * @param instanceName
 	 */
 	public void setInstanceName(Object instanceName) {
 		this.InstanceName = String.valueOf(instanceName);
 	}
-	/**ѓGЃ[ѓWѓFѓ“ѓgђ”‚рЋж“ѕЃD
+	/**г‚Ёгѓјг‚ёг‚§гѓігѓ€ж•°г‚’еЏ–еѕ—пјЋ
 	 * @return nAgents
 	 */
 	public int getnAgents() {
 		return nAgents;
 	}
 
-	/**ѓGЃ[ѓWѓFѓ“ѓgђ”‚рЋw’иЃD
-	 * @param nAgents ѓZѓbѓg‚·‚й nAgents
+	/**г‚Ёгѓјг‚ёг‚§гѓігѓ€ж•°г‚’жЊ‡е®љпјЋ
+	 * @param nAgents г‚»гѓѓгѓ€гЃ™г‚‹ nAgents
 	 */
 	public void setnAgents(int nAgents) {
 		this.nAgents = nAgents;
 	}
 
-	/**ѓTѓCѓЊѓ“ѓg—¦‚рЋж“ѕЃD
+	/**г‚µг‚¤гѓ¬гѓігѓ€зЋ‡г‚’еЏ–еѕ—пјЋ
 	 * @return
 	 */
 	public double getSilentAgentsRatio() {
 		return this.SilentAgentsRatio;
 	}
 
-	/**ѓTѓCѓЊѓ“ѓg—¦‚р“ь—НЃD
+	/**г‚µг‚¤гѓ¬гѓігѓ€зЋ‡г‚’е…ҐеЉ›пјЋ
 	 * @param silentAgentsRatio
 	 */
 	public void setSilentAgentsRatio(double silentAgentsRatio) {
 		this.SilentAgentsRatio = silentAgentsRatio;
 	}
 
-	/**ѓ‚ѓfѓ‹‘I‘р”д‚рЋж“ѕЃD
+	/**гѓўгѓ‡гѓ«йЃёжЉћжЇ”г‚’еЏ–еѕ—пјЋ
 	 * @return
 	 */
 	public double getModelReferenceRatio() {
 		return this.ModelReferenceRatio;
 	}
 
-	/**ѓ‚ѓfѓ‹‘I‘р”д‚р“ь—НЃD
+	/**гѓўгѓ‡гѓ«йЃёжЉћжЇ”г‚’е…ҐеЉ›пјЋ
 	 * @param modelReferenceRatio
 	 */
 	public void setModelReferenceRatio(double modelReferenceRatio) {
@@ -477,7 +477,7 @@ public class SimulationTask implements Runnable {
 	}
 	
 	/**
-	 * Џ‰Љъ‰»‚М•ыЋ®‚рЋж“ѕЃD
+	 * е€ќжњџеЊ–гЃ®ж–№ејЏг‚’еЏ–еѕ—пјЋ
 	 * @return
 	 */
 	public int getInitPattern() {
@@ -485,29 +485,29 @@ public class SimulationTask implements Runnable {
 	}
 	
 	/**
-	 * Џ‰Љъ‰»‚М•ыЋ®‚рђЭ’иЃD
+	 * е€ќжњџеЊ–гЃ®ж–№ејЏг‚’иЁ­е®љпјЋ
 	 * @param pattern
 	 */
 	public void setInitPattern(int pattern) {
 		this.initPattern = pattern;
 	}
 
-	/**Task‚І‚Ж‚МѓЌѓOѓtѓ@ѓCѓ‹–ј‚рЋж“ѕЃB
+	/**TaskгЃ”гЃЁгЃ®гѓ­г‚°гѓ•г‚Ўг‚¤гѓ«еђЌг‚’еЏ–еѕ—гЂ‚
 	 * @return taskLogFileName
 	 */
 	public String getTaskLogFileName() {
 		return this.TaskLogFileName;
 	}
-	/**SimulationExecutor‚МѓЌѓOѓtѓ@ѓCѓ‹–ј‚рѓXѓЊѓbѓhЏо•сѓxЃ[ѓX‚ЕђЭ’иЃD
+	/**SimulationExecutorгЃ®гѓ­г‚°гѓ•г‚Ўг‚¤гѓ«еђЌг‚’г‚№гѓ¬гѓѓгѓ‰жѓ…е ±гѓ™гѓјг‚№гЃ§иЁ­е®љпјЋ
 	 * @param simExecLogFileName
 	 */
 	public void setTaskLogFileName() {
 		this.TaskLogFileName = this.TaskLogger.getName() + ".log";
 	}
-	/**ѓЌѓKЃ[‚рЏ‰Љъ‰»‚µЃAѓtѓ@ѓCѓ‹ѓnѓ“ѓhѓ‰‚рђЭ’и‚·‚йЃB<br>
-	 * ѓЌѓOѓtѓ@ѓCѓ‹‚НѓAѓyѓ“ѓh‚·‚йЃB
-	 * Runnableѓ^ѓXѓN‚МѓЌѓO‚НЃiђ”•S€ИЏг‚Й‹y‚Ф‚±‚Ж‚М‚ ‚йЃjѓ^ѓXѓN‚І‚Ж‚Е‚Н‚И‚­ЃCЃi‚Ѕ‚©‚ѕ‚©ѓvѓЌѓZѓbѓTђ”*ѓRѓAђ”‚ЙЋы‚Ь‚йЃjЋАЌsѓXѓЊѓbѓh‚І‚Ж‚ЙЋж“ѕ‚µ‚Ѕ‚ўЃD<br>
-	 * ‚»‚М‚Ѕ‚Я‚ЙЃCinitTaskLogger‚НThread.currendThreadЃiЃj‚рЋg—p‚·‚й‚М‚ЕЃCRunnableѓIѓuѓWѓFѓNѓg‚Мrun()ѓЃѓ\ѓbѓh“а‚ЕЋАЌs‚і‚к‚И‚Ї‚к‚О‚И‚з‚И‚ўЃD
+	/**гѓ­г‚¬гѓјг‚’е€ќжњџеЊ–гЃ—гЂЃгѓ•г‚Ўг‚¤гѓ«гѓЏгѓігѓ‰гѓ©г‚’иЁ­е®љгЃ™г‚‹гЂ‚<br>
+	 * гѓ­г‚°гѓ•г‚Ўг‚¤гѓ«гЃЇг‚ўгѓљгѓігѓ‰гЃ™г‚‹гЂ‚
+	 * Runnableг‚їг‚№г‚ЇгЃ®гѓ­г‚°гЃЇпј€ж•°з™ѕд»ҐдёЉгЃ«еЏЉгЃ¶гЃ“гЃЁгЃ®гЃ‚г‚‹пј‰г‚їг‚№г‚ЇгЃ”гЃЁгЃ§гЃЇгЃЄгЃЏпјЊпј€гЃџгЃ‹гЃ гЃ‹гѓ—гѓ­г‚»гѓѓг‚µж•°*г‚іг‚ўж•°гЃ«еЏЋгЃѕг‚‹пј‰е®џиЎЊг‚№гѓ¬гѓѓгѓ‰гЃ”гЃЁгЃ«еЏ–еѕ—гЃ—гЃџгЃ„пјЋ<br>
+	 * гЃќгЃ®гЃџг‚ЃгЃ«пјЊinitTaskLoggerгЃЇThread.currendThreadпј€пј‰г‚’дЅїз”ЁгЃ™г‚‹гЃ®гЃ§пјЊRunnableг‚Єгѓ–г‚ёг‚§г‚Їгѓ€гЃ®run()гѓЎг‚Ѕгѓѓгѓ‰е†…гЃ§е®џиЎЊгЃ•г‚ЊгЃЄгЃ‘г‚ЊгЃ°гЃЄг‚‰гЃЄгЃ„пјЋ
 	 */
 	protected void initTaskLogger() {
 		this.TaskLogger = Logger.getLogger(this.getClass().getName()+"."+Thread.currentThread().getName()); //pseudo-constructor
@@ -534,8 +534,8 @@ public class SimulationTask implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	/**ѓЌѓKЃ[‚Мѓtѓ@ѓCѓ‹ѓnѓ“ѓhѓ‰‚рѓNѓЌЃ[ѓY‚·‚йЃD<br>
-	 * ‚±‚МЏ€—ќ‚Нlckѓtѓ@ѓCѓ‹‚р‘|Џњ‚·‚й‚Ѕ‚Я‚Й•K—vЃD
+	/**гѓ­г‚¬гѓјгЃ®гѓ•г‚Ўг‚¤гѓ«гѓЏгѓігѓ‰гѓ©г‚’г‚Їгѓ­гѓјг‚єгЃ™г‚‹пјЋ<br>
+	 * гЃ“гЃ®е‡¦зђ†гЃЇlckгѓ•г‚Ўг‚¤гѓ«г‚’жЋѓй™¤гЃ™г‚‹гЃџг‚ЃгЃ«еї…и¦ЃпјЋ
 	 * 
 	 */
 	protected void closeLogFileHandler() {
@@ -544,30 +544,30 @@ public class SimulationTask implements Runnable {
 			handler.close();
 		}
 	}
-	/**—бЉO‚рѓЌѓKЃ[‚Й—¬‚·ѓЃѓ\ѓbѓhЃB<br>
-	 * SEVEREѓЊѓxѓ‹ЃiFatalѓЊѓxѓ‹Ѓj‚ЕЏo—Н‚і‚к‚йЃB
+	/**дѕ‹е¤–г‚’гѓ­г‚¬гѓјгЃ«жµЃгЃ™гѓЎг‚Ѕгѓѓгѓ‰гЂ‚<br>
+	 * SEVEREгѓ¬гѓ™гѓ«пј€Fatalгѓ¬гѓ™гѓ«пј‰гЃ§е‡єеЉ›гЃ•г‚Њг‚‹гЂ‚
 	 * 
 	 * @param thrown
 	 */
 	public void logStackTrace(Throwable thrown) {
 		this.TaskLogger.log(Level.SEVERE, thrown.getLocalizedMessage(), thrown);
 	}
-	/**“ь—НѓfЃ[ѓ^‚рЉi”[‚µ‚Д‚ ‚йѓfѓBѓЊѓNѓgѓЉѓpѓX‚рЋж“ѕЃB
+	/**е…ҐеЉ›гѓ‡гѓјг‚їг‚’ж јзґЌгЃ—гЃ¦гЃ‚г‚‹гѓ‡г‚Јгѓ¬г‚Їгѓ€гѓЄгѓ‘г‚№г‚’еЏ–еѕ—гЂ‚
 	 * @return dataDir
 	 */
 	public String getDataDir() {
 		return this.DataDir;
 	}
 
-	/**“ь—НѓfЃ[ѓ^‚рЉi”[‚µ‚Д‚ ‚йѓfѓBѓЊѓNѓgѓЉѓpѓX‚рЋw’иЃBѓfѓtѓHѓ‹ѓg’l‚Н(current)/data
-	 * @param dataDir ѓZѓbѓg‚·‚й dataDir
+	/**е…ҐеЉ›гѓ‡гѓјг‚їг‚’ж јзґЌгЃ—гЃ¦гЃ‚г‚‹гѓ‡г‚Јгѓ¬г‚Їгѓ€гѓЄгѓ‘г‚№г‚’жЊ‡е®љгЂ‚гѓ‡гѓ•г‚©гѓ«гѓ€еЂ¤гЃЇ(current)/data
+	 * @param dataDir г‚»гѓѓгѓ€гЃ™г‚‹ dataDir
 	 */
 	public void setDataDir(String dataDir) {
 		this.DataDir = dataDir;
 	}
 	
 	/**
-	 * outDir€И‰є‚Йђ¶ђ¬‚µ‚ЅѓlѓbѓgѓЏЃ[ѓN‚М—ЧђЪѓЉѓXѓg‚рdatѓeѓLѓXѓg‚ЕЏo—Н‚·‚йЃB
+	 * outDirд»Ґдё‹гЃ«з”џж€ђгЃ—гЃџгѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃ®йљЈжЋҐгѓЄг‚№гѓ€г‚’datгѓ†г‚­г‚№гѓ€гЃ§е‡єеЉ›гЃ™г‚‹гЂ‚
 	 * @param outDir
 	 */
 	public void dumpNetworkList(File outDir) {
@@ -587,9 +587,9 @@ public class SimulationTask implements Runnable {
 	}
 	
 	
-	/**•А—сѓ^ѓXѓNЏ€—ќ‚МѓeѓXѓg—p‚МѓЃѓ\ѓbѓhЃD<br>
-	 * “K“–‚ИѓeѓLѓXѓgѓtѓ@ѓCѓ‹‚р“ь—Н‚Ж‚µЃC’PЊк‚МЏoЊ»ђ”‚рђ”‚¦Џг‚°‚йЃD<br>
-	 * HashMap‚ЖStringЃDsplit‚рЋg‚ўЃCЌЕЊг‚ЙArrayList‚ЖCollectionЃDsort‚Е•А‚С‘Ц‚¦‚йЃD<br>
+	/**дё¦е€—г‚їг‚№г‚Їе‡¦зђ†гЃ®гѓ†г‚№гѓ€з”ЁгЃ®гѓЎг‚Ѕгѓѓгѓ‰пјЋ<br>
+	 * йЃ©еЅ“гЃЄгѓ†г‚­г‚№гѓ€гѓ•г‚Ўг‚¤гѓ«г‚’е…ҐеЉ›гЃЁгЃ—пјЊеЌиЄћгЃ®е‡єзЏѕж•°г‚’ж•°гЃ€дёЉгЃ’г‚‹пјЋ<br>
+	 * HashMapгЃЁStringпјЋsplitг‚’дЅїгЃ„пјЊжњЂеѕЊгЃ«ArrayListгЃЁCollectionпјЋsortгЃ§дё¦гЃіж›їгЃ€г‚‹пјЋ<br>
 	 * @param input
 	 * @throws IOException 
 	 */

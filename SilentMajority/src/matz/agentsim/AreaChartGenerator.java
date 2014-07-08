@@ -15,9 +15,9 @@ import org.jfree.chart.renderer.xy.StackedXYAreaRenderer2;
 import org.jfree.data.xy.DefaultTableXYDataset;
 import org.jfree.data.xy.XYSeries;
 
-/**o—Í‚©‚ç–ÊƒOƒ‰ƒt‚ğ¶¬‚µA‰æ‘œƒtƒ@ƒCƒ‹‚ğì‚éƒNƒ‰ƒXB<br>
- * “Á’èŒ`®‚Ìo—Í‚ğó‚¯æ‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğ‚¿A‚»‚±‚©‚çƒOƒ‰ƒt‚ğì‚èA‰æ‘œ‚Éo—Í‚·‚éƒƒ\ƒbƒhgenerateGraph()‚ğ‚à‚ÂB<br>
- * generateGraph()‚Ío—ÍæƒfƒBƒŒƒNƒgƒŠ‚Æo—Íƒtƒ@ƒCƒ‹–¼‚ğˆø”‚Éæ‚éB
+/**å‡ºåŠ›ã‹ã‚‰é¢ã‚°ãƒ©ãƒ•ã‚’ç”Ÿæˆã—ã€ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œã‚‹ã‚¯ãƒ©ã‚¹ã€‚<br>
+ * ç‰¹å®šå½¢å¼ã®å‡ºåŠ›ã‚’å—ã‘å–ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’æŒã¡ã€ãã“ã‹ã‚‰ã‚°ãƒ©ãƒ•ã‚’ä½œã‚Šã€ç”»åƒã«å‡ºåŠ›ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰generateGraph()ã‚’ã‚‚ã¤ã€‚<br>
+ * generateGraph()ã¯å‡ºåŠ›å…ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¨å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å¼•æ•°ã«å–ã‚‹ã€‚
  * 
  * @author Yu
  *
@@ -34,9 +34,9 @@ public class AreaChartGenerator implements ChartGenerator {
 	private String[] opinionType = {"Neutral", "Positive", "Negative", "Undecided"};
 	
 	/**
-	 * SilentMajoritySimulator‚ÌŒ‹‰Ê‚ğ—p‚¢‚½ƒRƒ“ƒXƒgƒ‰ƒNƒ^B<br>
-	 * 3ŸŒ³Integer”z—ñ‚ÌArrayList‚ğˆø”‚Éæ‚éB<br>
-	 * ‚»‚ê‚¼‚ê‚ÌŸŒ³‚ÍAuƒXƒeƒbƒv”vu‹L˜^‚Ìí—Şi—İÏ/XVjvu‹L˜^‚ÌƒXƒR[ƒvi‘S‘Ì/ƒTƒCƒŒƒ“ƒg/ƒ”ƒH[ƒJƒ‹jvuˆÓŒ©i’†—§/m’è/”Û’è/–¢’è‹`jv‚Å‚ ‚éB
+	 * SilentMajoritySimulatorã®çµæœã‚’ç”¨ã„ãŸã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚<br>
+	 * 3æ¬¡å…ƒIntegeré…åˆ—ã®ArrayListã‚’å¼•æ•°ã«å–ã‚‹ã€‚<br>
+	 * ãã‚Œãã‚Œã®æ¬¡å…ƒã¯ã€ã€Œã‚¹ãƒ†ãƒƒãƒ—æ•°ã€ã€Œè¨˜éŒ²ã®ç¨®é¡ï¼ˆç´¯ç©/æ›´æ–°ï¼‰ã€ã€Œè¨˜éŒ²ã®ã‚¹ã‚³ãƒ¼ãƒ—ï¼ˆå…¨ä½“/ã‚µã‚¤ãƒ¬ãƒ³ãƒˆ/ãƒ´ã‚©ãƒ¼ã‚«ãƒ«ï¼‰ã€ã€Œæ„è¦‹ï¼ˆä¸­ç«‹/è‚¯å®š/å¦å®š/æœªå®šç¾©ï¼‰ã€ã§ã‚ã‚‹ã€‚
 	 * @param records
 	 */
 	public AreaChartGenerator(ArrayList<Integer[][][]> records) {
@@ -51,10 +51,10 @@ public class AreaChartGenerator implements ChartGenerator {
 				datasetSeries[i][j] = new XYSeries(opinionType[j], false, false);
 			}
 		}
-		//—İÏ‹L˜^iSUM_INDEXˆÈ‰ºj‚É‚Â‚¢‚Ä
-		for (int j = 0; j < records.get(0)[SUM_INDEX].length; j++) { //ƒXƒR[ƒv‚²‚Æ‚ÉŒn—ñ‚ğì‚é
-			/* X‚Ì’l‚ªd•¡‚µ‚Ä‚¢‚éƒf[ƒ^‚Ì‘¶İ‚ğ‹–‚·‚©”Û‚©‚Æ‚¢‚¤ˆá‚¢‚ª‚ ‚èA
-			 * StackedXYAreaChart‚Å‚Íd•¡‚ğ‹–‚³‚È‚¢‚Ì‚ÅA–¾¦“I‚ÈƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğg‚¤
+		//ç´¯ç©è¨˜éŒ²ï¼ˆSUM_INDEXä»¥ä¸‹ï¼‰ã«ã¤ã„ã¦
+		for (int j = 0; j < records.get(0)[SUM_INDEX].length; j++) { //ã‚¹ã‚³ãƒ¼ãƒ—ã”ã¨ã«æ™‚ç³»åˆ—ã‚’ä½œã‚‹
+			/* Xã®å€¤ãŒé‡è¤‡ã—ã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿ã®å­˜åœ¨ã‚’è¨±ã™ã‹å¦ã‹ã¨ã„ã†é•ã„ãŒã‚ã‚Šã€
+			 * StackedXYAreaChartã§ã¯é‡è¤‡ã‚’è¨±ã•ãªã„ã®ã§ã€æ˜ç¤ºçš„ãªã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’ä½¿ã†
 			 */			
 			for (int i = 0; i < records.size(); i++) {
 				for (int k = 0; k < 4; k++) {

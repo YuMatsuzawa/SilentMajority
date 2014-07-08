@@ -7,8 +7,8 @@ import java.util.logging.LogRecord;
 
 public class ShortLogFormatter extends Formatter {
 
-	/* LogRecord‚ğ“K“–‚ÉŒ©‚â‚·‚­‚·‚éFormatterD
-	 * 1s‚Éû‚Ü‚é‚æ‚¤‚É‚µ‚Ä‚¢‚éD
+	/* LogRecordã‚’é©å½“ã«è¦‹ã‚„ã™ãã™ã‚‹Formatterï¼
+	 * 1è¡Œã«åã¾ã‚‹ã‚ˆã†ã«ã—ã¦ã„ã‚‹ï¼
 	 */
 	@Override
 	public String format(LogRecord record) {

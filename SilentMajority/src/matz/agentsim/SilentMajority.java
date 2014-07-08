@@ -10,12 +10,12 @@ import matz.basics.network.StaticCNNNetwork;
 import matz.basics.network.StaticNetwork;
 
 /**
- * î•ñ“`”dƒlƒbƒgƒ[ƒN‚É‚¨‚¯‚éƒTƒCƒŒƒ“ƒgEƒ†[ƒU‚Ì‰e‹¿‚ğ•ªÍ‚·‚éƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“B<br>
- * ‚±‚ÌƒNƒ‰ƒX‚ÍmainŠÖ”‚ğƒzƒXƒg‚µAƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆø”‚ğˆ—‚·‚éƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg‚Å‚ ‚éB<br>
- * ƒpƒ‰ƒ[ƒ^‚ğ•ÏX‚³‚¹‚Ä˜A‘±ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚·‚é‚½‚ß‚ÉAbasicsƒpƒbƒP[ƒW‚ÌMatzExecutor‚ğƒCƒ“ƒXƒ^ƒ“ƒX‰»‚µ‚Äg—p‚·‚é‚±‚ÆB<br>
- * MatzExecutor‚Íƒ}ƒ‹ƒ`ƒXƒŒƒbƒhˆ—‚Ì‚½‚ß‚ÌƒtƒŒ[ƒ€ƒ[ƒN‚Å‚ ‚éExecutorService‚ğÀ‘•‚µ‚Ä‚¢‚éB<br>
- * ŒÂX‚ÌƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚É‚¨‚¯‚éÀÛ‚Ìˆ—“à—e‚ÍRunnablei‚ ‚é‚¢‚ÍCallablej‚ğÀ‘•‚µ‚Äƒ^ƒXƒNƒIƒuƒWƒFƒNƒg‚ğ’è‹`‚µA<br>
- * ‚±‚ê‚ğMatzExecutorƒCƒ“ƒXƒ^ƒ“ƒX‚Éexecutei‚ ‚é‚¢‚Ísubmitj‚µ‚Äg—p‚·‚éB
+ * æƒ…å ±ä¼æ’­ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã«ãŠã‘ã‚‹ã‚µã‚¤ãƒ¬ãƒ³ãƒˆãƒ»ãƒ¦ãƒ¼ã‚¶ã®å½±éŸ¿ã‚’åˆ†æã™ã‚‹ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã€‚<br>
+ * ã“ã®ã‚¯ãƒ©ã‚¹ã¯mainé–¢æ•°ã‚’ãƒ›ã‚¹ãƒˆã—ã€ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å¼•æ•°ã‚’å‡¦ç†ã™ã‚‹ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆã§ã‚ã‚‹ã€‚<br>
+ * ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¤‰æ›´ã•ã›ã¦é€£ç¶šã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹ãŸã‚ã«ã€basicsãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã®MatzExecutorã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã—ã¦ä½¿ç”¨ã™ã‚‹ã“ã¨ã€‚<br>
+ * MatzExecutorã¯ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰å‡¦ç†ã®ãŸã‚ã®ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã§ã‚ã‚‹ExecutorServiceã‚’å®Ÿè£…ã—ã¦ã„ã‚‹ã€‚<br>
+ * å€‹ã€…ã®ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã«ãŠã‘ã‚‹å®Ÿéš›ã®å‡¦ç†å†…å®¹ã¯Runnableï¼ˆã‚ã‚‹ã„ã¯Callableï¼‰ã‚’å®Ÿè£…ã—ã¦ã‚¿ã‚¹ã‚¯ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å®šç¾©ã—ã€<br>
+ * ã“ã‚Œã‚’MatzExecutorã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã«executeï¼ˆã‚ã‚‹ã„ã¯submitï¼‰ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚
  * 
  * @author Romancer
  *
@@ -29,7 +29,7 @@ public final class SilentMajority {
 	public static final void main(String[] args) {
 		MatzExecutor _E = null;
 		
-		//ˆø”‚ÍƒRƒA”‚Ì‚İDCorei7ˆÈã‚È‚ç8‚ğw’è‚µ‚Ä‚¢‚¢DCorei5,i3,Core2 Quad‚È‚ç4CCore2 Duo‚È‚ç2.
+		//å¼•æ•°ã¯ã‚³ã‚¢æ•°ã®ã¿ï¼Corei7ä»¥ä¸Šãªã‚‰8ã‚’æŒ‡å®šã—ã¦ã„ã„ï¼Corei5,i3,Core2 Quadãªã‚‰4ï¼ŒCore2 Duoãªã‚‰2.
 		if (args.length > 0) {
 			for (String arg : args) {
 				try {
@@ -44,9 +44,9 @@ public final class SilentMajority {
 		}
 		
 		_E.SimExecLogger.info("Starting "+ _E.getClass().getName() +". NumThreads = " + _E.getNumThreads());
-		//ƒpƒ‰ƒ[ƒ^‚ğ•ÏX‚³‚¹‚È‚ª‚çƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚·‚éƒCƒeƒŒ[ƒ^D
-		//nIter‚Í“¯ˆêğŒ‚Å‚ÌƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ğ‰½‰ñ‚¸‚Âs‚¤‚©w’è‚·‚éD
-		//ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚Ì‰ğ‘œ“x‚Íƒpƒ‰ƒ[ƒ^‚²‚Æ‚ÌResol‚Åw’è‚·‚éD
+		//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¤‰æ›´ã•ã›ãªãŒã‚‰ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ï¼
+		//nIterã¯åŒä¸€æ¡ä»¶ã§ã®ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ä½•å›ãšã¤è¡Œã†ã‹æŒ‡å®šã™ã‚‹ï¼
+		//ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã®è§£åƒåº¦ã¯ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã”ã¨ã®Resolã§æŒ‡å®šã™ã‚‹ï¼
 		Date date = new Date();
 		//File outDir = new File("results/recent");
 		File dateDir = new File("results/"+date.getTime());
@@ -55,9 +55,9 @@ public final class SilentMajority {
 		
 		int pattern = HUB_DRIVEN_PATTERN;
 		int nIter = 10, sRatioResol = 9, mRatioResol = 11;
-		CountDownLatch endGate = new CountDownLatch(sRatioResol * mRatioResol * nIter); //‘SƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ªI—¹‚·‚é‚Ü‚Å‚ğƒJƒEƒ“ƒg‚·‚éCountDownLatch
+		CountDownLatch endGate = new CountDownLatch(sRatioResol * mRatioResol * nIter); //å…¨ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãŒçµ‚äº†ã™ã‚‹ã¾ã§ã‚’ã‚«ã‚¦ãƒ³ãƒˆã™ã‚‹CountDownLatch
 		int nAgents = 1000;
-		// ‚±‚±‚Åƒlƒbƒgƒ[ƒN¶¬
+		// ã“ã“ã§ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ç”Ÿæˆ
 		StaticNetwork cnnNtwk = new StaticCNNNetwork(nAgents);
 		//cnnNtwk.dumpList(outDir);
 		cnnNtwk.dumpNetwork(dateDir);
@@ -70,7 +70,7 @@ public final class SilentMajority {
 					SimulationTask rn = new SimulationTask(String.valueOf(date.getTime()),
 							"condition" + k + "-" + j + "_" + i , nAgents, sRatio, mRatio, pattern, cnnNtwk, endGate);
 					//SimulationTask rn = new SimulationTask("condition" + k + "-" + j + "_" + i, nAgents, sRatio, mRatio, pattern, cnnNtwk, endGate);
-						//ƒRƒ“ƒXƒgƒ‰ƒNƒg‚É‚ğ—^‚¦‚È‚¢‚ÆA"recent"ˆÈ‰º‚ÉŒ‹‰Ê‚ªã‘‚«o—Í‚³‚ê‚éB
+						//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ãƒˆæ™‚ã«æ™‚åˆ»ã‚’ä¸ãˆãªã„ã¨ã€"recent"ä»¥ä¸‹ã«çµæœãŒä¸Šæ›¸ãå‡ºåŠ›ã•ã‚Œã‚‹ã€‚
 					_E.execute(rn);
 					_E.SimExecLogger.info("Submitted: " + rn.getInstanceName());
 				}
@@ -83,7 +83,7 @@ public final class SilentMajority {
 			endGate.await();
 			_E.SimExecLogger.info("Result summarizing...");
 			/*
-			 * Œ‹‰ÊWŒv‘€ì
+			 * çµæœé›†è¨ˆæ“ä½œ
 			 * 
 			 */
 			final int X_INDEX = 0, Y_INDEX = 1, Z_INDEX = 2;
@@ -102,7 +102,7 @@ public final class SilentMajority {
 							"m=" + String.format("%.1f", mRatio));
 					File[] resultFiles = resultDir.listFiles(new FilenameFilter() {
 						@Override
-						public boolean accept(File dir, String name) { //csvƒtƒ@ƒCƒ‹‚Ì‚İ“Ç‚İ‚ŞƒtƒBƒ‹ƒ^
+						public boolean accept(File dir, String name) { //csvãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿èª­ã¿è¾¼ã‚€ãƒ•ã‚£ãƒ«ã‚¿
 							boolean ret = name.endsWith(".csv");
 							return ret;
 						}
@@ -120,7 +120,7 @@ public final class SilentMajority {
 					for (File resultFile : resultFiles) {
 						BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(resultFile)));
 						String line = new String(), lastLine = new String();
-						while((line = br.readLine()) != null) lastLine = line; //ÅIsæ“¾
+						while((line = br.readLine()) != null) lastLine = line; //æœ€çµ‚è¡Œå–å¾—
 						String[] values = lastLine.split(",");
 						double nullRatio = Double.parseDouble(values[0]), VTDiv = Double.parseDouble(values[1]), STDiv = Double.parseDouble(values[2]);
 						totalNullRatio[Z_INDEX][(k-1) * mRatioResol + j] += nullRatio / nIter;
@@ -131,7 +131,7 @@ public final class SilentMajority {
 				}
 			}
 
-			//csvo—Í
+			//csvå‡ºåŠ›
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(dateDir, "TotalNullRatio.csv"))));
 			for (int k = 0; k <= sRatioResol; k++){
 				for (int j = -1; j < mRatioResol; j++) {
@@ -147,7 +147,7 @@ public final class SilentMajority {
 			}
 			bw.close();
 			
-			//Contouro—Í
+			//Contourå‡ºåŠ›
 			ContourGenerator cg = new ContourGenerator("TotalNullRatio", totalNullRatio);
 			cg.generateGraph(dateDir, "contour.png");
 			

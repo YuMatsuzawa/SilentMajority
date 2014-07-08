@@ -3,9 +3,9 @@ package matz.basics.network;
 import java.util.ArrayList;
 
 /**
- * �i�q�l�b�g���[�N�𐶐�����N���X�B<br>
- * �����̎��͂́A����degree�Ŏw�肳�ꂽ�l���Ƃ̊ԂɃ����N�𒣂�B���E�͎������E�ł���B<br>
- * degree����̏ꍇ(�����ɓ����̃����N��\��Ƃ��������̓s����)�A�ŋߖT�̏����ȋ����Ɋۂ߂���B<br>
+ * 格子ネットワークを生成するクラス。<br>
+ * 自分の周囲の、次数degreeで指定された人数との間にリンクを張る。境界は周期境界である。<br>
+ * degreeが奇数の場合(両側に同数のリンクを貼るという実装の都合上)、最近傍の小さな偶数に丸められる。<br>
  * @author Yu
  *
  */
@@ -24,9 +24,9 @@ public class StaticREGNetwork extends StaticNetwork {
 	}
 
 	/**
-	 * subject���猩�āAindex�̉������i�������jD/2�l���̃G�[�W�F���g�̃C���f�b�N�X��ArrayList�`���Ŏ擾����D<br>
-	 * D�̓R���X�g���N�g����givenDegree�Ŏw�肳���D�w�肳��ĂȂ���΃f�t�H���g�l��6���g����D<br>
-	 * D����������ꍇ�C2�Ŋ������ۂ̒[���͂��̎����ł͐؂�̂Ă���̂ŁCD�ɂ͋���������ׂ��D
+	 * subjectから見て、indexの下流側（昇順側）D/2人分のエージェントのインデックスをArrayList形式で取得する．<br>
+	 * Dはコンストラクト時にgivenDegreeで指定される．指定されてなければデフォルト値の6が使われる．<br>
+	 * Dが奇数だった場合，2で割った際の端数はこの実装では切り捨てられるので，Dには偶数を入れるべき．
 	 * @param subject
 	 * @return
 	 */
@@ -46,8 +46,8 @@ public class StaticREGNetwork extends StaticNetwork {
 	}
 
 	/**
-	 * subject����object�Aobject����subject�Ƀ����N�𒣂�D<br>
-	 * ��d�o�^���Ȃ��悤�Ƀ`�F�b�N���邪�A�Б��̂݁iindex�̉������̂݁j�Ɍ������Đڑ����Ă����Γ�d�o�^�͋N���肦�Ȃ��B
+	 * subjectからobject、objectからsubjectにリンクを張る．<br>
+	 * 二重登録がないようにチェックするが、片側のみ（indexの下流側のみ）に向かって接続していけば二重登録は起こりえない。
 	 * @param subject
 	 * @param object
 	 */
@@ -57,7 +57,7 @@ public class StaticREGNetwork extends StaticNetwork {
 	}
 	
 	/**
-	 * ��{�R���X�g���N�^�BWS���f���ł��g����悤�ɂ��Ă���B
+	 * 基本コンストラクタ。WSモデルでも使えるようにしてある。
 	 * @param ntwkName
 	 * @param nAgents
 	 * @param orientation
@@ -73,7 +73,7 @@ public class StaticREGNetwork extends StaticNetwork {
 	}
 	
 	/**
-	 * �G�[�W�F���g����degree��^����R���X�g���N�^�D
+	 * エージェント数とdegreeを与えるコンストラクタ．
 	 * @param nAgents
 	 * @param degree
 	 */

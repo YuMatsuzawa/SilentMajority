@@ -31,7 +31,7 @@ public class SilentMajorityLT {
 		String ntwkType = NTWK_NAME[CNN_INDEX];
 		
 		/*
-		 * Configƒtƒ@ƒCƒ‹‚Åƒpƒ‰ƒ[ƒ^ŠÇ—‚·‚éD
+		 * Configãƒ•ã‚¡ã‚¤ãƒ«ã§ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç®¡ç†ã™ã‚‹ï¼
 		 */
 		Properties conf = new Properties();
 		try {
@@ -122,9 +122,9 @@ public class SilentMajorityLT {
 
 		Date date = new Date();
 		
-		CountDownLatch endGate = new CountDownLatch(controlResol * nIter); //‘SƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ªI—¹‚·‚é‚Ü‚Å‚ğƒJƒEƒ“ƒg‚·‚éCountDownLatch
+		CountDownLatch endGate = new CountDownLatch(controlResol * nIter); //å…¨ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãŒçµ‚äº†ã™ã‚‹ã¾ã§ã‚’ã‚«ã‚¦ãƒ³ãƒˆã™ã‚‹CountDownLatch
 				
-		// ‚±‚±‚Åƒlƒbƒgƒ[ƒN¶¬
+		// ã“ã“ã§ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ç”Ÿæˆ
 		StaticNetwork ntwk = null;
 		if (ntwkType.equals(NTWK_NAME[CNN_INDEX])) ntwk = new StaticCNNNetwork(nAgents, degree);
 		else if (ntwkType.equals(NTWK_NAME[WS_INDEX])) {
@@ -160,7 +160,7 @@ public class SilentMajorityLT {
 			endGate.await();
 			_E.SimExecLogger.info("Result summarizing...");
 			/*
-			 * Œ‹‰ÊWŒv‘€ì
+			 * çµæœé›†è¨ˆæ“ä½œ
 			 * 
 			 */
 			double[][] vocalOpinions = new double[controlResol][2];
@@ -174,7 +174,7 @@ public class SilentMajorityLT {
 						);
 				File[] resultFiles = resultDir.listFiles(new FilenameFilter() {
 						@Override
-						public boolean accept(File dir, String name) { //csvƒtƒ@ƒCƒ‹‚Ì‚İ“Ç‚İ‚ŞƒtƒBƒ‹ƒ^
+						public boolean accept(File dir, String name) { //csvãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿èª­ã¿è¾¼ã‚€ãƒ•ã‚£ãƒ«ã‚¿
 							boolean ret = name.endsWith(".csv");
 							return ret;
 						}
@@ -184,17 +184,17 @@ public class SilentMajorityLT {
 				for (File resultFile : resultFiles) {
 					BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(resultFile)));
 					String line = new String(), lastLine = new String();
-					while((line = br.readLine()) != null) lastLine = line; //ÅIsæ“¾
+					while((line = br.readLine()) != null) lastLine = line; //æœ€çµ‚è¡Œå–å¾—
 					String[] values = lastLine.split(",");
 					double[] dValues = {Double.parseDouble(values[1]),Double.parseDouble(values[2])};
-					vocalOpinions[index][0] += dValues[0] / nIter; //d‚İ•t‚«‰ÁZ=>•½‹Ï
-					vocalOpinions[index][1] += dValues[1] / nIter; //d‚İ•t‚«‰ÁZ=>•½‹Ï
+					vocalOpinions[index][0] += dValues[0] / nIter; //é‡ã¿ä»˜ãåŠ ç®—=>å¹³å‡
+					vocalOpinions[index][1] += dValues[1] / nIter; //é‡ã¿ä»˜ãåŠ ç®—=>å¹³å‡
 					br.close();
 				}
 				index++;
 			}
 			
-			//csvo—Í
+			//csvå‡ºåŠ›
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "PosNegRatio" + date.getTime() + ".csv"))));
 			bw.write("control,pos,neg");
 			bw.newLine();

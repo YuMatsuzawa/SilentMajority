@@ -8,18 +8,18 @@ import java.util.concurrent.ThreadFactory;
 import java.util.logging.*;
 
 /**
- * ExecutorService‚ğg‚Á‚Äƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚ÅƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ““™‚ğ‘–‚ç‚¹‚é‚½‚ß‚ÌƒNƒ‰ƒXB<br>
- * ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ““™AŒÂ•Ê‚ÌƒvƒƒWƒFƒNƒg‚²‚Æ‚Émainƒƒ\ƒbƒh‚ğƒzƒXƒg‚·‚éƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒgƒNƒ‰ƒX‚ğì‚èA<br>
- * ‚»‚Ìmain‚Ì’†‚ÅƒCƒ“ƒXƒ^ƒ“ƒX‰»‚µ‚Äg—p‚·‚éB<br>
- * ŒÂ•Ê‚Ìˆ—“à—e‚ÍRunnableiCallablej‚ğÀ‘•‚µ‚½ƒ^ƒXƒNƒNƒ‰ƒX‚ğ’è‹`‚µA‚»‚ê‚ğƒCƒ“ƒXƒ^ƒ“ƒX‰»‚µ‚Ä“Š“ü‚·‚éB<br>
- * ˆÈ‰ºƒXƒjƒyƒbƒgF<br>
+ * ExecutorServiceã‚’ä½¿ã£ã¦ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ã§ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç­‰ã‚’èµ°ã‚‰ã›ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹ã€‚<br>
+ * ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç­‰ã€å€‹åˆ¥ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã”ã¨ã«mainãƒ¡ã‚½ãƒƒãƒ‰ã‚’ãƒ›ã‚¹ãƒˆã™ã‚‹ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆã‚¯ãƒ©ã‚¹ã‚’ä½œã‚Šã€<br>
+ * ãã®mainã®ä¸­ã§ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚<br>
+ * å€‹åˆ¥ã®å‡¦ç†å†…å®¹ã¯Runnableï¼ˆCallableï¼‰ã‚’å®Ÿè£…ã—ãŸã‚¿ã‚¹ã‚¯ã‚¯ãƒ©ã‚¹ã‚’å®šç¾©ã—ã€ãã‚Œã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã—ã¦æŠ•å…¥ã™ã‚‹ã€‚<br>
+ * ä»¥ä¸‹ã‚¹ãƒ‹ãƒšãƒƒãƒˆï¼š<br>
  * <br>
  * <code>
  * public class MySimulation {<br>
  * <br>
  * public static main (String[] args) {<br>
  * 	<strong>MatzExecutor _E = new MatzExecutor()</strong>;<br>
- *  RunnableTask rt = new RunnableTask(); //Runnable‚ğÀ‘•‚µ‚½ƒ^ƒXƒN<br>
+ *  RunnableTask rt = new RunnableTask(); //Runnableã‚’å®Ÿè£…ã—ãŸã‚¿ã‚¹ã‚¯<br>
  *  <br>
  *  _E.execute(rt);<br>
  *  <br>
@@ -33,36 +33,36 @@ import java.util.logging.*;
 public class MatzExecutor {
 
 	private int NumThreads;
-	/**ExecutorService‚ª‚ÂThread”‚ÌƒfƒtƒHƒ‹ƒg’lBi5“™‚Åì‹Æ‚³‚ê‚é‚±‚Æ‚à‘½‚¢‚Ì‚Å4‚Æ‚µ‚Ä‚¢‚éB<br>
-	 * ƒfƒtƒHƒ‹ƒg’l‚È‚Ì‚ÅStaticB
+	/**ExecutorServiceãŒæŒã¤Threadæ•°ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã€‚i5ç­‰ã§ä½œæ¥­ã•ã‚Œã‚‹ã“ã¨ã‚‚å¤šã„ã®ã§4ã¨ã—ã¦ã„ã‚‹ã€‚<br>
+	 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ãªã®ã§Staticã€‚
 	 */
 	private final static int NumThreadsDefault = 4;
-	/**MatzExecutor‚ÌŠîŠ²‚Æ‚È‚éƒXƒŒƒbƒhƒv[ƒ‹‚ğ•Û‚·‚éExecutorService.
+	/**MatzExecutorã®åŸºå¹¹ã¨ãªã‚‹ã‚¹ãƒ¬ãƒƒãƒ‰ãƒ—ãƒ¼ãƒ«ã‚’ä¿æŒã™ã‚‹ExecutorService.
 	 * @see java.util.concurrent.ExecutorService
 	 * 
 	 */
 	private ExecutorService SimExecServ;
-	/**MatzExecutor‚ÌƒƒK[B
+	/**MatzExecutorã®ãƒ­ã‚¬ãƒ¼ã€‚
 	 * @see java.util.logging.Logger
 	 */
 	public Logger SimExecLogger = null;
 	private String SimExecLogFileName;
 	
 	/**
-	 * ExecutorService‚ÌƒXƒŒƒbƒh”‚ğæ“¾‚·‚éD
+	 * ExecutorServiceã®ã‚¹ãƒ¬ãƒƒãƒ‰æ•°ã‚’å–å¾—ã™ã‚‹ï¼
 	 * @return
 	 */
 	public int getNumThreads() {
 		return this.NumThreads;
 	}
-	/**ExecutorService‚ÌƒXƒŒƒbƒh”‚ğw’è‚·‚éD
+	/**ExecutorServiceã®ã‚¹ãƒ¬ãƒƒãƒ‰æ•°ã‚’æŒ‡å®šã™ã‚‹ï¼
 	 * @param numThreads - int
 	 */
 	public void setNumThreads(int numThreads) {
 		this.NumThreads = numThreads;
 	}
-	/**ExecutorService‚ğNumThreadsƒtƒB[ƒ‹ƒh‚Éw’è‚µ‚½ƒXƒŒƒbƒh”‚Å‰Šú‰»D
-	 * ThreadFactory‚ğ—p‚¢‚ÄThread‚É–¼‘O•t‚¯‚ğ‚·‚éD
+	/**ExecutorServiceã‚’NumThreadsãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã«æŒ‡å®šã—ãŸã‚¹ãƒ¬ãƒƒãƒ‰æ•°ã§åˆæœŸåŒ–ï¼
+	 * ThreadFactoryã‚’ç”¨ã„ã¦Threadã«åå‰ä»˜ã‘ã‚’ã™ã‚‹ï¼
 	 */
 	private void initSimExecServ() {
 		ThreadFactory tf = new ThreadFactory() {
@@ -78,14 +78,14 @@ public class MatzExecutor {
 		this.SimExecServ = Executors.newFixedThreadPool(this.getNumThreads(),tf);
 	}
 	/**
-	 * Runnableƒ^ƒXƒN‚ğExecutorService‚É“Š“ü‚·‚éD
+	 * Runnableã‚¿ã‚¹ã‚¯ã‚’ExecutorServiceã«æŠ•å…¥ã™ã‚‹ï¼
 	 * @param runnable
 	 */
 	public void execute(Runnable command) {
 		this.SimExecServ.execute(command);
 	}
 	/**
-	 * Runnableƒ^ƒXƒN‚ ‚é‚¢‚ÍCallableƒIƒuƒWƒFƒNƒg‚ğ“Š“ü‚µC”ñ“¯ŠúŒvZ‚ÌŒ‹‰Ê‚ğæ“¾‚·‚éƒIƒuƒWƒFƒNƒgFuture‚ğ“¾‚éD
+	 * Runnableã‚¿ã‚¹ã‚¯ã‚ã‚‹ã„ã¯Callableã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æŠ•å…¥ã—ï¼ŒéåŒæœŸè¨ˆç®—ã®çµæœã‚’å–å¾—ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆFutureã‚’å¾—ã‚‹ï¼
 	 * @param command
 	 * @return
 	 */
@@ -93,20 +93,20 @@ public class MatzExecutor {
 		Future<?> future = this.SimExecServ.submit(command);
 		return future;
 	}
-	/**Às’†‚Ìƒ^ƒXƒN‚ª‘S‚ÄI—¹‚µ‚½‚ ‚Æ‚ÉExecutorService‚ğI—¹‚·‚éD
+	/**å®Ÿè¡Œä¸­ã®ã‚¿ã‚¹ã‚¯ãŒå…¨ã¦çµ‚äº†ã—ãŸã‚ã¨ã«ExecutorServiceã‚’çµ‚äº†ã™ã‚‹ï¼
 	 * 
 	 */
 	public void safeShutdown() {
 		this.SimExecServ.shutdown();
 		this.SimExecLogger.info(this.getClass().getName() + " going to be terminated after all submitted tasks done.");
 	}
-	/**ƒƒOƒtƒ@ƒCƒ‹–¼‚ğæ“¾D
+	/**ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—ï¼
 	 * @return
 	 */
 	public String getSimExecLogFileName() {
 		return this.SimExecLogFileName;
 	}
-	/**ƒƒOƒtƒ@ƒCƒ‹–¼‚ğƒƒK[‚Ì–¼‘O‚©‚çİ’èD
+	/**ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ãƒ­ã‚¬ãƒ¼ã®åå‰ã‹ã‚‰è¨­å®šï¼
 	 * @param simExecLogFileName
 	 */
 	public void setSimExecLogFileName() {
@@ -114,8 +114,8 @@ public class MatzExecutor {
 	}
 	
 	/**
-	 * ƒƒK[‚ğ‰Šú‰»‚µAƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‰EƒRƒ“ƒ\[ƒ‹ƒnƒ“ƒhƒ‰‚ğİ’è‚·‚éB<br>
-	 * ƒƒOƒtƒ@ƒCƒ‹‚ÍƒAƒyƒ“ƒh‚·‚éB
+	 * ãƒ­ã‚¬ãƒ¼ã‚’åˆæœŸåŒ–ã—ã€ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ©ãƒ»ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ãƒãƒ³ãƒ‰ãƒ©ã‚’è¨­å®šã™ã‚‹ã€‚<br>
+	 * ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã¯ã‚¢ãƒšãƒ³ãƒ‰ã™ã‚‹ã€‚
 	 */
 	private void initSimExecLogger() {
 		
@@ -143,8 +143,8 @@ public class MatzExecutor {
 			this.logStackTrace(e);
 		}
 	}
-	/**ƒƒK[‚Ìƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‰‚ğƒNƒ[ƒY‚·‚éD<br>
-	 * ‚±‚Ìˆ—‚Ílckƒtƒ@ƒCƒ‹‚ğ‘|œ‚·‚é‚½‚ß‚É•K—vD
+	/**ãƒ­ã‚¬ãƒ¼ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ©ã‚’ã‚¯ãƒ­ãƒ¼ã‚ºã™ã‚‹ï¼<br>
+	 * ã“ã®å‡¦ç†ã¯lckãƒ•ã‚¡ã‚¤ãƒ«ã‚’æƒé™¤ã™ã‚‹ãŸã‚ã«å¿…è¦ï¼
 	 * 
 	 */
 	public void closeLogFileHandler() {
@@ -153,21 +153,21 @@ public class MatzExecutor {
 			handler.close();
 		}
 	}
-	/**—áŠO‚ğƒƒK[‚É—¬‚·ƒƒ\ƒbƒhB<br>
-	 * SEVEREƒŒƒxƒ‹iFatalƒŒƒxƒ‹j‚Åo—Í‚³‚ê‚éB
+	/**ä¾‹å¤–ã‚’ãƒ­ã‚¬ãƒ¼ã«æµã™ãƒ¡ã‚½ãƒƒãƒ‰ã€‚<br>
+	 * SEVEREãƒ¬ãƒ™ãƒ«ï¼ˆFatalãƒ¬ãƒ™ãƒ«ï¼‰ã§å‡ºåŠ›ã•ã‚Œã‚‹ã€‚
 	 * 
 	 * @param thrown
 	 */
 	public void logStackTrace(Throwable thrown) {
 		this.SimExecLogger.log(Level.SEVERE, thrown.getLocalizedMessage(), thrown);
 	}
-	/**ƒfƒtƒHƒ‹ƒg‚ÌƒXƒŒƒbƒh”(8)‚Å‰Šú‰»‚·‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^D
+	/**ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚¹ãƒ¬ãƒƒãƒ‰æ•°(8)ã§åˆæœŸåŒ–ã™ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼
 	 * 
 	 */
 	public MatzExecutor() {
 		this(NumThreadsDefault);
 	}
-	/**w’è‚µ‚½ƒXƒŒƒbƒh”‚Å‰Šú‰»‚·‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^D
+	/**æŒ‡å®šã—ãŸã‚¹ãƒ¬ãƒƒãƒ‰æ•°ã§åˆæœŸåŒ–ã™ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼
 	 * @param numThreads - int
 	 */
 	public MatzExecutor(int numThreads) {

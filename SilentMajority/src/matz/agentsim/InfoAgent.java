@@ -14,22 +14,22 @@ public class InfoAgent {
 	private ArrayList<Integer> followedList;
 	private boolean isSilent;
 	private boolean tmpSilent;
-	/**’ЉЏЫ“I‚И€УЊ©ЃiЏо•сЃj‚р•\‚·Џу‘Ф•Пђ”ЃD<br>
-	 * ѓvѓЉѓ~ѓeѓBѓuint‚Е‚Н‚И‚­ѓ‰ѓbѓpЊ^‚МInteger‚Й‚µ‚Д‚Ё‚«ЃCnull‚рЋg‚¦‚й‚ж‚¤‚Й‚·‚йЃD
+	/**жЉЅи±Ўзљ„гЃЄж„Џи¦‹пј€жѓ…е ±пј‰г‚’иЎЁгЃ™зЉ¶ж…‹е¤‰ж•°пјЋ<br>
+	 * гѓ—гѓЄгѓџгѓ†г‚Јгѓ–intгЃ§гЃЇгЃЄгЃЏгѓ©гѓѓгѓ‘ећ‹гЃ®IntegerгЃ«гЃ—гЃ¦гЃЉгЃЌпјЊnullг‚’дЅїгЃ€г‚‹г‚€гЃ†гЃ«гЃ™г‚‹пјЋ
 	 */
 	private Integer opinion;
 	private Integer tmpOpinion;
 	private double influence = Math.random();
-	private double threshold = Math.random(); //ѓ‰ѓ“ѓ_ѓЂ‚Й‚·‚й
+	private double threshold = Math.random(); //гѓ©гѓігѓЂгѓ гЃ«гЃ™г‚‹
 	private double noiseRatio = 0.05;
-	private double bendThreshold = 0.05; //relief‚В‚«muzzling‚ЕЏ­ђ””hи‡’l‚МЏкЌ‡
+	private double bendThreshold = 0.05; //reliefгЃ¤гЃЌmuzzlingгЃ§е°‘ж•°жґѕй–ѕеЂ¤гЃ®е ґеђ€
 	private StaticNetwork refNetwork = null;
 	private boolean isNetworkStatic = false;
 	
-	/**Ћ©•Є‚Є’†—§“IЃE‚ ‚й‚ў‚Н–ў’и‹`‚МЏу‘Ф‚Й‚ ‚й‚Ж‚«ЃCЌm’и“IЃE”Ы’и“I–в‚н‚ё‰Ѕ‚з‚©‚Мђжђi“I€УЊ©‚ЙђG‚к‚й‚ЖЃC‚»‚к‚Й‰e‹ї‚і‚к‚йЃD<br>
-	 * ‰e‹ї‚рЋу‚Ї‚й‚©”Ы‚©‚НЃC‘ЉЋи‚М‰e‹ї—Н‚М‹­‚і‚Й‚ж‚йЃD<br>
-	 * —ЧђЪѓЉѓXѓg‚Й‚ў‚йђl‚рЏ‡‚ЙЋQЏЖ‚µ‚Д‚ў‚«ЃAѓ”ѓHЃ[ѓJѓ‹‚Иђl‚М’†‚ЕЌЕ‚а‰e‹ї—Н‚МЌ‚‚ўђl‚©‚з‰e‹ї‚і‚к‚йЃB
-	 * @return •П‰»‚Є‚ ‚Б‚Ѕ‚зtrue
+	/**и‡Єе€†гЃЊдё­з«‹зљ„гѓ»гЃ‚г‚‹гЃ„гЃЇжњЄе®љзѕ©гЃ®зЉ¶ж…‹гЃ«гЃ‚г‚‹гЃЁгЃЌпјЊи‚Їе®љзљ„гѓ»еђ¦е®љзљ„е•Џг‚ЏгЃљдЅ•г‚‰гЃ‹гЃ®е…€йЂІзљ„ж„Џи¦‹гЃ«и§¦г‚Њг‚‹гЃЁпјЊгЃќг‚ЊгЃ«еЅ±йџїгЃ•г‚Њг‚‹пјЋ<br>
+	 * еЅ±йџїг‚’еЏ—гЃ‘г‚‹гЃ‹еђ¦гЃ‹гЃЇпјЊз›ёж‰‹гЃ®еЅ±йџїеЉ›гЃ®еј·гЃ•гЃ«г‚€г‚‹пјЋ<br>
+	 * йљЈжЋҐгѓЄг‚№гѓ€гЃ«гЃ„г‚‹дєєг‚’й †гЃ«еЏ‚з…§гЃ—гЃ¦гЃ„гЃЌгЂЃгѓґг‚©гѓјг‚«гѓ«гЃЄдєєгЃ®дё­гЃ§жњЂг‚‚еЅ±йџїеЉ›гЃ®й«гЃ„дєєгЃ‹г‚‰еЅ±йџїгЃ•г‚Њг‚‹гЂ‚
+	 * @return е¤‰еЊ–гЃЊгЃ‚гЃЈгЃџг‚‰true
 	 */
 	public boolean independentCascade(InfoAgent[] infoAgentsArray) {
 		if (!(this.getOpinion() == null || this.getOpinion() == 0)) return false;
@@ -40,9 +40,9 @@ public class InfoAgent {
 		for (Object neighbor : this.getUndirectedList()) {
 			Integer neighborOp = infoAgentsArray[(Integer) neighbor].getOpinion();
 			double neighborInfluence = infoAgentsArray[(Integer) neighbor].getInfluence();
-				//ѓTѓCѓЊѓ“ѓgѓGЃ[ѓWѓFѓ“ѓg‚Мinfluence‚Н-1‚Ж•Ф‚Б‚Д‚­‚йЃB
-			//if (preOp == null || preOp == 0) { //Ћ©•Є‚Є‘Ф“x–ўЊ€’и‚Е‚ ‚й‚Ж‚«‚µ‚©IC‚М‰e‹ї‚рЋу‚Ї‚И‚ўЃC‚Ж‚ў‚¤ЏрЊЏЃi‚И‚є‚©‚В‚ў‚Д‚ў‚ЅЃj
-				if (neighborInfluence > topInfluence && neighborOp != null && neighborOp > 0) { //‚±‚±‚ЕЃA‘ЉЋи‚ЄѓTѓCѓЊѓ“ѓg‚И‚з•s“K
+				//г‚µг‚¤гѓ¬гѓігѓ€г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®influenceгЃЇ-1гЃЁиї”гЃЈгЃ¦гЃЏг‚‹гЂ‚
+			//if (preOp == null || preOp == 0) { //и‡Єе€†гЃЊж…‹еє¦жњЄж±єе®љгЃ§гЃ‚г‚‹гЃЁгЃЌгЃ—гЃ‹ICгЃ®еЅ±йџїг‚’еЏ—гЃ‘гЃЄгЃ„пјЊгЃЁгЃ„гЃ†жќЎд»¶пј€гЃЄгЃњгЃ‹гЃ¤гЃ„гЃ¦гЃ„гЃџпј‰
+				if (neighborInfluence > topInfluence && neighborOp != null && neighborOp > 0) { //гЃ“гЃ“гЃ§гЂЃз›ёж‰‹гЃЊг‚µг‚¤гѓ¬гѓігѓ€гЃЄг‚‰дёЌйЃ©
 					tmpOp = neighborOp;
 					topInfluence = neighborInfluence;
 				} else {
@@ -55,7 +55,7 @@ public class InfoAgent {
 		return false;
 	}
 
-	/**—ЧђЪ‚µ‚Д‚ў‚йѓmЃ[ѓh‚М’†‚Е‚М‘Ѕђ””h‚р’mЉo‚µ‚ДЃC‚»‚М‰e‹ї‚рЋу‚Ї‚йЃD
+	/**йљЈжЋҐгЃ—гЃ¦гЃ„г‚‹гѓЋгѓјгѓ‰гЃ®дё­гЃ§гЃ®е¤љж•°жґѕг‚’зџҐи¦љгЃ—гЃ¦пјЊгЃќгЃ®еЅ±йџїг‚’еЏ—гЃ‘г‚‹пјЋ
 	 * @param infoAgentsArray
 	 * @return
 	 */
@@ -68,18 +68,18 @@ public class InfoAgent {
 		int NEU_INDEX = 0, POS_INDEX = 1, NEG_INDEX = 2;
 		for (Object neighbor : this.getUndirectedList()) {
 			Integer neighborOp = infoAgentsArray[(Integer) neighbor].getOpinion(); 
-			if (neighborOp == null) continue; //–ў’и‹`‚МђlЃEѓTѓCѓЊѓ“ѓg‚Иђl‚НЉЁ’и‚µ‚И‚ўЃD
+			if (neighborOp == null) continue; //жњЄе®љзѕ©гЃ®дєєгѓ»г‚µг‚¤гѓ¬гѓігѓ€гЃЄдєєгЃЇе‹е®љгЃ—гЃЄгЃ„пјЋ
 			
 			sum++;
 			opinions[neighborOp]++;
 		}
 		if (sum == 0) return false;
-/*		for (int opIndex = 0; opIndex < 3; opIndex++) { //’PЏѓ‚ЙЃCnull€ИЉO‚М€УЊ©‚М”д—¦‚р’І‚ЧЃCи‡’l‚р’ґ‚¦‚Д‚ў‚й‚а‚М‚Й•ta—‹“Ї‚·‚й
+/*		for (int opIndex = 0; opIndex < 3; opIndex++) { //еЌзґ”гЃ«пјЊnullд»Ґе¤–гЃ®ж„Џи¦‹гЃ®жЇ”зЋ‡г‚’иЄїгЃ№пјЊй–ѕеЂ¤г‚’и¶…гЃ€гЃ¦гЃ„г‚‹г‚‚гЃ®гЃ«д»е’Њй›·еђЊгЃ™г‚‹
 			if (opinions[opIndex] / sum > this.threshold) tmpOp = opIndex;
 		}*/
 		
 		/*
-		 * ‚±‚ї‚з‚НЃC1or2‚М€УЊ©‚Є‚З‚ї‚з‚а‘Ѕђ””h‚рЏџ‚ї“ѕ‚Д‚ў‚И‚Ї‚к‚ОЃC’†—§”h‚Є‘Ѕђ””h‚Е‚ ‚Б‚Д‚а‚И‚­‚Д‚а’†—§‚М—§Џк‚рЋж‚йЃC‚Ж‚ў‚¤ѓ‚ѓfѓ‹ЃD
+		 * гЃ“гЃЎг‚‰гЃЇпјЊ1or2гЃ®ж„Џи¦‹гЃЊгЃ©гЃЎг‚‰г‚‚е¤љж•°жґѕг‚’е‹ќгЃЎеѕ—гЃ¦гЃ„гЃЄгЃ‘г‚ЊгЃ°пјЊдё­з«‹жґѕгЃЊе¤љж•°жґѕгЃ§гЃ‚гЃЈгЃ¦г‚‚гЃЄгЃЏгЃ¦г‚‚дё­з«‹гЃ®з«‹е ґг‚’еЏ–г‚‹пјЊгЃЁгЃ„гЃ†гѓўгѓ‡гѓ«пјЋ
 		 */
 		if (opinions[POS_INDEX] / sum > this.getThreshold()) tmpOp = POS_INDEX;
 		else if (opinions[NEG_INDEX] / sum > this.getThreshold()) tmpOp = NEG_INDEX;
@@ -91,15 +91,15 @@ public class InfoAgent {
 	}
 
 	/**
-	 * ”hђ¶ѓVѓ~ѓ…ѓЊЃ[ѓVѓ‡ѓ“‚М‚Ѕ‚Я‚МѓЃѓ\ѓbѓhЃD<br>
-	 * LTѓ‚ѓfѓ‹‚ЙЉо‚Г‚«ЃC—ЧђЪЋь€Н‚М‘Ѕђ””h‚Й”Ѕ‰ћ‚µ‚ДЃCѓTѓCѓЊѓ“ѓg‰»‚µ‚Ѕ‚иЃCѓ”ѓHЃ[ѓJѓ‹‰»‚µ‚Ѕ‚и‚·‚йЃD<br>
-	 * ѓ‹Ѓ[ѓ‹:Ћ©•Є‚Ж“Ї‚¶€УЊ©‚ЄЃC<br>
-	 * 1.Ћ©•Є‚Ми‡’l‚р’ґ‚¦‚й‘Ѕђ””h‚И‚зѓ”ѓHЃ[ѓJѓ‹‚Й‚И‚й<br>
-	 * 2.Ћ©•Є‚Ми‡’l‚р‰є‰с‚йЏ­ђ””h‚И‚зѓTѓCѓЊѓ“ѓg‚Й‚И‚й<br>
-	 * и‡’l‚Нѓ‰ѓ“ѓ_ѓЂ‚Й•Є•z‚µ‚Д‚ў‚й‚М‚ЕЃCЋ©•Є‚Ж“Ї‚¶€УЊ©‚Є‚Ѕ‚Ж‚¦Џ­ђ””h‚Е‚аѓTѓCѓЊѓ“ѓg‚Й‚И‚з‚И‚©‚Б‚Ѕ‚иЃC<br>
-	 * ‹t‚Й‘Љ“–‘Ѕђ””h‚Е‚аѓ”ѓHЃ[ѓJѓ‹‚Й‚И‚з‚И‚©‚Б‚Ѕ‚и‚·‚йѓGЃ[ѓWѓFѓ“ѓg‚а”­ђ¶‚·‚йЃD<br>
+	 * жґѕз”џг‚·гѓџгѓҐгѓ¬гѓјг‚·гѓ§гѓігЃ®гЃџг‚ЃгЃ®гѓЎг‚Ѕгѓѓгѓ‰пјЋ<br>
+	 * LTгѓўгѓ‡гѓ«гЃ«еџєгЃҐгЃЌпјЊйљЈжЋҐе‘Ёе›ІгЃ®е¤љж•°жґѕгЃ«еЏЌеїњгЃ—гЃ¦пјЊг‚µг‚¤гѓ¬гѓігѓ€еЊ–гЃ—гЃџг‚ЉпјЊгѓґг‚©гѓјг‚«гѓ«еЊ–гЃ—гЃџг‚ЉгЃ™г‚‹пјЋ<br>
+	 * гѓ«гѓјгѓ«:и‡Єе€†гЃЁеђЊгЃж„Џи¦‹гЃЊпјЊ<br>
+	 * 1.и‡Єе€†гЃ®й–ѕеЂ¤г‚’и¶…гЃ€г‚‹е¤љж•°жґѕгЃЄг‚‰гѓґг‚©гѓјг‚«гѓ«гЃ«гЃЄг‚‹<br>
+	 * 2.и‡Єе€†гЃ®й–ѕеЂ¤г‚’дё‹е›ћг‚‹е°‘ж•°жґѕгЃЄг‚‰г‚µг‚¤гѓ¬гѓігѓ€гЃ«гЃЄг‚‹<br>
+	 * й–ѕеЂ¤гЃЇгѓ©гѓігѓЂгѓ гЃ«е€†еёѓгЃ—гЃ¦гЃ„г‚‹гЃ®гЃ§пјЊи‡Єе€†гЃЁеђЊгЃж„Џи¦‹гЃЊгЃџгЃЁгЃ€е°‘ж•°жґѕгЃ§г‚‚г‚µг‚¤гѓ¬гѓігѓ€гЃ«гЃЄг‚‰гЃЄгЃ‹гЃЈгЃџг‚ЉпјЊ<br>
+	 * йЂ†гЃ«з›ёеЅ“е¤љж•°жґѕгЃ§г‚‚гѓґг‚©гѓјг‚«гѓ«гЃ«гЃЄг‚‰гЃЄгЃ‹гЃЈгЃџг‚ЉгЃ™г‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€г‚‚з™єз”џгЃ™г‚‹пјЋ<br>
 	 * @param infoAgentsArray
-	 * @return •П‰»‚·‚к‚Оtrue
+	 * @return е¤‰еЊ–гЃ™г‚ЊгЃ°true
 	 */
 	public boolean linearThreasholdMuzzling(InfoAgent[] infoAgentsArray) {
 		boolean preSilent = (this.isSilent())? true : false;
@@ -108,11 +108,11 @@ public class InfoAgent {
 		int sumOfVocal = 0, sumOfVocalizedSameOpinion = 0;
 		for (int neighborIndex : this.getUndirectedList()) {
 			Integer neighborOp = infoAgentsArray[neighborIndex].getOpinion();
-			if (neighborOp == null) continue; //ѓTѓCѓЊѓ“ѓg‚Н–іЋ‹
+			if (neighborOp == null) continue; //г‚µг‚¤гѓ¬гѓігѓ€гЃЇз„Ўи¦–
 			else {
-				sumOfVocal++; //null‚Е‚И‚ў‚И‚зѓ”ѓHЃ[ѓJѓ‹
+				sumOfVocal++; //nullгЃ§гЃЄгЃ„гЃЄг‚‰гѓґг‚©гѓјг‚«гѓ«
 				if (neighborOp.equals(this.forceGetOpinion())) {
-					sumOfVocalizedSameOpinion++; //Ћ©•Є‚Мђ^‚М€УЊ©‚Ж“Ї‚¶€УЊ©‚Мђl‚рђ”‚¦‚й
+					sumOfVocalizedSameOpinion++; //и‡Єе€†гЃ®зњџгЃ®ж„Џи¦‹гЃЁеђЊгЃж„Џи¦‹гЃ®дєєг‚’ж•°гЃ€г‚‹
 				}
 			}
 		}
@@ -129,10 +129,10 @@ public class InfoAgent {
 	}
 
 	/**
-	 * €А“gRelief‚ ‚й‚ў‚Н‘јђl”C‚№Slack‚р“±“ь‚µ‚Ѕ{@link #linearThreasholdMuzzling(InfoAgent[])}‚©‚з‚М”hђ¶ѓVѓ~ѓ…ѓЊЃ[ѓVѓ‡ѓ“<br>
-	 * Ћ©•Є‚М€УЊ©‚Є‹Й‚Я‚ДЏ­ђ””h‚Е‚ ‚йЏкЌ‡ѓTѓCѓЊѓ“ѓg‚Й‚И‚иЃC<br>
-	 * ‚ ‚й’ц“xЋs–ЇЊ ‚р“ѕ‚й‚Жѓ”ѓHЃ[ѓJѓ‹‚Й‚И‚иЃC<br>
-	 * ЌX‚Й’·‚¶‚Д€АђSЏo—€‚й‚ѕ‚Ї‚М‘Ѕђ””h‚Є‰с‚и‚Й‚ў‚й‚ЖЉґ‚¶‚й‚Ж‚Ь‚ЅѓTѓCѓЊѓ“ѓg‚Й‚И‚йЃD
+	 * е®‰е µReliefгЃ‚г‚‹гЃ„гЃЇд»–дєєд»»гЃ›Slackг‚’е°Ће…ҐгЃ—гЃџ{@link #linearThreasholdMuzzling(InfoAgent[])}гЃ‹г‚‰гЃ®жґѕз”џг‚·гѓџгѓҐгѓ¬гѓјг‚·гѓ§гѓі<br>
+	 * и‡Єе€†гЃ®ж„Џи¦‹гЃЊжҐµг‚ЃгЃ¦е°‘ж•°жґѕгЃ§гЃ‚г‚‹е ґеђ€г‚µг‚¤гѓ¬гѓігѓ€гЃ«гЃЄг‚ЉпјЊ<br>
+	 * гЃ‚г‚‹зЁ‹еє¦её‚ж°‘жЁ©г‚’еѕ—г‚‹гЃЁгѓґг‚©гѓјг‚«гѓ«гЃ«гЃЄг‚ЉпјЊ<br>
+	 * ж›ґгЃ«й•·гЃгЃ¦е®‰еїѓе‡єжќҐг‚‹гЃ гЃ‘гЃ®е¤љж•°жґѕгЃЊе›ћг‚ЉгЃ«гЃ„г‚‹гЃЁж„џгЃг‚‹гЃЁгЃѕгЃџг‚µг‚¤гѓ¬гѓігѓ€гЃ«гЃЄг‚‹пјЋ
 	 * @param infoAgentsArray
 	 */
 	public boolean linearThresholdMuzzlingWithRelief(InfoAgent[] infoAgentsArray, double reliefRatio) {
@@ -142,11 +142,11 @@ public class InfoAgent {
 		int sumOfVocal = 0, sumOfVocalizedSameOpinion = 0;
 		for (int neighborIndex : this.getUndirectedList()) {
 			Integer neighborOp = infoAgentsArray[neighborIndex].getOpinion();
-			if (neighborOp == null) continue; //ѓTѓCѓЊѓ“ѓg‚Н–іЋ‹
+			if (neighborOp == null) continue; //г‚µг‚¤гѓ¬гѓігѓ€гЃЇз„Ўи¦–
 			else {
-				sumOfVocal++; //null‚Е‚И‚ў‚И‚зѓ”ѓHЃ[ѓJѓ‹
+				sumOfVocal++; //nullгЃ§гЃЄгЃ„гЃЄг‚‰гѓґг‚©гѓјг‚«гѓ«
 				if (neighborOp.equals(this.forceGetOpinion())) sumOfVocalizedSameOpinion++;
-					//Ћ©•Є‚Мђ^‚М€УЊ©‚Ж“Ї‚¶€УЊ©‚Мђl‚рђ”‚¦‚й
+					//и‡Єе€†гЃ®зњџгЃ®ж„Џи¦‹гЃЁеђЊгЃж„Џи¦‹гЃ®дєєг‚’ж•°гЃ€г‚‹
 			}
 		}
 		if (sumOfVocal == 0) {
@@ -154,7 +154,7 @@ public class InfoAgent {
 			return false;
 		}
 		if ((double)sumOfVocalizedSameOpinion / (double)sumOfVocal > this.bendThreshold &&
-				(double)sumOfVocalizedSameOpinion / (double)sumOfVocal < reliefRatio) tmpSilent = false; //–Щ‚Б‚Д‚µ‚Ь‚¤‚Щ‚ЗЏ­‚И‚­‚а‚И‚ў‚ЄЃC€АђS‚Е‚«‚й‚Щ‚З‘Ѕ‚­‚а‚И‚ў‚Ж‚«‚Йѓ”ѓHЃ[ѓJѓ‹‚Й‚И‚й
+				(double)sumOfVocalizedSameOpinion / (double)sumOfVocal < reliefRatio) tmpSilent = false; //й»™гЃЈгЃ¦гЃ—гЃѕгЃ†гЃ»гЃ©е°‘гЃЄгЃЏг‚‚гЃЄгЃ„гЃЊпјЊе®‰еїѓгЃ§гЃЌг‚‹гЃ»гЃ©е¤љгЃЏг‚‚гЃЄгЃ„гЃЁгЃЌгЃ«гѓґг‚©гѓјг‚«гѓ«гЃ«гЃЄг‚‹
 		else tmpSilent = true;
 		
 		this.tmpSilent = tmpSilent;
@@ -163,8 +163,8 @@ public class InfoAgent {
 	}
 
 	/**
-	 * ‘ЉЊЭЌм—p‚Є‹N‚±‚з‚И‚©‚Б‚ЅЏкЌ‡‚ЙЊД‚О‚к‚йЃAѓ‰ѓ“ѓ_ѓЂ‚ИЋ©”­•П‰»ЃB<br>
-	 * —v‚НѓmѓCѓYЌЂЃBЋ–‘OЏу‘Ф‚рЉЁ€Д‚№‚ёЃAѓ‰ѓ“ѓ_ѓЂ‚ЙѓTѓCѓЊѓ“ѓg‚©ѓ”ѓHЃ[ѓJѓ‹‚Й‚·‚йЃB<br>
+	 * з›ёдє’дЅњз”ЁгЃЊиµ·гЃ“г‚‰гЃЄгЃ‹гЃЈгЃџе ґеђ€гЃ«е‘јгЃ°г‚Њг‚‹гЂЃгѓ©гѓігѓЂгѓ гЃЄи‡Єз™єе¤‰еЊ–гЂ‚<br>
+	 * и¦ЃгЃЇгѓЋг‚¤г‚єй …гЂ‚дє‹е‰ЌзЉ¶ж…‹г‚’е‹жЎ€гЃ›гЃљгЂЃгѓ©гѓігѓЂгѓ гЃ«г‚µг‚¤гѓ¬гѓігѓ€гЃ‹гѓґг‚©гѓјг‚«гѓ«гЃ«гЃ™г‚‹гЂ‚<br>
 	 * @return
 	 */
 	public boolean randomUpdate(Random localRNG) {
@@ -180,7 +180,7 @@ public class InfoAgent {
 	}
 	
 	/**
-	 * Џг‚М”hђ¶”ЕЃDѓ‰ѓ“ѓ_ѓЂ‚Йѓ”ѓHЃ[ѓJѓ‹‚Й‚·‚й‚ЄѓTѓCѓЊѓ“ѓg‚Й‚µ‚И‚ўЃD
+	 * дёЉгЃ®жґѕз”џз‰€пјЋгѓ©гѓігѓЂгѓ гЃ«гѓґг‚©гѓјг‚«гѓ«гЃ«гЃ™г‚‹гЃЊг‚µг‚¤гѓ¬гѓігѓ€гЃ«гЃ—гЃЄгЃ„пјЋ
 	 * @param localRNG
 	 * @return
 	 */
@@ -194,14 +194,14 @@ public class InfoAgent {
 		return ret;
 	}
 	
-	//•¶Ћљ—с–ј‚р—^‚¦‚йѓXѓ^ѓCѓ‹‚Н‚в‚Я‚й.
+	//ж–‡е­—е€—еђЌг‚’дёЋгЃ€г‚‹г‚№г‚їг‚¤гѓ«гЃЇг‚„г‚Ѓг‚‹.
 	
 	/**
-	 * Љо–{ѓRѓ“ѓXѓgѓ‰ѓNѓ^ЃD
-	 * @param index -ђ®ђ”‚МЋЇ•К”ФЌ†
-	 * @param opinion -ђ®ђ”’l‚М€УЊ©
-	 * @param isSilent -ѓTѓCѓЊѓ“ѓg‚Е‚ ‚й‚©
-	 * @param ntwk -ЋQЏЖ‚·‚йђГ“IѓlѓbѓgѓЏЃ[ѓN
+	 * еџєжњ¬г‚ігѓіг‚№гѓ€гѓ©г‚Їг‚їпјЋ
+	 * @param index -ж•ґж•°гЃ®и­е€Ґз•ЄеЏ·
+	 * @param opinion -ж•ґж•°еЂ¤гЃ®ж„Џи¦‹
+	 * @param isSilent -г‚µг‚¤гѓ¬гѓігѓ€гЃ§гЃ‚г‚‹гЃ‹
+	 * @param ntwk -еЏ‚з…§гЃ™г‚‹йќ™зљ„гѓЌгѓѓгѓ€гѓЇгѓјг‚Ї
 	 */
 	public InfoAgent(int index, Integer opinion, boolean isSilent, StaticNetwork ntwk) {
 		this.setAgentIndex(index);
@@ -219,7 +219,7 @@ public class InfoAgent {
 	}
 	
 	/**
-	 * ‚·‚Ч‚Дѓ”ѓHЃ[ѓJѓ‹‚Ж‚µЃAђГ“IѓlѓbѓgѓЏЃ[ѓN‚р—^‚¦‚йѓRѓ“ѓXѓgѓ‰ѓNѓ^ЃB
+	 * гЃ™гЃ№гЃ¦гѓґг‚©гѓјг‚«гѓ«гЃЁгЃ—гЂЃйќ™зљ„гѓЌгѓѓгѓ€гѓЇгѓјг‚Їг‚’дёЋгЃ€г‚‹г‚ігѓіг‚№гѓ€гѓ©г‚Їг‚їгЂ‚
 	 * @param index
 	 * @param opinion
 	 * @param ntwk
@@ -229,27 +229,27 @@ public class InfoAgent {
 	}
 	
 	/**
-	 * ‚·‚Ч‚Дѓ”ѓHЃ[ѓJѓ‹‚Ж‚µЃAѓVѓ~ѓ…ѓЊЃ[ѓVѓ‡ѓ“ЊВ•К‚МѓlѓbѓgѓЏЃ[ѓN‚рЋg—p‚·‚йѓRѓ“ѓXѓgѓ‰ѓNѓ^ЃB
-	 * @param index -ђ®ђ”‚МЋЇ•К”ФЌ†
-	 * @param opinion -ђ®ђ”’l‚М€УЊ©
+	 * гЃ™гЃ№гЃ¦гѓґг‚©гѓјг‚«гѓ«гЃЁгЃ—гЂЃг‚·гѓџгѓҐгѓ¬гѓјг‚·гѓ§гѓіеЂ‹е€ҐгЃ®гѓЌгѓѓгѓ€гѓЇгѓјг‚Їг‚’дЅїз”ЁгЃ™г‚‹г‚ігѓіг‚№гѓ€гѓ©г‚Їг‚їгЂ‚
+	 * @param index -ж•ґж•°гЃ®и­е€Ґз•ЄеЏ·
+	 * @param opinion -ж•ґж•°еЂ¤гЃ®ж„Џи¦‹
 	 */
 	public InfoAgent(int index, Integer opinion) {
 		this(index, opinion, false, null);
 	}
 	
 	/*
-	 * €И‰єgetter/setter‹y‚С‚»‚М‘ј‚МѓЃѓ\ѓbѓh
+	 * д»Ґдё‹getter/setterеЏЉгЃігЃќгЃ®д»–гЃ®гѓЎг‚Ѕгѓѓгѓ‰
 	 * 
 	 */
 	
 	
-	/**Џо•сѓGЃ[ѓWѓFѓ“ѓg‚Мђ®ђ”ЋЇ•К”ФЌ†‚рЋж“ѕЃD
+	/**жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•ґж•°и­е€Ґз•ЄеЏ·г‚’еЏ–еѕ—пјЋ
 	 * @return
 	 */
 	public int getAgentIndex() {
 		return this.agentIndex;
 	}
-	/**Џо•сѓGЃ[ѓWѓFѓ“ѓg‚Мђ®ђ”ЋЇ•К”ФЌ†‚рЋw’иЃD
+	/**жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•ґж•°и­е€Ґз•ЄеЏ·г‚’жЊ‡е®љпјЋ
 	 * @param agentIndex
 	 */
 	public void setAgentIndex(int agentIndex) {
@@ -257,42 +257,42 @@ public class InfoAgent {
 	}
 	
 	/*
-	 * €И‰єЃCѓЉѓXѓgЉЦA‚МѓЃѓ\ѓbѓhЃD Џ‰Љъ‰»ѓЃѓ\ѓbѓh‚Нprivate‚Ж‚·‚йЃD
+	 * д»Ґдё‹пјЊгѓЄг‚№гѓ€й–ўйЂЈгЃ®гѓЎг‚Ѕгѓѓгѓ‰пјЋ е€ќжњџеЊ–гѓЎг‚Ѕгѓѓгѓ‰гЃЇprivateгЃЁгЃ™г‚‹пјЋ
 	 */	
 	
-	/**Џо•сѓGЃ[ѓWѓFѓ“ѓg‚ЄЋQЏЖ‚µ‚Д‚ў‚йѓGЃ[ѓWѓFѓ“ѓg‚Мђ®ђ”ѓCѓ“ѓfѓbѓNѓXѓЉѓXѓg‚рЋж“ѕЃB
+	/**жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊеЏ‚з…§гЃ—гЃ¦гЃ„г‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•ґж•°г‚¤гѓігѓ‡гѓѓг‚Їг‚№гѓЄг‚№гѓ€г‚’еЏ–еѕ—гЂ‚
 	 * @return followingIndexList
 	 */
 	public List<Integer> getFollowingList() {
 		return (this.isNetworkStatic)? this.refNetwork.getFollowingListOf(this.getAgentIndex()) : this.followingList;
 	}
-	/**Џо•сѓGЃ[ѓWѓFѓ“ѓg‚ЄЋQЏЖ‚µ‚Д‚ў‚йѓGЃ[ѓWѓFѓ“ѓg‚Мђ®ђ”ѓCѓ“ѓfѓbѓNѓXѓЉѓXѓg‚р‹у‚МѓЉѓXѓg‚ЙЏ‰Љъ‰»ЃB
-	 * @param followingList ѓZѓbѓg‚·‚й followingIndexList
+	/**жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊеЏ‚з…§гЃ—гЃ¦гЃ„г‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•ґж•°г‚¤гѓігѓ‡гѓѓг‚Їг‚№гѓЄг‚№гѓ€г‚’з©єгЃ®гѓЄг‚№гѓ€гЃ«е€ќжњџеЊ–гЂ‚
+	 * @param followingList г‚»гѓѓгѓ€гЃ™г‚‹ followingIndexList
 	 */
 	private void initFollowingList() {
 		this.followingList = new ArrayList<Integer>();
 	}
-	/**Џо•сѓGЃ[ѓWѓFѓ“ѓg‚ЄЋQЏЖ‚µ‚Д‚ў‚йѓGЃ[ѓWѓFѓ“ѓg‚Мђ®ђ”ѓCѓ“ѓfѓbѓNѓXѓЉѓXѓg‚ЙђV‚Ѕ‚ИѓGЃ[ѓWѓFѓ“ѓg‚Мђ®ђ”ѓCѓ“ѓfѓbѓNѓX‚р’З‰БЃB
-	 * @param followingList ѓZѓbѓg‚·‚й followingIndexList
+	/**жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊеЏ‚з…§гЃ—гЃ¦гЃ„г‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•ґж•°г‚¤гѓігѓ‡гѓѓг‚Їг‚№гѓЄг‚№гѓ€гЃ«ж–°гЃџгЃЄг‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•ґж•°г‚¤гѓігѓ‡гѓѓг‚Їг‚№г‚’иїЅеЉ гЂ‚
+	 * @param followingList г‚»гѓѓгѓ€гЃ™г‚‹ followingIndexList
 	 */
 	public void appendFollowingList(int index) {
 		this.followingList.add(index);
 	}
-	/**Џо•сѓGЃ[ѓWѓFѓ“ѓg‚ЄЋQЏЖ‚і‚к‚Д‚ў‚йѓGЃ[ѓWѓFѓ“ѓg‚Мђ®ђ”ѓCѓ“ѓfѓbѓNѓXѓЉѓXѓg‚рЋж“ѕЃB
+	/**жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊеЏ‚з…§гЃ•г‚ЊгЃ¦гЃ„г‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•ґж•°г‚¤гѓігѓ‡гѓѓг‚Їг‚№гѓЄг‚№гѓ€г‚’еЏ–еѕ—гЂ‚
 	 * @return followedIndexList
 	 */
 	public List<Integer> getFollowedList() {
 		return (this.isNetworkStatic)? this.refNetwork.getFollowedListOf(this.getAgentIndex()) : this.followedList;
 	}
-	/**Џо•сѓGЃ[ѓWѓFѓ“ѓg‚ЄЋQЏЖ‚і‚к‚Д‚ў‚йѓGЃ[ѓWѓFѓ“ѓg‚Мђ®ђ”ѓCѓ“ѓfѓbѓNѓXѓЉѓXѓg‚р‹у‚МѓЉѓXѓg‚ЙЏ‰Љъ‰»ЃB
-	 * @param followedList ѓZѓbѓg‚·‚й followedIndexList
+	/**жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊеЏ‚з…§гЃ•г‚ЊгЃ¦гЃ„г‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•ґж•°г‚¤гѓігѓ‡гѓѓг‚Їг‚№гѓЄг‚№гѓ€г‚’з©єгЃ®гѓЄг‚№гѓ€гЃ«е€ќжњџеЊ–гЂ‚
+	 * @param followedList г‚»гѓѓгѓ€гЃ™г‚‹ followedIndexList
 	 */
 	private void initFollowedList() {
 		this.followedList = new ArrayList<Integer>();
 	}
 	/**
-	 * Џо•сѓGЃ[ѓWѓFѓ“ѓg‚ЄЋQЏЖ‚і‚к‚Д‚ў‚йѓGЃ[ѓWѓFѓ“ѓg‚Мђ®ђ”ѓCѓ“ѓfѓbѓNѓXѓЉѓXѓg‚ЙђV‚Ѕ‚ИѓGЃ[ѓWѓFѓ“ѓg‚Мђ®ђ”ѓCѓ“ѓfѓbѓNѓX‚р’З‰БЃB
-	 * @param followedList ѓZѓbѓg‚·‚й followedIndexList
+	 * жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊеЏ‚з…§гЃ•г‚ЊгЃ¦гЃ„г‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•ґж•°г‚¤гѓігѓ‡гѓѓг‚Їг‚№гѓЄг‚№гѓ€гЃ«ж–°гЃџгЃЄг‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•ґж•°г‚¤гѓігѓ‡гѓѓг‚Їг‚№г‚’иїЅеЉ гЂ‚
+	 * @param followedList г‚»гѓѓгѓ€гЃ™г‚‹ followedIndexList
 	 */
 	public void appendFollowedList(int index) {
 		this.followedList.add(index);
@@ -300,7 +300,7 @@ public class InfoAgent {
 
 	
 	/**
-	 * ѓЉѓ“ѓN‚Є‘ОЏМ‚Е‚ ‚й‚ж‚¤‚И–іЊьѓlѓbѓgѓЏЃ[ѓN‚МЏкЌ‡‚НЋQЏЖѓЉѓXѓg‚Ж”нЋQЏЖѓЉѓXѓg‚З‚ї‚з‚Й‚а“ЇЋћ‚Й’З‰Б‚і‚к‚й‚М‚ЕЃC‚»‚М‚Ѕ‚Я‚МѓЃѓ\ѓbѓhЃD<br>
+	 * гѓЄгѓіг‚ЇгЃЊеЇѕз§°гЃ§гЃ‚г‚‹г‚€гЃ†гЃЄз„Ўеђ‘гѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃ®е ґеђ€гЃЇеЏ‚з…§гѓЄг‚№гѓ€гЃЁиў«еЏ‚з…§гѓЄг‚№гѓ€гЃ©гЃЎг‚‰гЃ«г‚‚еђЊж™‚гЃ«иїЅеЉ гЃ•г‚Њг‚‹гЃ®гЃ§пјЊгЃќгЃ®гЃџг‚ЃгЃ®гѓЎг‚Ѕгѓѓгѓ‰пјЋ<br>
 	 * @param index
 	 */
 	public void appendUndirectedList (int index) {
@@ -308,8 +308,8 @@ public class InfoAgent {
 		this.appendFollowingList(index);
 	}
 	/**
-	 * ѓЉѓ“ѓN‚Є‘ОЏМ‚Е‚ ‚й‚ж‚¤‚И–іЊьѓlѓbѓgѓЏЃ[ѓN‚МЏкЌ‡‚МѓЉѓXѓgЋж“ѕѓЃѓ\ѓbѓhЃD<br>
-	 * ’З‰БЋћ‚Й—ј•ы‚Й’З‰Б‚і‚к‚Д‚ў‚й‚Н‚ё‚И‚М‚ЕЃC‚З‚ї‚з‚©Ћж‚Б‚Д‚­‚к‚О‚ў‚ўЃD
+	 * гѓЄгѓіг‚ЇгЃЊеЇѕз§°гЃ§гЃ‚г‚‹г‚€гЃ†гЃЄз„Ўеђ‘гѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃ®е ґеђ€гЃ®гѓЄг‚№гѓ€еЏ–еѕ—гѓЎг‚Ѕгѓѓгѓ‰пјЋ<br>
+	 * иїЅеЉ ж™‚гЃ«дёЎж–№гЃ«иїЅеЉ гЃ•г‚ЊгЃ¦гЃ„г‚‹гЃЇгЃљгЃЄгЃ®гЃ§пјЊгЃ©гЃЎг‚‰гЃ‹еЏ–гЃЈгЃ¦гЃЏг‚ЊгЃ°гЃ„гЃ„пјЋ
 	 * @param nameOrIndex
 	 */
 	public List<Integer> getUndirectedList () {
@@ -317,29 +317,29 @@ public class InfoAgent {
 	}
 	
 	/**
-	 * Collection.sort‚р—p‚ў‚ДЃC2‚В‚МѓЉѓXѓg‚рѓ\Ѓ[ѓg‚·‚йЃD<br>
-	 * ѓlѓbѓgѓЏЃ[ѓNђ¶ђ¬‚МЊџЏШ—p‚Е‚ ‚иЃCЋАЌЫ‚МѓVѓ~ѓ…ѓЊЃ[ѓVѓ‡ѓ“‚Е‚НЊД‚Ф•K—v‚Н‚И‚ўЃD
+	 * Collection.sortг‚’з”ЁгЃ„гЃ¦пјЊ2гЃ¤гЃ®гѓЄг‚№гѓ€г‚’г‚Ѕгѓјгѓ€гЃ™г‚‹пјЋ<br>
+	 * гѓЌгѓѓгѓ€гѓЇгѓјг‚Їз”џж€ђгЃ®ж¤њиЁјз”ЁгЃ§гЃ‚г‚ЉпјЊе®џйљ›гЃ®г‚·гѓџгѓҐгѓ¬гѓјг‚·гѓ§гѓігЃ§гЃЇе‘јгЃ¶еї…и¦ЃгЃЇгЃЄгЃ„пјЋ
 	 */
 	public void sortLists () {
 		Collections.sort(this.followedList);
 		Collections.sort(this.followingList);
 	}
 	/**
-	 * ЋQЏЖ‚µ‚Д‚ў‚йѓGЃ[ѓWѓFѓ“ѓg‚Мђ”‚р•Ф‚·ЃB
+	 * еЏ‚з…§гЃ—гЃ¦гЃ„г‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•°г‚’иї”гЃ™гЂ‚
 	 * @return
 	 */
 	public int getnFollowing () {
 		return (this.isNetworkStatic)? this.refNetwork.getnFollowedOf(this.getAgentIndex()) : this.followingList.size();
 	}
 	/**
-	 * ЋQЏЖ‚і‚к‚Д‚ў‚йѓGЃ[ѓWѓFѓ“ѓg‚Мђ”‚р•Ф‚·ЃB
+	 * еЏ‚з…§гЃ•г‚ЊгЃ¦гЃ„г‚‹г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж•°г‚’иї”гЃ™гЂ‚
 	 * @return
 	 */
 	public int getnFollowed () {
 		return (this.isNetworkStatic)? this.refNetwork.getnFollowedOf(this.getAgentIndex()) : this.followedList.size();
 	}
 	/**
-	 * –іЊьѓlѓbѓgѓЏЃ[ѓN‚Е‚МђЪ‘±Ћџђ”‚р•Ф‚·ЃB
+	 * з„Ўеђ‘гѓЌгѓѓгѓ€гѓЇгѓјг‚ЇгЃ§гЃ®жЋҐз¶љж¬Ўж•°г‚’иї”гЃ™гЂ‚
 	 * @return
 	 */
 	public int getDegree () {
@@ -348,28 +348,28 @@ public class InfoAgent {
 	
 	
 	/**
-	 * Џо•сѓGЃ[ѓWѓFѓ“ѓg‚ЄѓTѓCѓЊѓ“ѓg‚Е‚ ‚к‚ОtrueЃCѓ”ѓHЃ[ѓJѓ‹‚Е‚ ‚к‚Оfalse‚р•Ф‚·<br>
-	 * ѓfѓtѓHѓ‹ѓg‚Нfalse
+	 * жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊг‚µг‚¤гѓ¬гѓігѓ€гЃ§гЃ‚г‚ЊгЃ°trueпјЊгѓґг‚©гѓјг‚«гѓ«гЃ§гЃ‚г‚ЊгЃ°falseг‚’иї”гЃ™<br>
+	 * гѓ‡гѓ•г‚©гѓ«гѓ€гЃЇfalse
 	 * @return isSilent
 	 */
 	public boolean isSilent() {
 		return this.isSilent;
 	}
 	/**
-	 * Џо•сѓGЃ[ѓWѓFѓ“ѓg‚рѓTѓCѓЊѓ“ѓg‚Й‚·‚йЃB
+	 * жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€г‚’г‚µг‚¤гѓ¬гѓігѓ€гЃ«гЃ™г‚‹гЂ‚
 	 */
 	public void muzzle() {
 		this.isSilent = true;
 	}
 	/**
-	 * Џо•сѓGЃ[ѓWѓFѓ“ѓg‚рѓ”ѓHЃ[ѓJѓ‹‚Й‚·‚йЃB
+	 * жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€г‚’гѓґг‚©гѓјг‚«гѓ«гЃ«гЃ™г‚‹гЂ‚
 	 */
 	public void unmuzzle() {
 		this.isSilent = false;
 	}
 	/**
-	 * ЉO‚©‚зЏо•сѓGЃ[ѓWѓFѓ“ѓg‚МЊ»ЌЭ‚М€УЊ©‚рЋж“ѕ‚·‚йЃBѓVѓ~ѓ…ѓЊЃ[ѓVѓ‡ѓ“—pЃB<br>
-	 * ѓGЃ[ѓWѓFѓ“ѓg‚ЄѓTѓCѓЊѓ“ѓg‚Е‚ ‚йЏкЌ‡‚НЋж“ѕ‚Е‚«‚И‚ўЃBnull’l‚р•Ф‚·
+	 * е¤–гЃ‹г‚‰жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®зЏѕењЁгЃ®ж„Џи¦‹г‚’еЏ–еѕ—гЃ™г‚‹гЂ‚г‚·гѓџгѓҐгѓ¬гѓјг‚·гѓ§гѓіз”ЁгЂ‚<br>
+	 * г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃЊг‚µг‚¤гѓ¬гѓігѓ€гЃ§гЃ‚г‚‹е ґеђ€гЃЇеЏ–еѕ—гЃ§гЃЌгЃЄгЃ„гЂ‚nullеЂ¤г‚’иї”гЃ™
 	 * @return opinion
 	 */
 	public Integer getOpinion() {
@@ -377,33 +377,33 @@ public class InfoAgent {
 		return this.forceGetOpinion();
 	}
 	/**
-	 * ѓTѓCѓЊѓ“ѓg”@‰Ѕ‚р–в‚н‚ё€УЊ©‚рЋж“ѕ‚·‚йЃB‹L^—pЃB
+	 * г‚µг‚¤гѓ¬гѓігѓ€е¦‚дЅ•г‚’е•Џг‚ЏгЃљж„Џи¦‹г‚’еЏ–еѕ—гЃ™г‚‹гЂ‚иЁйЊІз”ЁгЂ‚
 	 * @return
 	 */
 	public Integer forceGetOpinion() {
 		return this.opinion;
 	}
 	/**
-	 * Џо•сѓGЃ[ѓWѓFѓ“ѓg‚М€УЊ©‚рЋw’и‚·‚йЃB
-	 * @param opinion ѓZѓbѓg‚·‚й opinion
+	 * жѓ…е ±г‚Ёгѓјг‚ёг‚§гѓігѓ€гЃ®ж„Џи¦‹г‚’жЊ‡е®љгЃ™г‚‹гЂ‚
+	 * @param opinion г‚»гѓѓгѓ€гЃ™г‚‹ opinion
 	 */
 	public void setOpinion(Integer opinion) {
 		this.opinion = opinion;
 	}
 	/**
-	 * ’†ЉФ€УЊ©‚рЉm’и€УЊ©‚Ж‚µ‚Д“K—p‚·‚йЃBѓCѓeѓЊЃ[ѓ^‚МЌЕЊг‚ЙЊД‚ФЃB
+	 * дё­й–“ж„Џи¦‹г‚’зўєе®љж„Џи¦‹гЃЁгЃ—гЃ¦йЃ©з”ЁгЃ™г‚‹гЂ‚г‚¤гѓ†гѓ¬гѓјг‚їгЃ®жњЂеѕЊгЃ«е‘јгЃ¶гЂ‚
 	 */
 	public void applyOpinion() {
 		if (this.tmpOpinion != null) this.setOpinion(this.tmpOpinion);
 	}
 	/**
-	 * ’†ЉФ€УЊ©‚рЋж“ѕ‚·‚йЃB€УЊ©•П‰»‚рѓ`ѓFѓbѓN‚·‚й‚Ѕ‚Я‚ЙЋg‚¤ЃB
+	 * дё­й–“ж„Џи¦‹г‚’еЏ–еѕ—гЃ™г‚‹гЂ‚ж„Џи¦‹е¤‰еЊ–г‚’гѓЃг‚§гѓѓг‚ЇгЃ™г‚‹гЃџг‚ЃгЃ«дЅїгЃ†гЂ‚
 	 */
 	public Integer getTmpOpinion() {
 		return this.tmpOpinion;
 	}
 	/**
-	 * €кЋћ“I‚Й€УЊ©‚рЉi”[‚·‚йЃBѓCѓeѓЊЃ[ѓ^‚М’†ЉФѓfЃ[ѓ^‚М•Ы‘¶‚ЙЋg‚¤ЃB
+	 * дёЂж™‚зљ„гЃ«ж„Џи¦‹г‚’ж јзґЌгЃ™г‚‹гЂ‚г‚¤гѓ†гѓ¬гѓјг‚їгЃ®дё­й–“гѓ‡гѓјг‚їгЃ®дїќе­гЃ«дЅїгЃ†гЂ‚
 	 * @param tmpOp
 	 */
 	private void setTmpOpinion(Integer tmpOp) {
@@ -411,8 +411,8 @@ public class InfoAgent {
 	}
 
 	/**
-	 * ”hђ¶ѓVѓ~ѓ…ѓЊЃ[ѓVѓ‡ѓ“‚М‚Ѕ‚Я‚МѓЃѓ\ѓbѓhЃD<br>
-	 * {@link #linearThreasholdMuzzling(InfoAgent[])}‚ЕЊ€’и‚µ‚Ѕmuzzling‚М’†ЉФЏу‘Ф‚р–{“K—p‚·‚йЃD
+	 * жґѕз”џг‚·гѓџгѓҐгѓ¬гѓјг‚·гѓ§гѓігЃ®гЃџг‚ЃгЃ®гѓЎг‚Ѕгѓѓгѓ‰пјЋ<br>
+	 * {@link #linearThreasholdMuzzling(InfoAgent[])}гЃ§ж±єе®љгЃ—гЃџmuzzlingгЃ®дё­й–“зЉ¶ж…‹г‚’жњ¬йЃ©з”ЁгЃ™г‚‹пјЋ
 	 */
 	public void applyMuzzling() {
 		if (this.tmpSilent) this.muzzle();
@@ -420,7 +420,7 @@ public class InfoAgent {
 	}
 	
 	/**
-	 * ‰e‹ї—Н‚рЋж“ѕ‚·‚йЃBѓTѓCѓЊѓ“ѓg‚И‚з-1‚р•Ф‚·ЃB‚±‚М-1‚Ж‚ў‚¤ђ”Ћљ‚НѓCѓeѓЊЃ[ѓ^‘¤‚Е‰e‹ї—НЌЕ‘е‚МѓGЃ[ѓWѓFѓ“ѓg‚р’T‚·ЌЫ‚М”дЉr‚Й€ш‚Б‚©‚©‚з‚И‚ў‚Ѕ‚Я‚ЙЋw’и‚і‚к‚Д‚ў‚йЃB
+	 * еЅ±йџїеЉ›г‚’еЏ–еѕ—гЃ™г‚‹гЂ‚г‚µг‚¤гѓ¬гѓігѓ€гЃЄг‚‰-1г‚’иї”гЃ™гЂ‚гЃ“гЃ®-1гЃЁгЃ„гЃ†ж•°е­—гЃЇг‚¤гѓ†гѓ¬гѓјг‚їеЃґгЃ§еЅ±йџїеЉ›жњЂе¤§гЃ®г‚Ёгѓјг‚ёг‚§гѓігѓ€г‚’жЋўгЃ™йљ›гЃ®жЇ”ијѓгЃ«еј•гЃЈгЃ‹гЃ‹г‚‰гЃЄгЃ„гЃџг‚ЃгЃ«жЊ‡е®љгЃ•г‚ЊгЃ¦гЃ„г‚‹гЂ‚
 	 * @return influence
 	 */
 	public double getInfluence() {
@@ -428,15 +428,15 @@ public class InfoAgent {
 	}
 
 	/**
-	 * ‰e‹ї—Н‚рЋw’и‚·‚йЃB
-	 * @param influence ѓZѓbѓg‚·‚й influence
+	 * еЅ±йџїеЉ›г‚’жЊ‡е®љгЃ™г‚‹гЂ‚
+	 * @param influence г‚»гѓѓгѓ€гЃ™г‚‹ influence
 	 */
 	public void setInfluence(double influence) {
 		this.influence = influence;
 	}
 
 	/**
-	 * и‡’l‚рЋж“ѕ‚·‚йЃD
+	 * й–ѕеЂ¤г‚’еЏ–еѕ—гЃ™г‚‹пјЋ
 	 * @return threshold
 	 */
 	public double getThreshold() {
@@ -444,8 +444,8 @@ public class InfoAgent {
 	}
 
 	/**
-	 * и‡’l‚рЋw’и‚·‚йЃDи‡’l‚р€УЊ©‚Й‚ж‚Б‚Д•П‰»‚і‚№‚йѓVѓ~ѓ…ѓЊЃ[ѓVѓ‡ѓ“‚Е—p‚ў‚йЃD
-	 * @param threshold ѓZѓbѓg‚·‚й threshold
+	 * й–ѕеЂ¤г‚’жЊ‡е®љгЃ™г‚‹пјЋй–ѕеЂ¤г‚’ж„Џи¦‹гЃ«г‚€гЃЈгЃ¦е¤‰еЊ–гЃ•гЃ›г‚‹г‚·гѓџгѓҐгѓ¬гѓјг‚·гѓ§гѓігЃ§з”ЁгЃ„г‚‹пјЋ
+	 * @param threshold г‚»гѓѓгѓ€гЃ™г‚‹ threshold
 	 */
 	public void setThreshold(double threshold) {
 		this.threshold = threshold;

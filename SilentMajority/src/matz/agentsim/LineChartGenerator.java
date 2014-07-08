@@ -27,8 +27,8 @@ public class LineChartGenerator implements ChartGenerator {
 	private String[] opinionType = {"Neutral", "Positive", "Negative", "Undecided"};
 	
 	/**
-	 * SilentMajoritySimulator‚ÌŒ‹‰Ê‚ğ—p‚¢‚½ƒRƒ“ƒXƒgƒ‰ƒNƒ^B<br>
-	 * 4ŸŒ³Integer”z—ñ‚ğˆø”‚Éæ‚éB‚»‚ê‚¼‚ê‚ÌŸŒ³‚ÍAuƒXƒeƒbƒv”vu‹L˜^‚Ìí—Şi—İÏ/XVjvu‹L˜^‚ÌƒXƒR[ƒvi‘S‘Ì/ƒTƒCƒŒƒ“ƒg/ƒ”ƒH[ƒJƒ‹jvuˆÓŒ©i’†—§/m’è/”Û’è/–¢’è‹`jv‚Å‚ ‚éB
+	 * SilentMajoritySimulatorã®çµæœã‚’ç”¨ã„ãŸã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚<br>
+	 * 4æ¬¡å…ƒIntegeré…åˆ—ã‚’å¼•æ•°ã«å–ã‚‹ã€‚ãã‚Œãã‚Œã®æ¬¡å…ƒã¯ã€ã€Œã‚¹ãƒ†ãƒƒãƒ—æ•°ã€ã€Œè¨˜éŒ²ã®ç¨®é¡ï¼ˆç´¯ç©/æ›´æ–°ï¼‰ã€ã€Œè¨˜éŒ²ã®ã‚¹ã‚³ãƒ¼ãƒ—ï¼ˆå…¨ä½“/ã‚µã‚¤ãƒ¬ãƒ³ãƒˆ/ãƒ´ã‚©ãƒ¼ã‚«ãƒ«ï¼‰ã€ã€Œæ„è¦‹ï¼ˆä¸­ç«‹/è‚¯å®š/å¦å®š/æœªå®šç¾©ï¼‰ã€ã§ã‚ã‚‹ã€‚
 	 * 
 	 * @param records
 	 */
@@ -44,10 +44,10 @@ public class LineChartGenerator implements ChartGenerator {
 				datasetSeries[i][j] = new XYSeries(opinionType[j], false, false);
 			}
 		}
-		//—İÏ‹L˜^iSUM_INDEXˆÈ‰ºj‚É‚Â‚¢‚Ä
-		for (int j = 0; j < records.get(0)[UPDATE_INDEX].length; j++) { //ƒXƒR[ƒv‚²‚Æ‚ÉŒn—ñ‚ğì‚é
-			/* X‚Ì’l‚ªd•¡‚µ‚Ä‚¢‚éƒf[ƒ^‚Ì‘¶İ‚ğ‹–‚·‚©”Û‚©‚Æ‚¢‚¤ˆá‚¢‚ª‚ ‚èA
-			 * StackedXYAreaChart‚Å‚Íd•¡‚ğ‹–‚³‚È‚¢‚Ì‚ÅA–¾¦“I‚ÈƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğg‚¤
+		//ç´¯ç©è¨˜éŒ²ï¼ˆSUM_INDEXä»¥ä¸‹ï¼‰ã«ã¤ã„ã¦
+		for (int j = 0; j < records.get(0)[UPDATE_INDEX].length; j++) { //ã‚¹ã‚³ãƒ¼ãƒ—ã”ã¨ã«æ™‚ç³»åˆ—ã‚’ä½œã‚‹
+			/* Xã®å€¤ãŒé‡è¤‡ã—ã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿ã®å­˜åœ¨ã‚’è¨±ã™ã‹å¦ã‹ã¨ã„ã†é•ã„ãŒã‚ã‚Šã€
+			 * StackedXYAreaChartã§ã¯é‡è¤‡ã‚’è¨±ã•ãªã„ã®ã§ã€æ˜ç¤ºçš„ãªã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’ä½¿ã†
 			 */			
 			for (int i = 0; i < records.size(); i++) {
 				for (int k = 0; k < 4; k++) {
