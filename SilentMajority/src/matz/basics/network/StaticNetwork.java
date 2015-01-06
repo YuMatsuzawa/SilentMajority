@@ -1,6 +1,9 @@
 package matz.basics.network;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -281,8 +284,9 @@ public abstract class StaticNetwork {
 	/**
 	 * チェックのためにネットワークの情報をファイルや画像に出力する．
 	 * @param outDir
+	 * @throws Exception 
 	 */
-	public void dumpNetwork(File outDir) {
+	public void dumpNetwork(File outDir) throws Exception {
 		if (!outDir.isDirectory()) outDir.mkdirs();
 		
 		//全エージェントの隣接リストをソートする。コメントアウトしてしまってもいい。
@@ -318,8 +322,8 @@ public abstract class StaticNetwork {
 					",Avg_D=" + String.format("%.2f", this.getAvgDegree()) ,this.nFollowedFreqMap);
 			spg.generateGraph(outDir, "ntwkDegreeFreq.png");
 	
-		} catch(IOException e) {
-			e.printStackTrace();
+		} catch(Exception e) {
+			throw e;
 		}
 	}
 

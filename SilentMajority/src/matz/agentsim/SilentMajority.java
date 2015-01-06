@@ -60,7 +60,11 @@ public final class SilentMajority {
 		// ここでネットワーク生成
 		StaticNetwork cnnNtwk = new StaticCNNNetwork(nAgents);
 		//cnnNtwk.dumpList(outDir);
-		cnnNtwk.dumpNetwork(dateDir);
+		try {
+			cnnNtwk.dumpNetwork(dateDir);
+		} catch(Exception e) {
+			_E.logStackTrace(e);
+		}
 		for (int k = 1; k <= sRatioResol; k++) {
 			double sRatio = k * 0.10;
 			for (int j = 0; j < mRatioResol; j++) {

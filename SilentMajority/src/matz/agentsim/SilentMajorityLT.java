@@ -138,7 +138,11 @@ public class SilentMajorityLT {
 		String simName = SIM_TYPE_NAME[simType] + "_" + ntwkType + date.getTime();
 		File outDir = new File("results",simName);
 		if (!outDir.isDirectory()) outDir.mkdirs();
-		ntwk.dumpNetwork(outDir);
+		try {
+			ntwk.dumpNetwork(outDir);
+		} catch(Exception e) {
+			_E.logStackTrace(e);
+		}
 		
 		for (double controlVar = lowerBound; controlVar < lowerBound + controlPitch*controlResol; controlVar += controlPitch) {
 			for (int iter = 0; iter < nIter; iter++) {
