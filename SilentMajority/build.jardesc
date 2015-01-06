@@ -26,6 +26,7 @@
         <file path="/SilentMajority/libs/jung-2.0.1/lib/jung-graph-impl-2.0.1.jar"/>
         <file path="/SilentMajority/libs/jung-2.0.1/lib/colt-1.2.0.jar"/>
         <file path="/SilentMajority/libs/jung-2.0.1/lib/jung-api-2.0.1.jar"/>
+        <file path="/SilentMajority/conf_neumann.xml"/>
         <file path="/SilentMajority/libs/jfreechart-1.0.17/lib/jfreechart-1.0.17-swt.jar"/>
         <file path="/SilentMajority/.project"/>
     </selectedElements>
