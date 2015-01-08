@@ -37,8 +37,8 @@ public abstract class StaticNetwork {
 	protected double givenDegree;
 	//protected boolean degreeGiven = false;
 
-	protected TreeMap<Integer, Integer> nFollowedFreqMap = new TreeMap<Integer,Integer>(); //TreeMapはKeyを昇順に順序付けするので、
-	protected TreeMap<Integer, Integer> nFollowingFreqMap = new TreeMap<Integer,Integer>();
+	protected TreeMap<Integer, Integer> numFollowedFreqMap = new TreeMap<Integer,Integer>(); //TreeMapはKeyを昇順に順序付けするので、低次数のエントリから順に並ぶ
+	protected TreeMap<Integer, Integer> numFollowingFreqMap = new TreeMap<Integer,Integer>();
 	
 	protected Random localRNG = new Random();
 	
@@ -210,76 +210,125 @@ public abstract class StaticNetwork {
 	}
 	
 	/**
-	 * 有向グラフにおける被参照数（入次数）を返す．
+	 * 有向グラフにおいて，あるエージェントindexの被参照数（入次数）を返す．
 	 * @param index
 	 * @return
 	 */
-	public int getnFollowedOf(int index) {
+	public int getNumFollowedOf(int index) {
 		return this.networkList[index][FOLLOWED_INDEX].size();
 	}
 	
 	/**
-	 * 有向グラフにおける参照数（出次数）を返す．
+	 * 有向グラフにおいて，あるエージェントindexの参照数（出次数）を返す．
 	 * @param index
 	 * @return
 	 */
-	public int getnFollowingOf(int index) {
+	public int getNumFollowingOf(int index) {
 		return this.networkList[index][FOLLOWING_INDEX].size();
 	}
 	
 	/**
-	 * 無向グラフにおける次数を返す．内部的には有向グラフの被参照数と同じものを返す．
+	 * 無向グラフにおいて，あるエージェントの次数を返す．内部的には有向グラフの参照数と同じものを返す．
 	 * @param index
 	 * @return
 	 */
 	public int getDegreeOf(int index) {
-		return this.getnFollowedOf(index);
+		return this.getNumFollowingOf(index);
 	}
 	
+	/**入次数，出次数それぞれについて頻度分布Mapを生成する．
+	 * 
+	 */
 	public void countDegreeFreq() {
 		for (int i = 0; i < this.getnAgents(); i++) {
-			int nFollowed = this.getnFollowedOf(i), nFollowing = this.getnFollowingOf(i);
-			if (this.nFollowedFreqMap.containsKey(nFollowed)) {
-				int val = this.nFollowedFreqMap.get(nFollowed);
-				this.nFollowedFreqMap.put(nFollowed, ++val);
-			} else this.nFollowedFreqMap.put(nFollowed, 1);
-			if (this.nFollowingFreqMap.containsKey(nFollowing)) {
-				int val = this.nFollowingFreqMap.get(nFollowing);
-				this.nFollowingFreqMap.put(nFollowing, ++val);
-			} else this.nFollowingFreqMap.put(nFollowing, 1);
+			int nFollowed = this.getNumFollowedOf(i), nFollowing = this.getNumFollowingOf(i);
+			if (this.numFollowedFreqMap.containsKey(nFollowed)) {
+				int val = this.numFollowedFreqMap.get(nFollowed);
+				this.numFollowedFreqMap.put(nFollowed, ++val);
+			} else this.numFollowedFreqMap.put(nFollowed, 1);
+			if (this.numFollowingFreqMap.containsKey(nFollowing)) {
+				int val = this.numFollowingFreqMap.get(nFollowing);
+				this.numFollowingFreqMap.put(nFollowing, ++val);
+			} else this.numFollowingFreqMap.put(nFollowing, 1);
 		}
 	}
 	
+	/**頻度分布を元データとして，生成・構築したネットワークの実際の平均<strong>出次数</strong>を算出・取得する．
+	 * @return
+	 */
+	public double getAvgNumFollowing() {
+		double avgNumFollowing = 0.0;
+		for (Entry<Integer,Integer> entry : this.getNumFollowingFreqMap().entrySet()) {
+			avgNumFollowing += (double)entry.getKey() * (double)entry.getValue() / (double)this.getnAgents();
+		}
+		return avgNumFollowing;
+	}
+	
+	/**頻度分布を元データとして，生成・構築したネットワークの実際の平均<strong>入次数</strong>を算出・取得する．
+	 * @return
+	 */
+	public double getAvgNumFollowed() {
+		double avgNumFollowed = 0.0;
+		for (Entry<Integer,Integer> entry : this.getNumFollowedFreqMap().entrySet()) {
+			avgNumFollowed += (double)entry.getKey() * (double)entry.getValue() / (double)this.getnAgents();
+		}
+		return avgNumFollowed;
+	}
+	
+	/**頻度分布を元データとして，生成・構築したネットワークの実際の平均次数を算出・取得する．<br>
+	 * 内部的には出次数（参照数）の平均を出力する．
+	 * @return
+	 */
 	public double getAvgDegree() {
-		double avgDegree = 0.0;
-		for (Entry<Integer,Integer> entry : this.getnFollowedFreq().entrySet()) {
-			avgDegree += (double)entry.getKey() * (double)entry.getValue() / (double)this.getnAgents();
-		}
-		return avgDegree;
+		return this.getAvgNumFollowing();
 	}
 	
-	public TreeMap<Integer,Integer> getnFollowedFreq() {
-		return this.nFollowedFreqMap;
+	/**ネットワークの入次数頻度分布Mapを取得する．
+	 * @return
+	 */
+	public TreeMap<Integer,Integer> getNumFollowedFreqMap() {
+		return this.numFollowedFreqMap;
 	}
 	
-	public TreeMap<Integer,Integer> getnFollowingFreq() {
-		return this.nFollowingFreqMap;
+	/**ネットワークの出次数頻度分布Mapを取得する．
+	 * @return
+	 */
+	public TreeMap<Integer,Integer> getNumFollowingFreqMap() {
+		return this.numFollowingFreqMap;
 	}
 	
-	public TreeMap<Integer,Integer> getDegreeFreq() {
-		return this.getnFollowedFreq();
+	/**ネットワークの次数頻度分布Mapを取得する．内部的には出次数分布Mapを返している．
+	 * @return
+	 */
+	public TreeMap<Integer,Integer> getDegreeFreqMap() {
+		return this.getNumFollowingFreqMap();
 	}
 	
-	public int getnFollowedFreqOf(int index) {
-		return this.nFollowedFreqMap.get(this.getnFollowedOf(index));
+	/**あるノードindexの入次数が，ネットワーク全体ではどの程度の頻度で出現しているか取得する．頻度分布Mapの指定Keyに対するValueを返している．<br>
+	 * 当該ノードの次数の，ネットワーク全体における順位を算出するために使用できる．
+	 * @param index
+	 * @return
+	 */
+	public int getNumFollowedFreqOf(int index) {
+		return this.numFollowedFreqMap.get(this.getNumFollowedOf(index));
 	}
 	
-	public int getnFollowingFreqOf(int index) {
-		return this.nFollowingFreqMap.get(this.getnFollowingOf(index));
+	/**あるノードindexの出次数が，ネットワーク全体ではどの程度の頻度で出現しているか取得する．頻度分布Mapの指定Keyに対するValueを返している．<br>
+	 * 当該ノードの次数の，ネットワーク全体における順位を算出するために使用できる．
+	 * @param index
+	 * @return
+	 */
+	public int getNumFollowingFreqOf(int index) {
+		return this.numFollowingFreqMap.get(this.getNumFollowingOf(index));
 	}
 	
+	/**無向グラフで，あるノードindexの次数が，ネットワーク全体ではどの程度の頻度で出現しているか取得する．内部的には出自数頻度分布Mapから取得している．<br>
+	 * 当該ノードの次数の，ネットワーク全体における順位を算出するために使用できる．
+	 * @param index
+	 * @return
+	 */
 	public int getDegreeFreqOf(int index) {
-		return this.getnFollowedFreqOf(index);
+		return this.getNumFollowingFreqOf(index);
 	}
 	
 	/**
@@ -302,7 +351,7 @@ public abstract class StaticNetwork {
 			//隣接リスト吐き出し
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
 			for (int i = 0; i < this.getnAgents(); i++) { //Undirectedを前提とした初期コード
-				bw.write(i + "(" + this.getnFollowedOf(i) + ")\t:\t");
+				bw.write(i + "(" + this.getNumFollowedOf(i) + ")\t:\t");
 				for (Object neighbor : this.getUndirectedListOf(i)) {
 					bw.write((Integer)neighbor + ",");
 				}
@@ -311,7 +360,7 @@ public abstract class StaticNetwork {
 			
 			//TODO
 			for (int i = 0; i < this.getnAgents(); i++) { //Directedに対応した網羅的な出力コード．鈴村研データのCSV形式に合わせる．
-				bw.write(i + "(" + this.getnFollowedOf(i) + ")\t:\t");
+				bw.write(i + "(" + this.getNumFollowedOf(i) + ")\t:\t");
 				for (Object neighbor : this.getUndirectedListOf(i)) {
 					bw.write((Integer)neighbor + ",");
 				}
@@ -321,7 +370,7 @@ public abstract class StaticNetwork {
 			
 			//頻度分布吐き出し
 			BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwkDegreeFreq.csv"))));
-			for (Entry<Integer,Integer> entry : this.nFollowedFreqMap.entrySet()) {
+			for (Entry<Integer,Integer> entry : this.numFollowedFreqMap.entrySet()) {
 				bw2.write(entry.getKey() + "," + entry.getValue());
 				bw2.newLine();
 			}
@@ -329,7 +378,7 @@ public abstract class StaticNetwork {
 			ScatterPlotGenerator spg = new ScatterPlotGenerator(
 					this.getNtwkName() + 
 					",N=" + this.getnAgents() + 
-					",Avg_D=" + String.format("%.2f", this.getAvgDegree()) ,this.nFollowedFreqMap);
+					",Avg_D=" + String.format("%.2f", this.getAvgDegree()) ,this.numFollowedFreqMap);
 			spg.generateGraph(outDir, "ntwkDegreeFreq.png");
 	
 		} catch(Exception e) {

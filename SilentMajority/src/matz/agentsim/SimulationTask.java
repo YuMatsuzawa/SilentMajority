@@ -243,7 +243,7 @@ public class SimulationTask implements Runnable {
 		double nSilent = this.getnAgents() * this.getSilentAgentsRatio();
 		int cutoffDegree = 0;
 		int nSilentCandidate = 0;
-		for(Entry<Integer,Integer> entry : this.refNetwork.getDegreeFreq().entrySet()) {
+		for(Entry<Integer,Integer> entry : this.refNetwork.getDegreeFreqMap().entrySet()) {
 			cutoffDegree = entry.getKey();
 			nSilentCandidate += entry.getValue();
 			if (nSilentCandidate >= nSilent) break;
@@ -266,7 +266,7 @@ public class SimulationTask implements Runnable {
 		double boundary = 0.5;
 		double nLeafInitiator = this.getnAgents() * boundary;
 		double nHubInitiator = this.getnAgents() * boundary;
-		for (Entry<Integer,Integer> entry : this.refNetwork.getDegreeFreq().entrySet()) {
+		for (Entry<Integer,Integer> entry : this.refNetwork.getDegreeFreqMap().entrySet()) {
 			if (leafCandidate < nLeafInitiator) {
 				leafCutoff = entry.getKey();
 				leafCandidate += entry.getValue();

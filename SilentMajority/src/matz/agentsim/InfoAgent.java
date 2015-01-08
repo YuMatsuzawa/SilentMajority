@@ -330,14 +330,14 @@ public class InfoAgent {
 	 * @return
 	 */
 	public int getnFollowing () {
-		return (this.isNetworkStatic)? this.refNetwork.getnFollowedOf(this.getAgentIndex()) : this.followingList.size();
+		return (this.isNetworkStatic)? this.refNetwork.getNumFollowedOf(this.getAgentIndex()) : this.followingList.size();
 	}
 	/**
 	 * 参照されているエージェントの数を返す。
 	 * @return
 	 */
 	public int getnFollowed () {
-		return (this.isNetworkStatic)? this.refNetwork.getnFollowedOf(this.getAgentIndex()) : this.followedList.size();
+		return (this.isNetworkStatic)? this.refNetwork.getNumFollowedOf(this.getAgentIndex()) : this.followedList.size();
 	}
 	/**
 	 * 無向ネットワークでの接続次数を返す。

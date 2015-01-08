@@ -144,7 +144,7 @@ public class SilentMajorityLT {
 		else if (ntwkType.equals(NTWK_NAME[CSTM_INDEX])) { //カスタムネットワーク
 			try {
 				ntwk = new StaticCSTMNetwork(customNetworkPath, nAgents);
-				degree = ntwk.get
+				degree = ntwk.getAvgDegree();
 			} catch (FileNotFoundException e) {
 				_E.SimExecLogger.severe("Custom Network file not found.");
 				_E.safeShutdown();

@@ -148,11 +148,11 @@ public class SimulationTaskLT extends SimulationTask {
 	 */
 	public void rankedInitOpinions() {
 		//POSで始まるハブの境界値となる次数を探す
-		int hubCutoff = this.refNetwork.getDegreeFreq().firstKey() - 1;
+		int hubCutoff = this.refNetwork.getDegreeFreqMap().firstKey() - 1;
 		double nPosCandidate = this.getnAgents();
 		double nPosInitiator = this.getnAgents() * this.controlVar;
 		double nPos = 0.0;
-		for (Entry<Integer,Integer> entry : this.refNetwork.getDegreeFreq().entrySet()) {
+		for (Entry<Integer,Integer> entry : this.refNetwork.getDegreeFreqMap().entrySet()) {
 			hubCutoff = entry.getKey();
 			double tmpCandidate = nPosCandidate - (double)entry.getValue();
 			if (tmpCandidate > nPosInitiator) {
