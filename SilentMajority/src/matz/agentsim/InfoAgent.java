@@ -106,7 +106,7 @@ public class InfoAgent {
 		boolean tmpSilent = (this.isSilent())? true : false;
 		
 		int sumOfVocal = 0, sumOfVocalizedSameOpinion = 0;
-		for (int neighborIndex : this.getUndirectedList()) {
+		for (int neighborIndex : this.getFollowingList()) {
 			Integer neighborOp = infoAgentsArray[neighborIndex].getOpinion();
 			if (neighborOp == null) continue; //サイレントは無視
 			else {
@@ -309,11 +309,12 @@ public class InfoAgent {
 	}
 	/**
 	 * リンクが対称であるような無向ネットワークの場合のリスト取得メソッド．<br>
-	 * 追加時に両方に追加されているはずなので，どちらか取ってくればいい．
+	 * 追加時に両方に追加されているはずなので，どちらか取ってくればいい．<br>
+	 * StaticNetworkの場合，元クラス側の内部定義上，参照リストが返ってくる．非Staticでも同じようにしておく．
 	 * @param nameOrIndex
 	 */
 	public List<Integer> getUndirectedList () {
-		return this.getFollowedList();
+		return (this.isNetworkStatic)? this.refNetwork.getUndirectedListOf(this.getAgentIndex()) : this.followingList;
 	}
 	
 	/**

@@ -3,17 +3,18 @@
 <properties>
 <comment>Configuration</comment>
 <entry key="nCore"></entry>
-<entry key="simType">0</entry>
+<entry key="simType">0<!--0=HighD,高次数占有, 1=BiasedV,初期Vocal偏り, 2=Relief,緩和付き, 3=CtrlTH,少数派閾値下げ, 4=SepTH,少数派閾値下げ&多数派上げ, 5=Normal,何も起こらない--></entry>
 <entry key="initSilentRatio">0.9</entry>
 <entry key="totalPosRatio">0.4</entry>
 <entry key="nIter">10</entry>
 <entry key="lowerBound">0.00</entry>
 <entry key="controlPitch">0.05</entry>
 <entry key="controlResol">21</entry>
-<entry key="nAgents">1000</entry>
-<entry key="ntwkType">CNN</entry>
+<entry key="nAgents">1000<!-- -1 when using raw network from file in CSTM network type. --></entry>
+<entry key="ntwkType">CNN<!-- CNN/BA/WS/RND/REG/CSTM --></entry>
 <entry key="degree">10</entry>
 <entry key="pRewire"></entry>
 <entry key="noiseEnabled">0</entry>
 <entry key="ntwkFig">0</entry>
+<entry key="customNetworkPath"></entry>
 </properties>

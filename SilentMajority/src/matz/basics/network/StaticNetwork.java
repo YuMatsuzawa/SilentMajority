@@ -200,12 +200,13 @@ public abstract class StaticNetwork {
 	}
 	
 	/**
-	 * 無向グラフにおける隣接リストを返す．内部的には有向グラフの被参照リストと同じものを返す．
+	 * 無向グラフにおける隣接リストを返す．内部的には有向グラフの<s>被</s>参照リストと同じものを返す．<br>
+	 * 実験における利用の本質上，参照リストを用いることのほうが多いので，有向グラフ導入時の影響を緩和するために，参照リストを返すように変更した．15/01/07
 	 * @param index
 	 * @return
 	 */
 	public List<Integer> getUndirectedListOf(int index) {
-		return this.getFollowedListOf(index);
+		return this.getFollowingListOf(index);
 	}
 	
 	/**
@@ -300,7 +301,16 @@ public abstract class StaticNetwork {
 		try {
 			//隣接リスト吐き出し
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
-			for (int i = 0; i < this.getnAgents(); i++) {
+			for (int i = 0; i < this.getnAgents(); i++) { //Undirectedを前提とした初期コード
+				bw.write(i + "(" + this.getnFollowedOf(i) + ")\t:\t");
+				for (Object neighbor : this.getUndirectedListOf(i)) {
+					bw.write((Integer)neighbor + ",");
+				}
+				bw.newLine();
+			}
+			
+			//TODO
+			for (int i = 0; i < this.getnAgents(); i++) { //Directedに対応した網羅的な出力コード．鈴村研データのCSV形式に合わせる．
 				bw.write(i + "(" + this.getnFollowedOf(i) + ")\t:\t");
 				for (Object neighbor : this.getUndirectedListOf(i)) {
 					bw.write((Integer)neighbor + ",");

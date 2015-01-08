@@ -13,8 +13,8 @@ public class SilentMajorityLT {
 	static int TYPE_RANKED = 0, TYPE_BIASED = 1, TYPE_RELIEF = 2, TYPE_THRES = 3, TYPE_THRES2 = 4, TYPE_NORMAL = 5;
 	static String[] SIM_TYPE_NAME = {"HighD", "BiasedV", "Relief", "CtrlTH", "SepTH", "Normal"};
 	
-	static int CNN_INDEX = 0, WS_INDEX = 1, BA_INDEX = 2, RND_INDEX = 3, REG_INDEX = 4;
-	static String[] NTWK_NAME = {"CNN","WS","BA","RND","REG"};
+	static int CNN_INDEX = 0, WS_INDEX = 1, BA_INDEX = 2, RND_INDEX = 3, REG_INDEX = 4, CSTM_INDEX = 5;
+	static String[] NTWK_NAME = {"CNN","WS","BA","RND","REG","CSTM"};
 
 	/**
 	 * @param args
@@ -28,6 +28,7 @@ public class SilentMajorityLT {
 		double controlPitch, lowerBound;
 		Double pRewire = null, degree = null;
 		boolean noiseEnabled = false, ntwkFig = true;
+		String customNetworkPath = "";
 		String ntwkType = NTWK_NAME[CNN_INDEX];
 		
 		/*
@@ -38,13 +39,13 @@ public class SilentMajorityLT {
 			conf.loadFromXML(new FileInputStream(args[0]));
 		} catch(FileNotFoundException e) {
 			System.err.println("First argument must be proper path to configuration XML.");
-			System.exit(-1);
+			return;
 		} catch(IOException e) {
 			System.err.println("Cannot read "+args[0]);
-			System.exit(-1);
+			return;
 		} catch(Exception e) {
 			e.printStackTrace();
-			System.exit(-1);
+			return;
 		}
 
 		try {
@@ -61,6 +62,7 @@ public class SilentMajorityLT {
 			nAgents = Integer.parseInt(conf.getProperty("nAgents"));
 		} catch (Exception e) {
 			//do nothing
+			//nAgents should always be given by user. if not, default value of 1000 will hold.
 		}
 		try {
 			simType = Integer.parseInt(conf.getProperty("simType"));
@@ -93,6 +95,11 @@ public class SilentMajorityLT {
 		}
 		try {
 			ntwkFig = (conf.getProperty("ntwkFig").equals("0"))? false : true;
+		} catch (Exception e) {
+			//do nothing
+		}
+		try {
+			customNetworkPath = conf.getProperty("customNetworkPath");
 		} catch (Exception e) {
 			//do nothing
 		}
@@ -134,6 +141,27 @@ public class SilentMajorityLT {
 		else if (ntwkType.equals(NTWK_NAME[BA_INDEX])) ntwk = new StaticBANetwork(nAgents, degree);
 		else if (ntwkType.equals(NTWK_NAME[RND_INDEX])) ntwk = new StaticRNDNetwork(nAgents, degree);
 		else if (ntwkType.equals(NTWK_NAME[REG_INDEX])) ntwk = new StaticREGNetwork(nAgents, degree);
+		else if (ntwkType.equals(NTWK_NAME[CSTM_INDEX])) { //カスタムネットワーク
+			try {
+				ntwk = new StaticCSTMNetwork(customNetworkPath, nAgents);
+				degree = ntwk.get
+			} catch (FileNotFoundException e) {
+				_E.SimExecLogger.severe("Custom Network file not found.");
+				_E.safeShutdown();
+				_E.closeLogFileHandler();
+				return;
+			} catch (IOException e) {
+				_E.SimExecLogger.severe("Cannot read Custom Network file.");
+				_E.safeShutdown();
+				_E.closeLogFileHandler();
+				return;
+			} catch (Exception e) {
+				_E.logStackTrace(e);
+				_E.safeShutdown();
+				_E.closeLogFileHandler();
+				return;
+			}
+		}
 		
 		String simName = SIM_TYPE_NAME[simType] + "_" + ntwkType + date.getTime();
 		File outDir = new File("results",simName);
