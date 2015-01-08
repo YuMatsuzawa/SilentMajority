@@ -72,8 +72,6 @@ public abstract class StaticNetwork {
 		this(ntwkName, nAgents, UNDIRECTED, null);
 	}
 	
-	// TODO ネットワークデータを取得できる場合，それを元にコンストラクトできるような実装
-	
 	/**
 	 * @return ntwkName
 	 */
@@ -358,11 +356,16 @@ public abstract class StaticNetwork {
 				bw.newLine();
 			}
 			
-			//TODO
+			// UserID,#followed,#following,followed csv,following csv
 			for (int i = 0; i < this.getnAgents(); i++) { //Directedに対応した網羅的な出力コード．鈴村研データのCSV形式に合わせる．
-				bw.write(i + "(" + this.getNumFollowedOf(i) + ")\t:\t");
-				for (Object neighbor : this.getUndirectedListOf(i)) {
-					bw.write((Integer)neighbor + ",");
+				bw.write(i);
+				bw.write("," + this.getNumFollowedOf(i));
+				bw.write("," + this.getNumFollowingOf(i));
+				for (Integer follower : this.getFollowedListOf(i)) {
+					bw.write("," + follower);
+				}
+				for (Integer followee : this.getFollowingListOf(i)) {
+					bw.write("," + followee);
 				}
 				bw.newLine();
 			}
@@ -370,16 +373,33 @@ public abstract class StaticNetwork {
 			
 			//頻度分布吐き出し
 			BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwkDegreeFreq.csv"))));
+			bw2.write("numFollowed,freq");
+			bw2.newLine();
 			for (Entry<Integer,Integer> entry : this.numFollowedFreqMap.entrySet()) {
 				bw2.write(entry.getKey() + "," + entry.getValue());
 				bw2.newLine();
 			}
+			bw2.newLine();
+			bw2.write("numFollowing,freq");
+			bw2.newLine();
+			for (Entry<Integer,Integer> entry : this.numFollowingFreqMap.entrySet()) {
+				bw2.write(entry.getKey() + "," + entry.getValue());
+				bw2.newLine();
+			}
 			bw2.close();
+			
 			ScatterPlotGenerator spg = new ScatterPlotGenerator(
 					this.getNtwkName() + 
 					",N=" + this.getnAgents() + 
-					",Avg_D=" + String.format("%.2f", this.getAvgDegree()) ,this.numFollowedFreqMap);
-			spg.generateGraph(outDir, "ntwkDegreeFreq.png");
+					",Avg_InD=" + String.format("%.2f", this.getAvgNumFollowed()) ,this.numFollowedFreqMap);
+			spg.generateGraph(outDir, "ntwkInDegreeFreq.png");
+			if (this.getOrientation() == DIRECTED) {
+				ScatterPlotGenerator spg2 = new ScatterPlotGenerator(
+						this.getNtwkName() + 
+						",N=" + this.getnAgents() + 
+						",Avg_OutD=" + String.format("%.2f", this.getAvgNumFollowing()) ,this.numFollowingFreqMap);
+				spg2.generateGraph(outDir, "ntwkOutDegreeFreq.png");
+			}
 	
 		} catch(Exception e) {
 			throw e;
