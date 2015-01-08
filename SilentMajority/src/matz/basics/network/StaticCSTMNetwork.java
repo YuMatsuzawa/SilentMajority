@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class StaticCSTMNetwork extends StaticNetwork {
 	
-	private static ArrayList<String> customNetworkList = null;
+	private static ArrayList<String[]> customNetworkList = null;
 
 	/* 指定されたネットワークファイルを読み込み，
 	 * (非 Javadoc)
@@ -34,7 +34,7 @@ public class StaticCSTMNetwork extends StaticNetwork {
 	 */
 	private StaticCSTMNetwork(String ntwkName, int nAgents, boolean orientation, Double degree) {
 		super(ntwkName, nAgents, orientation, degree);
-		customNetworkList = new ArrayList<String>();
+		customNetworkList = new ArrayList<String[]>();
 	}
 
 	/**デフォルトコンストラクタ．nAgentsは必ず指定される．まず指定のnAgentsサイズのネットワークをsuper側でインスタンス化する．<br>
@@ -51,8 +51,12 @@ public class StaticCSTMNetwork extends StaticNetwork {
 		//ファイルを読み込み，Listに保存する．その後，鍵付きユーザを除外したランダムサンプリングを行い，Listサイズを指定のnAgentsサイズと一致させておく．
 		BufferedReader br = null;
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(customNetworkPath))));
-		// TODO
-//		while(br)
+		String line = "";
+		while((line = br.readLine()) != null) {
+			customNetworkList.add(line.split(","));
+		}
+		br.close();
+		//TODO
 
 		//Listに取り込んだ元データはノードをLong型のUserIDで管理しているため，そのままだとInteger型のネットワークリストにマッチしない．
 		//StaticNetworkの派生クラス，及びInfoAgentクラスでは，ノード（エージェント）の識別をint整数のindexで行っており，このindexはネットワークリストのindexと対応しているからである．
