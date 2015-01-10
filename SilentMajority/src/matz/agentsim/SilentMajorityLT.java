@@ -146,7 +146,7 @@ public class SilentMajorityLT {
 				ntwk = new StaticCSTMNetwork(customNetworkPath, nAgents);
 				degree = ntwk.getAvgDegree();
 			} catch (FileNotFoundException e) {
-				_E.SimExecLogger.severe("Custom Network file not found.");
+				_E.SimExecLogger.severe("Custom Network file not found or inappropriate.");
 				_E.safeShutdown();
 				_E.closeLogFileHandler();
 				return;

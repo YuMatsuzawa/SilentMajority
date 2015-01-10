@@ -23,10 +23,10 @@ public class StaticCSTMNetwork extends StaticNetwork {
 	 */
 	@Override
 	public void build() {
-		for (int index = 0; index < nAgents; index++) {
+		for (int index = 0; index < nAgents && index < customNetworkList.size(); index++) {
 			String[] csv = customNetworkList.get(index);
 			for (int cursor = 3; cursor <= 2 + Integer.valueOf(csv[NUM_FOLLOWED_INDEX]); cursor++) {	//FollowedListをIntegerIndexに変換してアペンド
-				for (int innerIndex = 0; innerIndex < nAgents; innerIndex++) {
+				for (int innerIndex = 0; innerIndex < nAgents && innerIndex < customNetworkList.size(); innerIndex++) {
 					if (customNetworkList.get(innerIndex)[USERID_INDEX].equals(csv[cursor])) {		//ノードのListにあるuserIDがサンプル全体Listに含まれているか判定
 						this.appendToFollowedListOf(index, innerIndex);		 //含まれていれば，対象userIDのノードが格納されているindexを，自ノードindexのFollowedListにアペンド．
 						break;	//見つかったならループは閉じる．見つからなかった場合は単に無視して次に行く．
@@ -34,7 +34,7 @@ public class StaticCSTMNetwork extends StaticNetwork {
 				}
 			}
 			for (int cursor = 3 + Integer.valueOf(csv[NUM_FOLLOWING_INDEX]); cursor < csv.length; cursor++) {	//FollowingListをIntegerIndexに変換してアペンド
-				for (int innerIndex = 0; innerIndex < nAgents; innerIndex++) {
+				for (int innerIndex = 0; innerIndex < nAgents && innerIndex < customNetworkList.size(); innerIndex++) {
 					if (customNetworkList.get(innerIndex)[USERID_INDEX].equals(csv[cursor])) {		//ノードのListにあるuserIDがサンプル全体Listに含まれているか判定
 						this.appendToFollowingListOf(index, innerIndex);		 //含まれていれば，対象userIDのノードが格納されているindexを，自ノードindexのFollowingListにアペンド．
 						break;	//見つかったならループは閉じる．見つからなかった場合は単に無視して次に行く．
@@ -79,6 +79,10 @@ public class StaticCSTMNetwork extends StaticNetwork {
 			customNetworkList.add(csv);
 		}
 		br.close();
+		
+		if (customNetworkList.size() < nAgents) {
+			throw new FileNotFoundException("Given network doesn't have sufficient number of agents.");
+		}
 		
 		while (customNetworkList.size() > nAgents) {//sampling
 			int index = localRNG.nextInt(customNetworkList.size());

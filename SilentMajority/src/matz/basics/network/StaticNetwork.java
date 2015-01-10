@@ -348,19 +348,18 @@ public abstract class StaticNetwork {
 		try {
 			//隣接リスト吐き出し
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outDir, "ntwk.dat"))));
-			for (int i = 0; i < this.getnAgents(); i++) { //Undirectedを前提とした初期コード
+			
+			/*for (int i = 0; i < this.getnAgents(); i++) { //Undirectedを前提とした初期コード
 				bw.write(i + "(" + this.getNumFollowedOf(i) + ")\t:\t");
 				for (Object neighbor : this.getUndirectedListOf(i)) {
 					bw.write((Integer)neighbor + ",");
 				}
 				bw.newLine();
 			}
-			
+			*/
 			// UserID,#followed,#following,followed csv,following csv
 			for (int i = 0; i < this.getnAgents(); i++) { //Directedに対応した網羅的な出力コード．鈴村研データのCSV形式に合わせる．
-				bw.write(i);
-				bw.write("," + this.getNumFollowedOf(i));
-				bw.write("," + this.getNumFollowingOf(i));
+				bw.write(i + "," + this.getNumFollowedOf(i) + "," + this.getNumFollowingOf(i));
 				for (Integer follower : this.getFollowedListOf(i)) {
 					bw.write("," + follower);
 				}
