@@ -30,7 +30,9 @@ public abstract class StaticNetwork {
 	 * 静的ネットワークを保持するArrayListの配列。<br>
 	 * 総称型の配列なので扱いに注意する．意味論的に使いやすいのでこうしているが，本来あまりやらないほうがいいらしい<br>
 	 */
-	protected List<Integer>[][] networkList = null;
+	protected ArrayList<Integer>[][] networkList = null;
+	protected List<SortedSet<Integer>> followingSetList = new ArrayList<SortedSet<Integer>>();
+	protected List<SortedSet<Integer>> followedSetList = new ArrayList<SortedSet<Integer>>();
 	protected String ntwkName;
 	protected boolean orientation = UNDIRECTED;
 	protected int nAgents;
@@ -43,24 +45,78 @@ public abstract class StaticNetwork {
 	protected Random localRNG = new Random();
 	
 	public abstract void build();
+	
+	/**頂点を整数のインデックスで識別する無向エッジ情報の格納クラス．<br>
+	 * 与えられた2頂点を，インデックス整数の小さい順に並び替えて内部変数に格納するので，逆向きに入力されたエッジとの区別を持たない（無方向である）．即ち，<br>
+	 * <code>(new Edge(0, 1)).equals(new Edge(1, 0))</code>はTrueである．<br>
+	 * Set系Collection実装で重複なしaddをするための判定にはhashCodeとequalsが両方使われており，
+	 * hashCodeで簡易チェックしてからequalsで詳細な判定という順になっているため，そういった利用を行うためにはhashCodeも適当にOverrideする必要がある．<br>
+	 * またデバッグ用にtoString（）もOverrideする．
+	 * @author YuMatsuzawa
+	 *
+	 */
+	protected class Edge {
+		protected int littleEnd, bigEnd;
+		/**無向エッジであることに注意．
+		 * <code>(new Edge(0, 1)).equals(new Edge(1, 0))</code>はTrueである．
+		 * @param end1
+		 * @param end2
+		 */
+		protected Edge(int end1, int end2) {
+			if (end1 == end2) {
+				System.err.println("Self-link not permited.");
+				return;
+			}
+			this.littleEnd = (end1 < end2)? end1 : end2;
+			this.bigEnd = (end1 < end2)? end2 : end1;
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			Edge objEdge = (Edge)obj;
+			return objEdge.littleEnd == this.littleEnd && objEdge.bigEnd == this.bigEnd;
+		}
+		
+		@Override
+		public int hashCode() {
+			return this.littleEnd + this.bigEnd;
+		}
+		
+		@Override
+		public String toString() {
+			return "[" + this.littleEnd + "," + this.bigEnd + "]";
+		}
+	}
+	
 	/**
 	 * 基本コンストラクタ.エージェント数を与えないコンストラクタは作らない.<br>
 	 * 
 	 * @param nAgents
 	 * @param orientation - 有向ならtrue,無向ならfalse
 	 */
-	@SuppressWarnings("unchecked")
 	public StaticNetwork(String ntwkName, int nAgents, boolean orientation, Double degree) {
 		this.setNtwkName(ntwkName);
 		this.setnAgents(nAgents);
 		this.setOrientation(orientation);
-		this.networkList = new ArrayList[nAgents][2];
-		for (int i = 0; i < nAgents; i++) {
-			for (int j = 0; j < 2; j++) this.networkList[i][j] = new ArrayList<Integer>();
-		}
+		this.initNetworkList(nAgents);
 		if (degree == null) this.setGivenDegree(DEGREE_DEFAULT);
 		else {
 			this.setGivenDegree(degree);
+		}
+	}
+	
+	/**ネットワークリストのList配列を初期化する．<br>インスタンス化時点ではnAgentsが不明なネットワークなどを実装する場合，
+	 * 先に適当なnAgentsを与えてインスタンス化した上で，後でこのメソッドを呼び出して好きなnAgentsに指定し直すことができる．
+	 * @param nAgents
+	 */
+	protected void initNetworkList(int nAgents) {
+//		this.networkList = new ArrayList[nAgents][2];
+		for (int i = 0; i < nAgents; i++) {
+//			for (int j = 0; j < 2; j++) {
+//				this.networkList[i][j] = new ArrayList<Integer>();
+//			}
+			this.followedSetList.add(new TreeSet<Integer>());
+			this.followingSetList.add(new TreeSet<Integer>());
 		}
 	}
 	
@@ -135,7 +191,8 @@ public abstract class StaticNetwork {
 	 * @param object
 	 */
 	public void appendToFollowedListOf(int subject, int object) {
-		this.networkList[subject][FOLLOWED_INDEX].add(object);
+//		this.networkList[subject][FOLLOWED_INDEX].add(object);
+		this.followedSetList.get(subject).add(object);
 	}
 	/**
 	 * subjectの参照リストにobjectを追加。
@@ -143,7 +200,8 @@ public abstract class StaticNetwork {
 	 * @param object
 	 */
 	public void appendToFollowingListOf(int subject, int object) {
-		this.networkList[subject][FOLLOWING_INDEX].add(object);
+//		this.networkList[subject][FOLLOWING_INDEX].add(object);
+		this.followingSetList.get(subject).add(object);
 	}
 	/**
 	 * 無向グラフで、subjectの両方向のリストにobjectを追加。
@@ -160,7 +218,8 @@ public abstract class StaticNetwork {
 	 * @param object
 	 */
 	public void removeFromFollowedListOf(int subject, Integer object) { //remove(Object) and remove(int) must be differentiated
-		this.networkList[subject][FOLLOWED_INDEX].remove(object);
+//		this.networkList[subject][FOLLOWED_INDEX].remove(object);
+		this.followedSetList.get(subject).remove(object);
 	}
 	/**
 	 * subjectの参照リストからobjectを除去。
@@ -168,7 +227,8 @@ public abstract class StaticNetwork {
 	 * @param object
 	 */
 	public void removeFromFollowingListOf(int subject, Integer object) { //remove(Object) and remove(int) must be differentiated
-		this.networkList[subject][FOLLOWING_INDEX].remove(object);
+//		this.networkList[subject][FOLLOWING_INDEX].remove(object);
+		this.followingSetList.get(subject).remove(object);
 	}
 	/**
 	 * 無向グラフで、subjectの両方向のリストからobjectを除去。
@@ -184,8 +244,9 @@ public abstract class StaticNetwork {
 	 * @param index
 	 * @return
 	 */
-	public List<Integer> getFollowedListOf(int index) {
-		return this.networkList[index][FOLLOWED_INDEX];
+	public Collection<Integer> getFollowedListOf(int index) {
+//		return this.networkList[index][FOLLOWED_INDEX];
+		return this.followedSetList.get(index);
 	}
 	
 	/**
@@ -193,8 +254,9 @@ public abstract class StaticNetwork {
 	 * @param index
 	 * @return
 	 */
-	public List<Integer> getFollowingListOf(int index) {
-		return this.networkList[index][FOLLOWING_INDEX];
+	public Collection<Integer> getFollowingListOf(int index) {
+//		return this.networkList[index][FOLLOWING_INDEX];
+		return this.followingSetList.get(index);
 	}
 	
 	/**
@@ -203,7 +265,7 @@ public abstract class StaticNetwork {
 	 * @param index
 	 * @return
 	 */
-	public List<Integer> getUndirectedListOf(int index) {
+	public Collection<Integer> getUndirectedListOf(int index) {
 		return this.getFollowingListOf(index);
 	}
 	
@@ -213,7 +275,8 @@ public abstract class StaticNetwork {
 	 * @return
 	 */
 	public int getNumFollowedOf(int index) {
-		return this.networkList[index][FOLLOWED_INDEX].size();
+//		return this.networkList[index][FOLLOWED_INDEX].size();
+		return this.followedSetList.get(index).size();
 	}
 	
 	/**
@@ -222,7 +285,8 @@ public abstract class StaticNetwork {
 	 * @return
 	 */
 	public int getNumFollowingOf(int index) {
-		return this.networkList[index][FOLLOWING_INDEX].size();
+//		return this.networkList[index][FOLLOWING_INDEX].size();
+		return this.followingSetList.get(index).size();
 	}
 	
 	/**
@@ -240,10 +304,12 @@ public abstract class StaticNetwork {
 	public void countDegreeFreq() {
 		for (int i = 0; i < this.getnAgents(); i++) {
 			int nFollowed = this.getNumFollowedOf(i), nFollowing = this.getNumFollowingOf(i);
+			
 			if (this.numFollowedFreqMap.containsKey(nFollowed)) {
 				int val = this.numFollowedFreqMap.get(nFollowed);
 				this.numFollowedFreqMap.put(nFollowed, ++val);
 			} else this.numFollowedFreqMap.put(nFollowed, 1);
+			
 			if (this.numFollowingFreqMap.containsKey(nFollowing)) {
 				int val = this.numFollowingFreqMap.get(nFollowing);
 				this.numFollowingFreqMap.put(nFollowing, ++val);
@@ -256,10 +322,13 @@ public abstract class StaticNetwork {
 	 */
 	public double getAvgNumFollowing() {
 		double avgNumFollowing = 0.0;
-		for (Entry<Integer,Integer> entry : this.getNumFollowingFreqMap().entrySet()) {
-			avgNumFollowing += (double)entry.getKey() * (double)entry.getValue() / (double)this.getnAgents();
+//		for (Entry<Integer,Integer> entry : this.getNumFollowingFreqMap().entrySet()) {
+//			avgNumFollowing += (double)entry.getKey() * (double)entry.getValue() / (double)this.getnAgents();
+//		}
+		for (SortedSet<Integer> followingSet : this.followingSetList) {
+			avgNumFollowing += (double) followingSet.size();
 		}
-		return avgNumFollowing;
+		return avgNumFollowing / (double)this.getnAgents();
 	}
 	
 	/**頻度分布を元データとして，生成・構築したネットワークの実際の平均<strong>入次数</strong>を算出・取得する．
@@ -267,10 +336,14 @@ public abstract class StaticNetwork {
 	 */
 	public double getAvgNumFollowed() {
 		double avgNumFollowed = 0.0;
-		for (Entry<Integer,Integer> entry : this.getNumFollowedFreqMap().entrySet()) {
-			avgNumFollowed += (double)entry.getKey() * (double)entry.getValue() / (double)this.getnAgents();
+//		for (Entry<Integer,Integer> entry : this.getNumFollowedFreqMap().entrySet()) {
+//			avgNumFollowed += (double)entry.getKey() * (double)entry.getValue() / (double)this.getnAgents();
+//		}
+		
+		for (SortedSet<Integer> followedSet : this.followedSetList) {
+			avgNumFollowed += (double) followedSet.size();
 		}
-		return avgNumFollowed;
+		return avgNumFollowed / (double)this.getnAgents();
 	}
 	
 	/**頻度分布を元データとして，生成・構築したネットワークの実際の平均次数を算出・取得する．<br>
@@ -338,10 +411,10 @@ public abstract class StaticNetwork {
 		if (!outDir.isDirectory()) outDir.mkdirs();
 		
 		//全エージェントの隣接リストをソートする。コメントアウトしてしまってもいい。
-		for (List<Integer>[] agentLists : networkList) {
-			Collections.sort(agentLists[FOLLOWED_INDEX]);
-			Collections.sort(agentLists[FOLLOWING_INDEX]);
-		}
+//		for (List<Integer>[] agentLists : networkList) {
+//			Collections.sort(agentLists[FOLLOWED_INDEX]);
+//			Collections.sort(agentLists[FOLLOWING_INDEX]);
+//		}
 		//ネットワークの統計的性質をチェックする。
 		this.countDegreeFreq(); //次数の頻度分布
 		

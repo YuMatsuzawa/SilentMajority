@@ -94,4 +94,31 @@ public class StaticCSTMNetwork extends StaticNetwork {
 		//従ってbuildメソッドでネットワークリストに書き込みを行う際，Longで管理されているUserIDを，Listのindexに置換しながらネットワークリストへ書き込んでいく．
 		this.build();
 	}
+	
+	/**nAgentsを与えないコンストラクタ．読み込んだネットワークファイルの全体を利用する．
+	 * @param customNetworkPath
+	 * @throws FileNotFoundException 
+	 * @throws IOException 
+	 */
+	public StaticCSTMNetwork(String customNetworkPath) throws FileNotFoundException, IOException {
+		this("CSTM", 0, DIRECTED, null); //nAgents指定がないので，あとでsuper.initNetworkListを呼ぶ．
+
+		//ファイルを読み込み，Listに保存する．その後，鍵付きユーザを除外したランダムサンプリングを行い，Listサイズを指定のnAgentsサイズと一致させておく．
+		BufferedReader br = null;
+		br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(customNetworkPath))));
+		String line = "";
+		while((line = br.readLine()) != null) {
+			String[] keyval = line.split("\t");		//元ネットワークファイルはuserid-csv pair
+			String[] csv = keyval[1].split(",");
+			if (csv[NUM_FOLLOWED_INDEX].equals("-1") || csv[NUM_FOLLOWING_INDEX].equals("-1")) continue;	//鍵付きユーザを除外
+			
+			customNetworkList.add(csv);
+		}
+		br.close();
+		
+		this.nAgents = customNetworkList.size();
+		this.initNetworkList(this.nAgents);
+		
+		this.build();
+	}
 }

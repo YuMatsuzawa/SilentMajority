@@ -1,8 +1,9 @@
 package matz.basics.network;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * VazquezのCNNモデルに基づき、現実やSNSでの友人関係に近いネットワークを生成するクラス。<br>
@@ -22,27 +23,43 @@ public class StaticCNNNetwork extends StaticNetwork {
 	private double p_nn;
 	private static final double P_NN_DEFAULT = 0.666667;
 	//private static final double P_NN_DEFAULT = 0.75;
-	private List<Integer[]> potentialLinks = new ArrayList<Integer[]>();
-	private int includedAgents = 0;
+//	private List<Integer[]> potentialLinks = new ArrayList<Integer[]>();
+//	private List<Edge> potentialLinks = new ArrayList<Edge>();
+//	private Set<Integer[]> potentialLinks = new HashSet<Integer[]>();
+	private Set<Edge> potentialLinks = new HashSet<Edge>();
+	
+	private int numNodes = 0;
+	private int numEdges = 0;
 
 	@Override
 	public void build() {
-		//とりあえず無向グラフ
+		
+		//test
+//		Edge test1 = new Edge(0, 1);
+//		Edge test2 = new Edge(0, 1);
+//		System.out.println((test1.equals(test2))? "true" : "false");
+//		HashSet<Edge> testSet = new HashSet<StaticNetwork.Edge>();
+//		System.out.println((testSet.add(test1))? "added" : "not");
+//		System.out.println((testSet.add(test2))? "added" : "not");
+		
+		//とりあえず無向グラフ. CNNは有向グラフを作るのが難しい．
 		if (this.getOrientation() == UNDIRECTED) {
 			//ネットワークの種を作る
 			this.constructLink(0, 2);
 			this.constructLink(1, 2);
-			this.includedAgents = 3;
+			this.numNodes = 3;
+			this.numEdges = 2;
 			
 			//指定された数のエージェントからなるネットワークが出来るまでイテレート
-			while(this.includedAgents < this.getnAgents()) {
+			while(this.numNodes < this.getnAgents()) {
 				double roll = this.localRNG.nextDouble();
 				if (roll < this.p_nn) {
 					this.connectPotential();
 				} else {
-					this.includeAgent();
+					this.addNode();
 				}
 			}
+			
 		}
 	}
 
@@ -52,23 +69,37 @@ public class StaticCNNNetwork extends StaticNetwork {
 	private void connectPotential() {
 		int listSize = this.potentialLinks.size();
 		if (listSize == 0) return;
+
+//		Collections.shuffle(this.potentialLinks);
+//		int roll = this.localRNG.nextInt(listSize);
+//		Integer[] pLink = this.potentialLinks.get(roll);
+//		Edge pLink = this.potentialLinks.get(roll);
+//		Edge pLink = this.potentialLinks.get(0);
+//		this.potentialLinks.remove(roll);		//rollでランダムなポテンシャルリンクを選び出して，リストから除去
 		
-		int roll = this.localRNG.nextInt(listSize);
-		Integer[] pLink = this.potentialLinks.get(roll);
-		this.potentialLinks.remove(roll);
-			//rollでランダムなポテンシャルリンクを選び出し
-		this.constructLink(pLink[0], pLink[1]);
-			//それをエッジに変換
+//		ArrayList<Integer[]> asList = new ArrayList<Integer[]>(this.potentialLinks);	//サンプリングするために，SetをListに
+		ArrayList<Edge> asList = new ArrayList<Edge>(this.potentialLinks);	//サンプリングするために，SetをListに.→ここが多分くっそ遅い?
+		Collections.shuffle(asList);
+		Edge pLink = asList.get(0);		//shuffleして順番をランダムにし，最初の1つを取得．
+//		Edge pLink = asList.get(roll);		//shuffleして順番をランダムにし，最初の1つを取得．
+//		Edge pLink = null;
+//		for (int i = 0; i <= roll; i++) {
+//			pLink = this.potentialLinks.iterator().next();
+//		}
+		this.potentialLinks.remove(pLink);
 		
+		this.constructLink(pLink.littleEnd, pLink.bigEnd);		//それをエッジに変換
+		asList.clear();
 	}
 
 	/**
 	 * 新規エージェントをランダムに加える。
 	 */
-	private void includeAgent() {
-		int target = this.localRNG.nextInt(this.includedAgents);
-		int newcomer = this.includedAgents++;
+	private void addNode() {
+		int target = this.localRNG.nextInt(this.numNodes);
+		int newcomer = this.numNodes++;
 		this.constructLink(newcomer, target);
+		System.out.println(this.numNodes + " " + this.numEdges);
 	}
 
 	/**
@@ -81,6 +112,7 @@ public class StaticCNNNetwork extends StaticNetwork {
 	private void constructLink(int subject, int object) {
 		this.appendToUndirectedListOf(subject, object);
 		this.appendToUndirectedListOf(object, subject);
+		this.numEdges++;
 		this.safeAppendPotentialLink(subject, object);
 		this.safeAppendPotentialLink(object, subject);
 	}
@@ -96,17 +128,25 @@ public class StaticCNNNetwork extends StaticNetwork {
 		for(int pIndex : this.getUndirectedListOf(object)) { 
 			if (pIndex != subject &&
 				!this.getUndirectedListOf(subject).contains(pIndex)) {
-				Integer[] pLink = {pIndex, subject};
-				Integer[] rLink = {subject, pIndex};
-				boolean isNew = true;
-				for(Integer[] link : this.potentialLinks) {
-					if (Arrays.equals(pLink, link) ||
-							Arrays.equals(rLink, link)) { //両方向ないことを確認し、
-						isNew = false;
-						break;
-					}
-				}
-				if (isNew) this.potentialLinks.add(pLink); //一方向だけ登録。
+//				Integer[] pLink = {pIndex, subject};
+//				Integer[] rLink = {subject, pIndex};
+				Edge pLink = new Edge(pIndex, subject);
+//				boolean isNew = true;
+//				for(Integer[] link : this.potentialLinks) {
+//					if (Arrays.equals(pLink, link) ||
+//							Arrays.equals(rLink, link)) { //両方向ないことを確認し、
+//						isNew = false;
+//						break;
+//					}
+//				}
+//				if (isNew) this.potentialLinks.add(pLink); //一方向だけ登録。
+				
+				this.potentialLinks.add(pLink);
+				/*potentialLinksがSet系Collectionなら，単にaddしていい．重複はない．
+				 * List系なら，重複判定しなければならない．
+				 * 一般に，HashSetなどのSetはHash値に基づく階層型の格納構造を持っているので，
+				 * List系よりも重複判定は高速である． 
+				 */
 			}
 		}
 	}

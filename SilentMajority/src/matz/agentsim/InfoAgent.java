@@ -1,8 +1,8 @@
 package matz.agentsim;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 import matz.basics.network.StaticNetwork;
@@ -263,7 +263,7 @@ public class InfoAgent {
 	/**情報エージェントが参照しているエージェントの整数インデックスリストを取得。
 	 * @return followingIndexList
 	 */
-	public List<Integer> getFollowingList() {
+	public Collection<Integer> getFollowingList() {
 		return (this.isNetworkStatic)? this.refNetwork.getFollowingListOf(this.getAgentIndex()) : this.followingList;
 	}
 	/**情報エージェントが参照しているエージェントの整数インデックスリストを空のリストに初期化。
@@ -281,7 +281,7 @@ public class InfoAgent {
 	/**情報エージェントが参照されているエージェントの整数インデックスリストを取得。
 	 * @return followedIndexList
 	 */
-	public List<Integer> getFollowedList() {
+	public Collection<Integer> getFollowedList() {
 		return (this.isNetworkStatic)? this.refNetwork.getFollowedListOf(this.getAgentIndex()) : this.followedList;
 	}
 	/**情報エージェントが参照されているエージェントの整数インデックスリストを空のリストに初期化。
@@ -313,7 +313,7 @@ public class InfoAgent {
 	 * StaticNetworkの場合，元クラス側の内部定義上，参照リストが返ってくる．非Staticでも同じようにしておく．
 	 * @param nameOrIndex
 	 */
-	public List<Integer> getUndirectedList () {
+	public Collection<Integer> getUndirectedList () {
 		return (this.isNetworkStatic)? this.refNetwork.getUndirectedListOf(this.getAgentIndex()) : this.followingList;
 	}
 	

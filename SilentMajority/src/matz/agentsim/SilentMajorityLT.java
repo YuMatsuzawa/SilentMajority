@@ -63,6 +63,7 @@ public class SilentMajorityLT {
 		} catch (Exception e) {
 			//do nothing
 			//nAgents should always be given by user. if not, default value of 1000 will hold.
+			//nAgents = -1 with CSTM network type indicates using whole netowrk of given file.
 		}
 		try {
 			simType = Integer.parseInt(conf.getProperty("simType"));
@@ -133,6 +134,11 @@ public class SilentMajorityLT {
 				
 		// ここでネットワーク生成
 		StaticNetwork ntwk = null;
+		if (nAgents < 1 && !ntwkType.equals(NTWK_NAME[CSTM_INDEX])) {
+			_E.SimExecLogger.severe("Generative Network requires non-0 positive number of nAgents.");
+			_E.safeShutdown();
+			_E.closeLogFileHandler();
+		}
 		if (ntwkType.equals(NTWK_NAME[CNN_INDEX])) ntwk = new StaticCNNNetwork(nAgents, degree);
 		else if (ntwkType.equals(NTWK_NAME[WS_INDEX])) {
 			if (pRewire == null) ntwk = new StaticWSNetwork(nAgents, degree);
@@ -143,7 +149,9 @@ public class SilentMajorityLT {
 		else if (ntwkType.equals(NTWK_NAME[REG_INDEX])) ntwk = new StaticREGNetwork(nAgents, degree);
 		else if (ntwkType.equals(NTWK_NAME[CSTM_INDEX])) { //カスタムネットワーク
 			try {
-				ntwk = new StaticCSTMNetwork(customNetworkPath, nAgents);
+				if (nAgents == -1) {
+					ntwk = new StaticCSTMNetwork(customNetworkPath);
+				} else ntwk = new StaticCSTMNetwork(customNetworkPath, nAgents);
 				degree = ntwk.getAvgDegree();
 			} catch (FileNotFoundException e) {
 				_E.SimExecLogger.severe("Custom Network file not found or inappropriate.");
