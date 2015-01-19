@@ -149,6 +149,17 @@ public class SilentMajorityLT {
 		else if (ntwkType.equals(NTWK_NAME[REG_INDEX])) ntwk = new StaticREGNetwork(nAgents, degree);
 		else if (ntwkType.equals(NTWK_NAME[CSTM_INDEX])) { //カスタムネットワーク
 			try {
+				if (customNetworkPath.equals("ARG")) {
+					try {
+						customNetworkPath = args[1];	//シェルスクリプトなどを経由して連続で異なるネットワークファイルを導入するための仕組み．confファイルのパス指定でARGと書いておく．
+					} catch (ArrayIndexOutOfBoundsException e) {
+//						e.printStackTrace();
+						_E.SimExecLogger.severe("Give network file path as second argument.");
+						_E.safeShutdown();
+						_E.closeLogFileHandler();
+						return;
+					}
+				}
 				if (nAgents == -1) {
 					ntwk = new StaticCSTMNetwork(customNetworkPath);
 				} else ntwk = new StaticCSTMNetwork(customNetworkPath, nAgents);
