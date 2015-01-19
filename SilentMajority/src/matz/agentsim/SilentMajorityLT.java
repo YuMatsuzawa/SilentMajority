@@ -29,6 +29,7 @@ public class SilentMajorityLT {
 		Double pRewire = null, degree = null;
 		boolean noiseEnabled = false, ntwkFig = true;
 		String customNetworkPath = "";
+		File customNetworkFile = null;
 		String ntwkType = NTWK_NAME[CNN_INDEX];
 		
 		/*
@@ -160,9 +161,11 @@ public class SilentMajorityLT {
 						return;
 					}
 				}
+				
 				if (nAgents == -1) {
 					ntwk = new StaticCSTMNetwork(customNetworkPath);
 				} else ntwk = new StaticCSTMNetwork(customNetworkPath, nAgents);
+				customNetworkFile = new File(customNetworkPath);
 				degree = ntwk.getAvgDegree();
 			} catch (FileNotFoundException e) {
 				_E.SimExecLogger.severe("Custom Network file not found or inappropriate.");
@@ -182,7 +185,9 @@ public class SilentMajorityLT {
 			}
 		}
 		
-		String simName = SIM_TYPE_NAME[simType] + "_" + ntwkType + date.getTime();
+		String simName = SIM_TYPE_NAME[simType] + "_" + ntwkType;
+		simName += (ntwkType.equals(NTWK_NAME[CSTM_INDEX]))? customNetworkFile.getName() : "";
+		simName += date.getTime();
 		File outDir = new File("results",simName);
 		if (!outDir.isDirectory()) outDir.mkdirs();
 		try {
