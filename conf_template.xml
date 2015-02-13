@@ -2,19 +2,19 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>Configuration</comment>
-<entry key="nCore"></entry>
+<entry key="nCore">10<!-- スレッド数.個人PCなら，コア数-1が安定．最もシミュレーション自体は軽い． --></entry>
 <entry key="simType">0<!--0=HighD,高次数占有, 1=BiasedV,初期Vocal偏り, 2=Relief,緩和付き, 3=CtrlTH,少数派閾値下げ, 4=SepTH,少数派閾値下げ&多数派上げ, 5=Normal,何も起こらない--></entry>
-<entry key="initSilentRatio">0.9</entry>
-<entry key="totalPosRatio">0.4</entry>
-<entry key="nIter">10</entry>
-<entry key="lowerBound">0.00</entry>
-<entry key="controlPitch">0.05</entry>
-<entry key="controlResol">21</entry>
-<entry key="nAgents">1000<!-- -1 when using raw network from file in CSTM network type. --></entry>
-<entry key="ntwkType">CNN<!-- CNN/BA/WS/RND/REG/CSTM --></entry>
-<entry key="degree">10</entry>
-<entry key="pRewire"></entry>
-<entry key="noiseEnabled">0</entry>
-<entry key="ntwkFig">0</entry>
-<entry key="customNetworkPath"></entry>
+<entry key="initSilentRatio">0.90<!-- 初期サイレントの割合． --></entry>
+<entry key="totalPosRatio">0.4<!-- 全体少数派の割合． --></entry>
+<entry key="nIter">10<!-- 同条件での実験回数． --></entry>
+<entry key="lowerBound">0.0<!-- 制御変数の最小値．たいてい0.0 --></entry>
+<entry key="controlPitch">0.02<!-- 制御変数の刻み幅．0～1を20分割するなら0.05となる． --></entry>
+<entry key="controlResol">21<!--  分割数．1加えた数を入力する(20分割なら21) --></entry>
+<entry key="nAgents">1000<!-- value larger than 0/-1 to use whole network of given network file in CSTM type --></entry>
+<entry key="ntwkType">BA<!-- CNN/BA/WS/RND/REG/CSTM --></entry>
+<entry key="degree">10<!-- 生成ネットワークの平均次数 --></entry>
+<entry key="pRewire"><!-- WSモデルでのつなぎ変え確率．0～1.空欄可.1に近いほどランダムモデルに近づく. --></entry>
+<entry key="noiseEnabled">0<!-- ノイズ(ランダムに周囲の影響と無関係にヴォーカルになる効果)を加えるか否か.0→false --></entry>
+<entry key="ntwkFig">0<!-- 生成ネットワークの模式図を出力するか否か.Jungライブラリを使い可視化.重いので非推奨.0→false --></entry>
+<entry key="customNetworkPath">ARG<!-- カスタムネットワークを使う場合の,元ネットワークファイルパス or "ARG"(その都度コマンドラインから入力したい場合) --></entry>
 </properties>
