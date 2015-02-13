@@ -1,5 +1,22 @@
+<a name="SilentMajority"></a>
 # SilentMajority
 
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [SilentMajority](#SilentMajority)
+	- [Summary](#Summary)
+	- [Usage](#Usage)
+		- [Result](#Result)
+		- [Build](#Build)
+	- [Configuration](#Configuration)
+	- [Simulation Types](#SimulationTypes)
+		- [HighD](#HighD)
+		- [BiasedV](#BiasedV)
+		- [CtrlTH](#CtrlTH)
+		- [Others](#Others)
+	- [Other Classes](#OtherClasses)
+
+<a name="Summary"></a>
 ## Summary
 
 拡張LTモデルによる意見発信のシミュレーションを行うプロジェクト及びパッケージ．
@@ -16,24 +33,27 @@ ExecutorServiceはマルチスレッド化のためのものです．
 
 Eclipse上でそのまま実行するほか，実行可能Jarに固めてサーバ上で使用もできます．
 
+<a name="Usage"></a>
 ## Usage
 
 1. conf\_template.xmlを適当に書き換えて，別名で保存し，設定ファイルとします．(例：conf\_srv.xml)
 2. Eclipseで実行するか，実行可能Jarにエクスポートして，サーバで実行します．
 	- Eclipse上で使う場合，実行構成の引数欄に設定ファイル名を入力して実行して下さい．
-	- サーバで実行する場合は，`$ java -jar <jarname>.jar conf\_srv.xml`のように入力して実行して下さい．
+	- サーバで実行する場合は，`$ java -jar <jarname>.jar conf_srv.xml`のように入力して実行して下さい．
 3. 出力はresultsディレクトリ，ログはlogディレクトリに格納されます．
 
+<a name="Result"></a>
 ### Result
 
 結果出力のうち，最も見るべき部分は，制御変数の変化に対するヴォーカルな意見割合の変化です．
 これは出力フォルダに含まれるCSVファイル（`PosNegRatio<epocMillisec>.csv`）に自動で集計され，まとめられます．
 グラフ化は行っていないので，Excel等を使用して下さい．
 
-ここのサブディレクトリは各制御変数における試行結果を収束まで逐一出力したもので，細かい挙動の確認が必要となった時に用います．
+個々のサブディレクトリは各制御変数における試行結果を収束まで逐一出力したもので，細かい挙動の確認が必要となった時に用います．
 
 ntwkで始まるファイルはネットワークダンプです．鈴村研のフォローネットワークデータと同形式で出力したCSVファイルと次数分布集計ファイルからなります．
 
+<a name="Build"></a>
 ### Build
 
 Eclipseの場合，実行可能Jarへのエクスポートを利用して下さい．通常のJarでも同じだとは思いますが，その場合必要なライブラリを-cpオプションで指定する必要があります．多分面倒です．
@@ -44,6 +64,7 @@ Eclipseの場合，実行可能Jarへのエクスポートを利用して下さ�
 
 既存のbuild.xmlは松澤の個人フォルダに向けてエクスポートしようとするので，設定を変更して下さい．
 
+<a name="Configuration"></a>
 ## Configuration
 
 設定ファイルの構造は以下のようになっています．
@@ -75,8 +96,10 @@ Eclipseの場合，実行可能Jarへのエクスポートを利用して下さ�
 実装されている実験それぞれについてただ1つずつの制御変数があり，この制御変数に下限と刻み幅，分割数を与えることで，特定条件についてシミュレーションが走ります．
 制御変数の各値について，指定された回数（`nIter`）ずつ実験を行い，結果は平均されます．
 
+<a name="SimulationTypes"></a>
 ## Simulation Types
 
+<a name="HighD"></a>
 ### HighD
 
 高次数エージェントに少数派意見を保持させる条件の実験．simType=0
@@ -85,6 +108,7 @@ Eclipseの場合，実行可能Jarへのエクスポートを利用して下さ�
 
 totalPosRatioは全体に対する少数派の割合なので,制御変数とtotalPosRatioが一致した場合,全ての少数派エージェントが次数上位エージェントとなります．
 
+<a name="BiasedV"></a>
 ### BiasedV
 
 初期にヴォーカルになるエージェントが少数派意見である条件の実験.simType=1
@@ -92,6 +116,7 @@ totalPosRatioは全体に対する少数派の割合なので,制御変数とtot
 制御変数は,初期ヴォーカルエージェントにおける少数派意見エージェントの割合で,[0,1]の範囲で動かせます.
 
 
+<a name="CtrlTH"></a>
 ### CtrlTH
 
 少数派意見エージェントの多数派認識に関する閾値を下げる条件の実験.simType=3
@@ -101,12 +126,14 @@ totalPosRatioは全体に対する少数派の割合なので,制御変数とtot
 0の時は分布上限を下げないので，閾値は0～1で一様分布し，平常条件です．1の時は少数派エージェントは全て閾値0をもつことになるので，
 自身と一致する意見が周囲に誰もいなくても，ヴォーカルになり（自身の意見が多数派であると認識し）ます．社会的影響に対し頑健である状態です．
 
-### その他
+<a name="Others"></a>
+### Others
 
 論文に採用しなかった実験的なタイプが残っていますが，そのうちRelief（時間が経つとサイレントになる）はSilentMajorityLTの方には恐らく対応していません．
 
 SepTHは多数派の閾値を上げてみるという効果を加えたものです．
 
+<a name="OtherClasses"></a>
 ## Other Classes
 
 様々なクラスが含まれていますが，多くはネットワーク生成や可視化，マルチスレッド化のためのクラスです．
